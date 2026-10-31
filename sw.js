@@ -1,7 +1,8 @@
 // Studio Service Worker: App-Dateien zwischenspeichern, damit die App auch ohne Netz startet.
 // Erst Netz (neue Version kommt sofort an), ohne Netz die gespeicherte Datei. Die Daten puffert Firebase selbst.
-const CACHE = 'studio-v2';
-const DATEIEN = ['./', './index.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
+// v3 (31.10.2026): Logo „Horizont“, neue Icons und die Reel-Werkstatt (werkstatt.html).
+const CACHE = 'studio-v3';
+const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
 const FREMD = ['https://www.gstatic.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(DATEIEN)).then(() => self.skipWaiting())); });

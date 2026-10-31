@@ -1,6 +1,8 @@
 // Studio Sommer_gram als Web-App: Anmeldung und Speicher über Firebase (dasselbe Projekt wie SommerHaus).
 // Die Studio-Daten liegen in eigenen Sammlungen mit dem Präfix "studio_", damit sie sich nicht mit SommerHaus mischen.
 // Bilder liegen als komprimiertes JPEG (Base64) in "studio_bilder", geschützt durch dieselbe Anmeldung.
+// Größere Dateien (Reels, Musik der Reel-Werkstatt) liegen in Teilen zu 900 KB: Kopf in "studio_dateien",
+// Teile in "studio_dateiteile" (<id>_0, <id>_1, …). Der Kopf wird zuletzt geschrieben, halbe Dateien sieht niemand.
 import { firebaseConfig } from './firebase-config.js';
 
 const V = '10.12.2';
@@ -116,6 +118,42 @@ async function loadBild(id) {
   const x = d.data(); return URL.createObjectURL(b64ToBlob(x.b64, x.type));
 }
 
+// Dateien in Teilen (Videos, Musik): speichern, laden, löschen
+const TEIL = 900000;
+async function saveDatei(blob, o = {}) {
+  const id = o.id || uid(); const type = o.type || blob.type || 'application/octet-stream';
+  const u8 = new Uint8Array(await blob.arrayBuffer()); const n = Math.max(1, Math.ceil(u8.length / TEIL));
+  for (let i = 0; i < n; i += 3) {
+    const ks = []; for (let k = i; k < Math.min(n, i + 3); k++) ks.push(k);
+    await Promise.all(ks.map(k => F.setDoc(F.doc(fs, P + 'dateiteile', id + '_' + k), { d: F.Bytes.fromUint8Array(u8.subarray(k * TEIL, (k + 1) * TEIL)), i: k, f: id })));
+    if (o.progress) o.progress(Math.min(n, i + 3) / n);
+  }
+  await F.setDoc(F.doc(fs, P + 'dateien', id), { type, size: u8.length, n, name: o.name || '', at: new Date().toISOString() });
+  DCACHE.set(id, Promise.resolve(new Blob([u8], { type })));
+  return id;
+}
+const DCACHE = new Map();
+function loadDatei(id) {
+  if (DCACHE.has(id)) return DCACHE.get(id);
+  const p = (async () => {
+    const m = await F.getDoc(F.doc(fs, P + 'dateien', id));
+    if (!m.exists()) { const url = await loadBild(id); return url ? await (await fetch(url)).blob() : null; }
+    const x = m.data();
+    const parts = await Promise.all(Array.from({ length: x.n }, (_, k) => F.getDoc(F.doc(fs, P + 'dateiteile', id + '_' + k))));
+    if (parts.some(d => !d.exists())) throw new Error('Datei unvollständig');
+    return new Blob(parts.map(d => d.data().d.toUint8Array()), { type: x.type });
+  })();
+  DCACHE.set(id, p); p.then(b => { if (!b) DCACHE.delete(id); }, () => DCACHE.delete(id));
+  return p;
+}
+async function deleteDatei(id) {
+  const m = await F.getDoc(F.doc(fs, P + 'dateien', id)); if (!m.exists()) return;
+  const n = m.data().n || 0; await F.deleteDoc(F.doc(fs, P + 'dateien', id));
+  for (let k = 0; k < n; k++) await F.deleteDoc(F.doc(fs, P + 'dateiteile', id + '_' + k));
+  DCACHE.delete(id);
+}
+const files = Object.freeze({ save: saveDatei, load: loadDatei, del: deleteDatei });
+
 // Für Claude (Morgen-Check, Einplanen in Instagram): Lesen und Schreiben über die angemeldete Seite
 window.studioAPI = Object.freeze({
   list: async c => (await F.getDocs(F.collection(fs, P + c))).docs.map(d => { const x = { id: d.id, ...d.data() }; if (c === 'bilder') delete x.b64; return x; }),
@@ -123,7 +161,10 @@ window.studioAPI = Object.freeze({
   set: (c, id, o) => F.setDoc(F.doc(fs, P + c, id), o).then(() => 'ok'),
   update: (c, id, o) => F.updateDoc(F.doc(fs, P + c, id), o).then(() => 'ok'),
   del: (c, id) => F.deleteDoc(F.doc(fs, P + c, id)).then(() => 'ok'),
-  who: () => auth.currentUser && auth.currentUser.email
+  who: () => auth.currentUser && auth.currentUser.email,
+  // Reel-Video für das Einplanen in Instagram auf den Rechner laden (landet im Download-Ordner)
+  datei: async id => { const d = await F.getDoc(F.doc(fs, P + 'dateien', id)); return d.exists() ? { id, ...d.data() } : null; },
+  sichern: async (id, name) => { const b = await loadDatei(id); if (!b) return 'fehlt'; const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name || (id + '.mp4'); document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 4000); return 'ok ' + b.size; }
 });
 
 // Einmaliger Umzug aus dem Claude-Studio: JSON-Dateien {collections:{name:{id:doc}}, bilder:{id:{b64,type,w,h}}}
@@ -132,6 +173,7 @@ async function importFiles(files) {
   for (const f of files) {
     const data = JSON.parse(await f.text());
     for (const [id, b] of Object.entries(data.bilder || {})) { await F.setDoc(F.doc(fs, P + 'bilder', id), b); imgs++; }
+    for (const [id, b] of Object.entries(data.dateien || {})) { await saveDatei(b64ToBlob(b.b64, b.type), { id, type: b.type, name: b.name || '' }); imgs++; }
     const writes = [];
     for (const [c, m] of Object.entries(data.collections || {})) for (const [id, o] of Object.entries(m)) writes.push([c, id, o]);
     for (let i = 0; i < writes.length; i += 300) {
@@ -155,7 +197,7 @@ function addFooter(user) {
   $('stFile').onchange = async ev => {
     const files = [...(ev.target.files || [])]; if (!files.length) return;
     $('stImpMsg').textContent = 'Import läuft …';
-    try { const r = await importFiles(files); $('stImpMsg').textContent = `Import fertig: ${r.docs} Einträge, ${r.imgs} Bilder`; }
+    try { const r = await importFiles(files); $('stImpMsg').textContent = `Import fertig: ${r.docs} Einträge, ${r.imgs} Bilder und Dateien`; }
     catch (e) { $('stImpMsg').textContent = 'Import fehlgeschlagen: ' + (e.code || e.message || 'Fehler'); }
     ev.target.value = '';
   };
@@ -166,7 +208,7 @@ let resolved = false;
 A.onAuthStateChanged(auth, user => {
   if (user) {
     leave(); addFooter(user);
-    if (!resolved) { resolved = true; window.__studioResolve({ db, assets, loadBild, user: { email: user.email } }); }
+    if (!resolved) { resolved = true; window.__studioResolve({ db, assets, loadBild, files, user: { email: user.email } }); }
   } else { showForm(); msg('Bitte melde dich an, wie bei SommerHaus.'); }
 });
 $('stForm').addEventListener('submit', async ev => {
