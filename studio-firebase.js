@@ -174,6 +174,10 @@ async function importFiles(files) {
     const data = JSON.parse(await f.text());
     for (const [id, b] of Object.entries(data.bilder || {})) { await F.setDoc(F.doc(fs, P + 'bilder', id), b); imgs++; }
     for (const [id, b] of Object.entries(data.dateien || {})) { await saveDatei(b64ToBlob(b.b64, b.type), { id, type: b.type, name: b.name || '' }); imgs++; }
+    // Große Dateien in Teilen über mehrere Import-Dateien: erst alle Teile, zuletzt die Köpfe
+    for (const [id, k, b64] of (data.teile || [])) { const bin = atob(b64); const u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i);
+      await F.setDoc(F.doc(fs, P + 'dateiteile', id + '_' + k), { d: F.Bytes.fromUint8Array(u), i: k, f: id }); }
+    for (const [id, m] of Object.entries(data.koepfe || {})) { await F.setDoc(F.doc(fs, P + 'dateien', id), m); DCACHE.delete(id); imgs++; }
     const writes = [];
     for (const [c, m] of Object.entries(data.collections || {})) for (const [id, o] of Object.entries(m)) writes.push([c, id, o]);
     for (let i = 0; i < writes.length; i += 300) {
