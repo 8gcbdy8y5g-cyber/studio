@@ -1,7 +1,8 @@
 // Studio Service Worker: App-Dateien zwischenspeichern, damit die App auch ohne Netz startet.
 // Erst Netz (neue Version kommt sofort an), ohne Netz die gespeicherte Datei. Die Daten puffert Firebase selbst.
 // v3 (31.10.2026): Logo „Horizont“, neue Icons und die Reel-Werkstatt (werkstatt.html).
-const CACHE = 'studio-v3';
+// v4 (31.10.2026): iPad/iPhone ohne dauerhaften Datenbank-Zwischenspeicher (Safari hing beim Laden).
+const CACHE = 'studio-v4';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
 const FREMD = ['https://www.gstatic.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'];

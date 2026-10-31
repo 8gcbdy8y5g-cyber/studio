@@ -62,8 +62,36 @@ const [{ initializeApp }, A, F] = await Promise.all([
 const app = initializeApp(firebaseConfig);
 const auth = A.getAuth(app);
 let fs;
-try { fs = F.initializeFirestore(app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
-catch (e) { fs = F.getFirestore(app); }
+// iPad und iPhone: Safari hängt mit dem dauerhaften Zwischenspeicher (IndexedDB) und über iCloud Private Relay
+// gern fest, die App zeigt dann endlos „lädt“. Dort deshalb Speicher nur im Arbeitsspeicher und Long-Polling.
+// Antwortet die Datenbank auf anderen Geräten nicht, schaltet die App einmal selbst in diesen sicheren Modus.
+const APPLE_TOUCH = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+let SICHER = false; try { SICHER = localStorage.getItem('studio-sicher') === '1'; } catch (e) {}
+const LEICHT = APPLE_TOUCH || SICHER;
+try {
+  fs = F.initializeFirestore(app, LEICHT
+    ? { localCache: F.memoryLocalCache(), experimentalForceLongPolling: true }
+    : { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }), experimentalAutoDetectLongPolling: true });
+} catch (e) { fs = F.getFirestore(app); }
+function hinweis(t) {
+  let n = document.getElementById('stHinweis');
+  if (!n) { n = document.createElement('div'); n.id = 'stHinweis'; n.setAttribute('role', 'status');
+    n.style.cssText = 'position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:300;max-width:min(560px,calc(100vw - 32px));background:var(--ink);color:var(--on-ink);padding:12px 16px;border-radius:16px;font-size:14px;line-height:1.4;box-shadow:0 10px 30px rgba(0,0,0,.3)';
+    document.body.appendChild(n); }
+  n.textContent = t;
+}
+// Prüft nach der Anmeldung, ob die Datenbank wirklich antwortet
+async function verbindungPruefen() {
+  const zeit = new Promise(r => setTimeout(() => r('zeit'), 12000));
+  const probe = F.getDocFromServer(F.doc(fs, P + 'gallery', 'order')).then(() => 'ok', e => 'fehler:' + (e.code || e.message));
+  const r = await Promise.race([probe, zeit]);
+  if (r === 'ok') { const n = document.getElementById('stHinweis'); if (n) n.remove(); return; }
+  if (!LEICHT) { try { localStorage.setItem('studio-sicher', '1'); } catch (e) {} location.reload(); return; }
+  hinweis(r === 'zeit'
+    ? 'Die Datenbank antwortet nicht. Prüf das WLAN. Wenn iCloud Private Relay an ist: Einstellungen › Apple-Account › iCloud › Privat-Relay kurz aus, oder für dieses WLAN „IP-Adresse verbergen“ ausschalten.'
+    : 'Die Datenbank meldet einen Fehler (' + r.slice(7) + '). Bitte einmal neu laden.');
+  probe.then(x => { if (x === 'ok') { const n = document.getElementById('stHinweis'); if (n) n.remove(); } });
+}
 
 // Speicher im selben Format wie im Claude-Studio
 const snapDocs = s => ({ docs: s.docs.map(d => ({ id: d.id, data: () => d.data() })) });
@@ -209,9 +237,12 @@ function addFooter(user) {
 
 try { if (localStorage.getItem('studio-keep') === '0') $('stKeep').checked = false; } catch (e) {}
 let resolved = false;
+let authDa = false;
+setTimeout(() => { if (!authDa) { showForm(); msg('Die Anmeldung braucht ungewöhnlich lange. Lade die Seite neu oder melde dich hier an.', true); } }, 12000);
 A.onAuthStateChanged(auth, user => {
+  authDa = true;
   if (user) {
-    leave(); addFooter(user);
+    leave(); addFooter(user); verbindungPruefen();
     if (!resolved) { resolved = true; window.__studioResolve({ db, assets, loadBild, files, user: { email: user.email } }); }
   } else { showForm(); msg('Bitte melde dich an, wie bei SommerHaus.'); }
 });
