@@ -424,7 +424,7 @@ nav.side{position:fixed;left:0;top:0;bottom:0;z-index:45;width:calc(var(--side-w
     var q=p.then(function(api){return api.files.load(id);}).then(function(b){pend.delete(id);if(!b)throw new Error("Datei fehlt: "+id);put(id,b);return b;},
       function(e){pend.delete(id);throw e;});pend.set(id,q);return q;}
   function refresh(){clearTimeout(refreshT);refreshT=setTimeout(function(){
-    try{renderResult()}catch(e){}try{renderList()}catch(e){}try{if(R.playing)syncMusic(true)}catch(e){}},60);}
+    try{renderResult()}catch(e){}try{renderList()}catch(e){}},60);}
   window.__bl=function(id){return load(id).then(function(){return urls.get(id);});};
   window.__bs=function(id){if(!id)return "";var u=urls.get(id);if(u)return u;load(id).then(refresh,function(){});return "";};
   window.__bf=function(id){return load(id).then(function(b){return {blob:function(){return Promise.resolve(b);}};});};
@@ -1067,21 +1067,29 @@ function autoTrack(){const moods=STYLE_MOOD[P.style]||["treibend"];let pool=R.ml
   if(P.music&&sorted.length>1&&t.id===P.music.id)t=sorted[(sorted.indexOf(t)+1)%sorted.length];R.moodSel=t.mood;renderMoods();chooseTrack(t)}
 function musicChanged(){renderMiniSound();markChanged();renderBpm();rebuild();renderItems();renderTracks();renderApprove();R.t=0;R.needs=3;if(R.playing)syncMusic(true)}
 /* Ton in der Vorschau, im Gleichlauf mit dem Bild */
-/* Vorschau mit Musik: Die Musik läuft über Web Audio aus einem einmal dekodierten Puffer und ist der Taktgeber.
-   Das Bild richtet sich nach der Audio-Uhr, statt dass die Musik ständig nachgespult wird. Gestartet wird erst,
-   wenn die Musik geladen ist, damit Bild und Ton gemeinsam loslaufen. */
+/* Vorschau mit Musik: Das Audio-Element ist der Taktgeber. Das Bild folgt der Stelle, an der die Musik gerade ist,
+   und wartet, wenn sie lädt oder stockt. Gespult wird die Musik nur beim Start, beim Spulen und am Ende des Reels.
+   (Web Audio wäre genauer, bleibt auf iPad und iPhone im Stummmodus aber still und liest nicht jede MP4.) */
+try{if(navigator.audioSession)navigator.audioSession.type="playback"}catch(e){}
 function musicKey(){return P.music&&P.music.assetId?"a:"+P.music.assetId:R.music?R.music:null}
-function musicBuf(){if(P.music&&P.music.assetId)return decodeAudioOf("a:"+P.music.assetId,()=>__bf(P.music.assetId).then(r=>r.blob()));if(R.music)return decodeAudioOf(R.music);return null}
-function stopMusic(){R.mtok=(R.mtok||0)+1;if(R.mn){try{R.mn.stop()}catch(e){}try{R.mn.disconnect()}catch(e){}R.mn=null}R.clock=null;R.mpend=false}
-function startMusic(buf){stopMusic();const ac=audioCtx();if(!ac||!buf)return;const total=R.tl?R.tl.total:0;const st=musicStart();
-  const n=ac.createBufferSource();n.buffer=buf;if(buf.duration-st<total+0.1){n.loop=true;n.loopStart=0;n.loopEnd=buf.duration}
-  const off=n.loop?((st+R.t)%buf.duration):Math.min(st+R.t,Math.max(0,buf.duration-0.05));
-  const g=ac.createGain();g.gain.value=0.9;n.connect(g);g.connect(ac.destination);const at=ac.currentTime+0.06;n.start(at,off);
-  R.mn=n;R.clock={ac,at,t:R.t,lat:(ac.outputLatency||0)+(ac.baseLatency||0)}}
-function syncMusic(force){if(!R.playing||!musicKey()){stopMusic();return}
-  if(!force&&(R.mn||R.mpend))return;const p=musicBuf();if(!p)return;stopMusic();R.mpend=true;const tok=R.mtok;
-  p.then(buf=>{if(tok!==R.mtok||!R.playing)return;R.mpend=false;if(buf)startMusic(buf)},()=>{R.mpend=false})}
-function musicClockT(){const c=R.clock;if(!c)return null;const dt=c.ac.currentTime-c.lat-c.at;return c.t+Math.max(0,dt)}
+function musicEl(){const url=musicUrl();if(!url)return null;
+  if(!R.pa||R.pa.dataset.src!==url){if(R.pa){R.pa.pause();R.pa.removeAttribute("src");R.pa.load()}const a=new Audio();a.preload="auto";a.playsInline=true;a.src=url;a.dataset.src=url;a.volume=0.9;R.pa=a;
+    a.addEventListener("waiting",()=>{R.aWait=true});a.addEventListener("playing",()=>{R.aWait=false});a.addEventListener("seeking",()=>{R.aWait=true});a.addEventListener("seeked",()=>{R.aWait=a.paused})}
+  return R.pa}
+function stopMusic(){if(R.pa&&!R.pa.paused)R.pa.pause();R.aRun=false;R.aWait=false}
+// Musik an die Stelle R.t setzen und starten; das Bild läuft erst los, wenn die Musik wirklich spielt
+function startMusicAt(t){const a=musicEl();if(!a)return false;const st=musicStart(),dur=a.duration||0,total=R.tl?R.tl.total:0;
+  a.loop=!!dur&&dur-st<total+0.1;R.aOff=0;let pos=st+t;if(a.loop&&dur)pos=pos%dur;
+  try{a.currentTime=pos}catch(e){}R.aRun=true;R.aWait=true;R.aLast=null;a.play().then(()=>{},()=>{R.aRun=false;R.aWait=false;toast("Die Musik startet nicht. Tipp noch einmal auf Start.")});return true}
+function syncMusic(force){if(!R.playing||!musicKey()){stopMusic();return}if(force)startMusicAt(R.t)}
+// Zeit der Vorschau aus der Musik: mit kleiner Glättung, weil currentTime nicht jedes Bild neu meldet
+function musicClockT(now){const a=R.pa;if(!R.aRun||!a)return null;if(R.aWait||a.paused||a.seeking||a.readyState<3){R.aLast=null;return R.t}
+  const ct=a.currentTime,st=musicStart();if(R.aLast&&ct<R.aLast.ct-0.5&&a.loop)R.aOff+=a.duration||0;
+  if(!R.aLast||ct!==R.aLast.ct)R.aLast={ct,now};const ext=Math.min(0.25,(now-R.aLast.now)/1000);
+  return Math.max(R.t,ct+R.aOff-st+ext)}
+// Vor dem Start warten, bis die Musik geladen ist (in der App kommt sie erst aus der Datenbank)
+function waitMusicReady(){return new Promise(res=>{const t0=performance.now();const tick=()=>{const a=musicEl();
+  if(a&&a.readyState>=3)return res(true);if(performance.now()-t0>20000)return res(false);if(a&&a.readyState<2)try{a.load()}catch(e){}setTimeout(tick,120)};tick()})}
 
 /* ================= Medien laden ================= */
 const thumbOf=(src,sw,sh,cx=0.5)=>{const c=mk(128,160),x=c.getContext("2d");const sc=Math.max(128/sw,160/sh);const dw=sw*sc,dh=sh*sc;let dx=64-cx*dw;dx=Math.min(0,Math.max(128-dw,dx));x.drawImage(src,dx,(160-dh)/2,dw,dh);return c.toDataURL("image/jpeg",0.68)};
@@ -1139,16 +1147,18 @@ function syncPreview(){const tl=R.tl;if(!tl)return;const t=R.t;
     else{if(!v.paused)v.pause();const pre=seg.start-seg.lp/2;if(pre>t&&pre-t<0.6&&!v.seeking){const s0=it.inT||0;if(Math.abs(v.currentTime-s0)>0.05)v.currentTime=s0}}}}
 function frame(now){
   if(!R.exporting&&PV){
-    let wrapped=false;if(R.playing){const mt=musicClockT();R.t=mt!=null?mt:R.tStart+(now-R.wall)/1000;const tot=R.tl?R.tl.total:0;if(R.t>=tot){R.t=0;R.tStart=0;R.wall=now;wrapped=true}syncMusic(wrapped);if(wrapped&&!musicKey()){R.wall=now;R.tStart=0}}
+    let wrapped=false;if(R.playing){const mt=musicClockT(now);R.t=mt!=null?mt:R.tStart+(now-R.wall)/1000;const tot=R.tl?R.tl.total:0;if(R.t>=tot){R.t=0;R.tStart=0;R.wall=now;wrapped=true}if(wrapped)syncMusic(true)}
     if(R.playing||R.needs>0){syncPreview();PV.render(R.t);mirrorMini();if(R.needs>0)R.needs--;updateTransport()}
     renderDemo(now);if(R.ex||R.tp||R.vizIdle!==true){renderMoodViz();R.vizIdle=!(R.ex||R.tp)}
   }
   requestAnimationFrame(frame)}
 function setPlaying(on){
-  // Mit Musik erst starten, wenn sie geladen und dekodiert ist
-  if(on&&musicKey()&&R.bufOK!==musicKey()){if(R.waitMusic)return;audioCtx();const k=musicKey(),p=musicBuf();if(!p)return setPlayingNow(true);
-    R.waitMusic=true;const tm=setTimeout(()=>{if(R.waitMusic)toast("Musik wird geladen …",1800)},250);
-    p.then(b=>{clearTimeout(tm);R.waitMusic=false;if(b)R.bufOK=k;else toast("Die Musik ließ sich nicht laden. Vorschau ohne Musik.");setPlayingNow(true)},()=>{clearTimeout(tm);R.waitMusic=false;setPlayingNow(true)});return}
+  // Mit Musik erst starten, wenn sie geladen ist, damit Bild und Ton gemeinsam loslaufen
+  if(on&&musicKey()&&!(R.pa&&R.pa.dataset.src===musicUrl()&&R.pa.readyState>=3)){if(R.waitMusic)return;R.waitMusic=true;const a=musicEl();
+    // iPad/iPhone: Ton im Tipp freischalten, sonst darf die Musik später nicht von selbst starten
+    if(a){const tok=R.unlockTok=(R.unlockTok||0)+1;try{a.play().then(()=>{if(R.unlockTok===tok&&!R.aRun)a.pause()},()=>{})}catch(e){}}
+    const tm=setTimeout(()=>{if(R.waitMusic)toast("Musik wird geladen …",1800)},300);
+    waitMusicReady().then(ok=>{clearTimeout(tm);R.waitMusic=false;if(!ok)toast("Die Musik lädt gerade nicht. Vorschau ohne Musik.");setPlayingNow(true)});return}
   setPlayingNow(on)}
 function setPlayingNow(on){if(!on&&R.playing)setTimeout(scheduleThumbs,60);R.playing=on;if(on){R.wall=performance.now();R.tStart=R.t;if(R.ex||R.tp)stopExample()}else{for(const k in M)if(M[k].video&&!M[k].video.paused)M[k].video.pause()}syncMusic(true);R.needs=2;updateTransport()}
 

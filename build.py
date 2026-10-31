@@ -136,7 +136,7 @@ BOOT_WERK = '''<script>
     var q=p.then(function(api){return api.files.load(id);}).then(function(b){pend.delete(id);if(!b)throw new Error("Datei fehlt: "+id);put(id,b);return b;},
       function(e){pend.delete(id);throw e;});pend.set(id,q);return q;}
   function refresh(){clearTimeout(refreshT);refreshT=setTimeout(function(){
-    try{renderResult()}catch(e){}try{renderList()}catch(e){}try{if(R.playing)syncMusic(true)}catch(e){}},60);}
+    try{renderResult()}catch(e){}try{renderList()}catch(e){}},60);}
   window.__bl=function(id){return load(id).then(function(){return urls.get(id);});};
   window.__bs=function(id){if(!id)return "";var u=urls.get(id);if(u)return u;load(id).then(refresh,function(){});return "";};
   window.__bf=function(id){return load(id).then(function(b){return {blob:function(){return Promise.resolve(b);}};});};
