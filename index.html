@@ -1,0 +1,1159 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Studio">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0D0D0C">
+<meta name="color-scheme" content="dark light">
+<meta name="description" content="Planen, posten und auswerten für sommer_gram">
+<title>Studio Sommer_gram</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<script>(function(){var t="dark";try{t=localStorage.getItem("sg-theme")||"dark"}catch(e){}if(t==="light"||t==="dark")document.documentElement.setAttribute("data-sg",t)})()</script>
+<style>
+/* Dunkelkammer: Seitenleiste links, Fotos groß, Bernstein als einziges Signal. Hell = Papier, Dunkel = Dunkelkammer. data-sg = Wahl im Studio, ohne Wahl folgt es dem Gerät */
+:root{
+  --bg:#F2F0EB; --card:#FFFFFF; --field:#EAE7E1; --field-2:#D9D5CC; --line:#E2DED6;
+  --text:#171614; --text-2:#5C5850; --text-3:#8A857B; --ink:#171614; --on-ink:#FFFFFF;
+  --peach:#F5E2C0; --peach-soft:#FBF3E4; --accent:#A4620A; --amber:#E8A33D; --on-amber:#1A1206; --accent-fill:rgba(232,163,61,.18);
+  --ok:#2E8B57; --ok-soft:#E2F1E7; --info:#3D6FC4; --warn:#C25E2C; --bad:#C8372D; --muted:#A29D93; --c-reel:#9457AB;
+  --side:#E8E5DF; --hero-shadow:0 18px 44px rgba(60,45,20,.18); color-scheme:light;
+  --sans:"Inter",-apple-system,BlinkMacSystemFont,"Helvetica Neue",system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --r-field:12px; --r-card:20px; --side-w:92px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-sg]):not([data-theme="light"]){
+  --bg:#0D0D0C; --card:#151513; --field:#1E1D1B; --field-2:#2D2C29; --line:#262521;
+  --text:#EDEBE6; --text-2:#A8A399; --text-3:#726E66; --ink:#EDEBE6; --on-ink:#0D0D0C;
+  --peach:#2C2113; --peach-soft:#1B160E; --accent:#E8A33D; --amber:#E8A33D; --on-amber:#140F05; --accent-fill:rgba(232,163,61,.16);
+  --ok:#7CC79A; --ok-soft:#15211A; --info:#8FB0E8; --warn:#E58A5C; --bad:#FF7A70; --muted:#78746C; --c-reel:#C99BDA;
+  --side:#090908; --hero-shadow:0 28px 64px rgba(0,0,0,.6); color-scheme:dark}}
+:root:not([data-sg])[data-theme="dark"]{
+  --bg:#0D0D0C; --card:#151513; --field:#1E1D1B; --field-2:#2D2C29; --line:#262521;
+  --text:#EDEBE6; --text-2:#A8A399; --text-3:#726E66; --ink:#EDEBE6; --on-ink:#0D0D0C;
+  --peach:#2C2113; --peach-soft:#1B160E; --accent:#E8A33D; --amber:#E8A33D; --on-amber:#140F05; --accent-fill:rgba(232,163,61,.16);
+  --ok:#7CC79A; --ok-soft:#15211A; --info:#8FB0E8; --warn:#E58A5C; --bad:#FF7A70; --muted:#78746C; --c-reel:#C99BDA;
+  --side:#090908; --hero-shadow:0 28px 64px rgba(0,0,0,.6); color-scheme:dark}
+:root[data-sg="dark"]{
+  --bg:#0D0D0C; --card:#151513; --field:#1E1D1B; --field-2:#2D2C29; --line:#262521;
+  --text:#EDEBE6; --text-2:#A8A399; --text-3:#726E66; --ink:#EDEBE6; --on-ink:#0D0D0C;
+  --peach:#2C2113; --peach-soft:#1B160E; --accent:#E8A33D; --amber:#E8A33D; --on-amber:#140F05; --accent-fill:rgba(232,163,61,.16);
+  --ok:#7CC79A; --ok-soft:#15211A; --info:#8FB0E8; --warn:#E58A5C; --bad:#FF7A70; --muted:#78746C; --c-reel:#C99BDA;
+  --side:#090908; --hero-shadow:0 28px 64px rgba(0,0,0,.6); color-scheme:dark}
+:root[data-sg="light"]{
+  --bg:#F2F0EB; --card:#FFFFFF; --field:#EAE7E1; --field-2:#D9D5CC; --line:#E2DED6;
+  --text:#171614; --text-2:#5C5850; --text-3:#8A857B; --ink:#171614; --on-ink:#FFFFFF;
+  --peach:#F5E2C0; --peach-soft:#FBF3E4; --accent:#A4620A; --amber:#E8A33D; --on-amber:#1A1206; --accent-fill:rgba(232,163,61,.18);
+  --ok:#2E8B57; --ok-soft:#E2F1E7; --info:#3D6FC4; --warn:#C25E2C; --bad:#C8372D; --muted:#A29D93; --c-reel:#9457AB;
+  --side:#E8E5DF; --hero-shadow:0 18px 44px rgba(60,45,20,.18); color-scheme:light}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font:400 15px/1.45 var(--sans);padding-left:calc(var(--side-w) + env(safe-area-inset-left,0px));-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.wrap{max-width:1240px;margin:0 auto;padding-block:28px 64px;padding-left:28px;padding-right:max(28px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+header.top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+h1{font-size:34px;line-height:1.05;font-weight:800;letter-spacing:-.03em;margin:0;text-wrap:balance}
+a.home{color:inherit;text-decoration:none;cursor:pointer;border-radius:8px}
+a.home:hover{opacity:.75}
+h2{font-size:18px;font-weight:700;letter-spacing:-.015em;margin:0}
+.sub{display:flex;align-items:center;gap:10px;margin-top:0;color:var(--text-2);font-size:13px;flex-wrap:wrap}
+.tag{font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;background:var(--peach);color:var(--accent)}
+.conn{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--text-2);background:var(--field);border-radius:999px;padding:6px 12px}
+.dot{width:8px;height:8px;border-radius:50%;flex:none;display:inline-block}
+.tabs{display:inline-flex;background:var(--field);border-radius:999px;padding:4px;gap:2px}
+.tabs a{padding:8px 18px;border-radius:999px;text-decoration:none;color:var(--text-2);font-weight:600;font-size:14px}
+.tabs a[aria-current="page"]{background:var(--ink);color:var(--on-ink)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-card);padding:24px;min-width:0}
+.card>h2+*{margin-top:16px}
+.cardhead{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text-3)}
+.muted{color:var(--text-2)}
+.small{font-size:13px}
+.field{width:100%;background:var(--field);border:1px solid transparent;border-radius:var(--r-field);padding:11px 14px;outline:none}
+.field:focus{border-color:var(--text-3);background:var(--card)}
+textarea.field{resize:vertical;min-height:130px;line-height:1.5}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.stack{display:flex;flex-direction:column;gap:6px;min-width:0}
+.pill{border:1px solid var(--line);background:var(--card);border-radius:999px;padding:8px 14px;cursor:pointer;font-size:14px;font-weight:600;display:inline-flex;align-items:center;gap:7px;min-height:36px}
+.pill[aria-pressed="true"]{background:var(--ink);color:var(--on-ink);border-color:var(--ink)}
+.pill:hover{border-color:var(--text-3)}
+.btn{border:0;border-radius:999px;padding:11px 20px;font-weight:700;cursor:pointer;background:var(--amber);color:var(--on-amber);min-height:42px;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:var(--field);color:var(--text)}
+.btn.soft{background:var(--peach);color:var(--accent)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.sm{padding:7px 14px;min-height:34px;font-size:13px}
+.linkish{background:none;border:0;padding:0;color:var(--text-2);text-decoration:underline;cursor:pointer;font-size:13px;min-height:24px}
+.notice{border-radius:16px;padding:12px 16px;background:var(--peach-soft);border:1px solid var(--peach);font-size:14px;display:flex;gap:10px;align-items:flex-start;flex-wrap:wrap}
+.notice.bad{background:transparent;border-color:var(--bad)}
+
+/* Posten */
+.compose{display:grid;grid-template-columns:minmax(0,400px) minmax(0,1fr);gap:34px}
+.drop{aspect-ratio:4/5;max-width:100%;border-radius:18px;background:var(--field);border:1.5px dashed var(--field-2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;position:relative;overflow:hidden;cursor:pointer}
+.drop.has{border:0;border-radius:8px;box-shadow:var(--hero-shadow);cursor:zoom-in}
+.lb{position:fixed;inset:0;z-index:70;background:rgba(10,10,10,.92);display:flex;align-items:center;justify-content:center;padding:calc(56px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(56px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.lb[hidden]{display:none!important}
+.lb img{max-width:100%;max-height:100%;object-fit:contain;flex:none;border-radius:6px;display:block;will-change:transform;box-shadow:0 30px 80px rgba(0,0,0,.45)}
+.lb button{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;width:48px;height:48px;border-radius:50%;font-size:22px;cursor:pointer;display:grid;place-items:center}
+.lb button:hover{background:rgba(255,255,255,.26)}
+.lb .lbx{top:calc(12px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px))}
+.lb .lbp{left:max(12px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%)}
+.lb .lbn{right:max(12px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}
+.lb .lbc{position:absolute;bottom:calc(16px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);color:#ddd;font-size:14px}
+.drop.reel{aspect-ratio:9/16;max-height:520px}
+.drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.plus{width:44px;height:44px;border-radius:50%;background:var(--amber);color:var(--on-amber);display:grid;place-items:center;font-size:24px;font-weight:300}
+.thumbs{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.thumb{width:56px;aspect-ratio:4/5;border-radius:8px;overflow:hidden;position:relative;background:var(--field);border:2px solid transparent;cursor:pointer;padding:0}
+.thumb.on{border-color:var(--amber)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .x{position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;font-size:11px;display:grid;place-items:center;border:0;cursor:pointer}
+.thumb.add{display:grid;place-items:center;font-size:20px;color:var(--text-2)}
+.thumb[data-cur]{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
+.thumb .tn{position:absolute;left:3px;bottom:3px;min-width:16px;height:16px;padding:0 4px;border-radius:8px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;font-weight:700;display:grid;place-items:center}
+.thumb.dragph{border:2px dashed var(--text-3)}
+.dragghost{position:fixed;z-index:90;pointer-events:none;margin:0;transform:scale(1.06);box-shadow:0 18px 40px rgba(0,0,0,.32);cursor:grabbing;border-radius:10px;overflow:hidden}
+.dragph{opacity:.25}
+.fchips{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px;align-items:center}
+.pill.sm{min-height:34px;padding:6px 12px;font-size:13px}
+.pill .muted{font-weight:500;margin-left:2px}
+.ghostpill{border-style:dashed;color:var(--text-2)}
+.tile.dragable{cursor:grab}
+.tile.lift{transform:scale(1.04);box-shadow:0 10px 24px rgba(0,0,0,.25);z-index:2;transition:transform .15s,box-shadow .15s}
+.tile .rk{position:absolute;right:6px;bottom:6px;min-width:20px;height:20px;padding:0 6px;border-radius:10px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;font-weight:700;display:grid;place-items:center}
+.counter{font-family:var(--mono);font-size:11px;color:var(--text-3)}
+.feedprev{background:var(--field);border-radius:var(--r-field);padding:12px 14px;font-size:14px}
+.feedprev b{font-weight:700}
+.feedprev .more{color:var(--text-3)}
+.checks{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px}
+.checks span{display:inline-flex;align-items:center;gap:6px}
+.sugg{display:flex;flex-direction:column;gap:8px}
+.sugg button{text-align:left;background:var(--peach-soft);border:1px solid var(--peach);border-radius:var(--r-field);padding:10px 14px;cursor:pointer}
+.sugg button:hover{border-color:var(--accent)}
+.confirm{border:1px solid var(--ink);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+.feedgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;border-radius:14px;overflow:hidden}
+.tile{aspect-ratio:4/5;background:var(--field);position:relative;overflow:hidden;display:flex;align-items:flex-end;padding:8px;font-size:11.5px;color:var(--text-2);border:0;cursor:pointer;text-align:left}
+.tile img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tile .badge{position:absolute;top:6px;left:6px;font:700 10px var(--mono);padding:3px 7px;border-radius:5px;background:rgba(0,0,0,.62);color:#fff;max-width:calc(100% - 12px);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.tile span.t{position:relative}
+.tile.on{outline:3px solid var(--amber);outline-offset:-3px}
+.bottom{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:22px;align-items:start}
+@media (max-width:700px){.bottom{grid-template-columns:minmax(0,1fr)}}
+
+/* Plan */
+.week{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px}
+.day{background:var(--field);border-radius:16px;padding:10px;min-height:150px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.day.today{outline:1.5px solid var(--text)}
+.dayhead{display:flex;justify-content:space-between;font-size:12px;color:var(--text-2);font-weight:600}
+.dayhead b{color:var(--text);font-size:15px}
+.ev.ig{background:var(--ok-soft);border-color:var(--ok)}
+.ev.ig .me{color:var(--ok);font-weight:600}
+.tile .badge.ok{background:var(--ok);color:var(--on-ink)}
+.ev{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:7px 9px;font-size:12.5px;cursor:pointer;text-align:left;display:flex;flex-direction:column;gap:2px;min-width:0}
+.ev .ti{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ev .me{display:flex;align-items:center;gap:6px;color:var(--text-2);font-size:11.5px}
+.month .wdh{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);padding:0 4px 2px}
+.day.dim{opacity:.45}
+.day.dropto{outline:2px dashed var(--accent);outline-offset:-2px;background:var(--peach-soft)}
+.ev.dragable{cursor:grab}.ev.lift{transform:scale(1.04);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.month .dayhead span{display:none}
+.ev .evi{display:none}.month .ev .evi{display:block;width:100%;height:64px;object-fit:cover;border-radius:6px;margin-bottom:4px}
+.ev.pub{background:transparent}
+.ev.story{border-style:dashed}
+.slot{border:1.5px dashed var(--field-2);border-radius:10px;padding:7px 9px;font-size:12px;color:var(--text-3);background:transparent;cursor:pointer;text-align:left}
+.slot:hover{border-color:var(--accent);color:var(--accent)}
+.list{display:flex;flex-direction:column}
+.li{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.li:first-child{border-top:0}
+.mini{width:52px;aspect-ratio:4/5;border-radius:8px;background:var(--field);overflow:hidden}
+.mini img{width:100%;height:100%;object-fit:cover;display:block}
+.li .ti{font-weight:600}
+.status{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;color:var(--text-2);white-space:nowrap}
+
+/* Analytics */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.kpi{background:var(--field);border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.kpi.hi{background:var(--peach-soft);box-shadow:inset 0 0 0 1px var(--peach)}.kpi.hi .v{color:var(--accent)}
+.kpi .v{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.kpi .d{font-size:12px;font-weight:700}
+.kpi .s{font-size:12px;color:var(--text-2)}
+.chart svg{width:100%;height:auto;display:block}
+.chart text{font-size:11px;fill:var(--text-3);font-family:var(--sans)}
+.tblw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th{text-align:left;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--text-3);font-weight:700;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td.num,th.num{text-align:right}
+.ahead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center}
+.agrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,380px),1fr));gap:22px}
+.hbars{display:grid;gap:10px}
+.hb{display:grid;grid-template-columns:minmax(90px,130px) minmax(0,1fr) auto;gap:12px;align-items:center;font-size:14px}
+.hb .hl{color:var(--text-2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .ht{height:10px;background:var(--field);border-radius:99px;overflow:hidden}
+.hb .ht span{display:block;height:100%;border-radius:99px;min-width:2px}
+.hb .hv{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--text-2);margin-top:8px}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.mrow{display:flex;gap:12px;align-items:center;min-width:180px}
+.mrow .mini{width:40px;flex:none}
+.mtype{display:grid;place-items:center;width:100%;height:100%;color:#fff;font-weight:800;font-size:14px}
+table.mt td{vertical-align:middle}
+details summary{cursor:pointer;color:var(--text-2)}
+.field.sm{padding:6px 10px;min-height:34px;font-size:13px;width:auto}
+.pb .col{cursor:pointer;outline:none}
+.pb .col .bar{transition:opacity .15s,filter .15s}
+.pb .col:hover .bar,.pb .col:focus-visible .bar{filter:brightness(1.12)}
+.pb .col:focus-visible .hit{fill:var(--field)}
+tr.click{cursor:pointer}tr.click:hover td,tr.click:focus-visible td{background:var(--field)}
+.mo{position:fixed;inset:0;z-index:65;background:rgba(10,10,10,.62);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:grid;place-items:center;padding:max(16px,env(safe-area-inset-top,0px)) 16px max(16px,env(safe-area-inset-bottom,0px));overscroll-behavior:contain}
+.mo[hidden]{display:none!important}
+.mocard{position:relative;width:min(900px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:var(--card);border-radius:22px;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);box-shadow:0 30px 80px rgba(0,0,0,.35);will-change:transform}
+.momedia{position:relative;aspect-ratio:4/5;background:var(--field);overflow:hidden;align-self:start}
+.momedia img{width:100%;height:100%;object-fit:cover;display:block}
+.momedia.dz{outline:3px dashed var(--accent);outline-offset:-10px}
+.moph{width:100%;height:100%;display:grid;place-content:center;gap:8px;text-align:center;padding:24px;background:linear-gradient(160deg,color-mix(in srgb,var(--c,var(--accent)) 30%,var(--field)),var(--field))}
+.momedia.noimg{aspect-ratio:auto;min-height:220px;height:100%}
+.mocard.st{grid-template-columns:min(400px,calc((100dvh - 32px)*.5625)) minmax(0,1fr)}.mocard.st .momedia{aspect-ratio:9/16}
+.moph span{font-size:28px;font-weight:800}.moph small{color:var(--text-2);font-size:13px}
+.mop,.mon{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.85);color:#111;font-size:24px;line-height:1;cursor:pointer}
+.mop{left:10px}.mon{right:10px}
+.mocnt{position:absolute;top:10px;right:10px;background:rgba(0,0,0,.55);color:#fff;font-size:12px;font-weight:700;padding:4px 9px;border-radius:99px}
+.modots{position:absolute;bottom:10px;left:0;right:0;display:flex;justify-content:center;gap:5px}.modots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.5)}.modots i.on{background:#fff}
+.moinfo{padding:26px 24px 24px;display:flex;flex-direction:column;min-width:0}
+.moc{margin:8px 0 0;white-space:pre-line}
+.mostats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}
+.mostats div{background:var(--field);border-radius:12px;padding:9px 12px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.mostats .s{font-size:12px;color:var(--text-2)}.mostats b{font-variant-numeric:tabular-nums}
+.mox{position:absolute;top:10px;left:10px;width:38px;height:38px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:16px;cursor:pointer;z-index:2}
+@media (max-width:700px){.mocard,.mocard.st{grid-template-columns:minmax(0,1fr)}.mocard.st .momedia img{object-fit:contain;background:#000}.momedia.noimg{height:150px!important;min-height:0}.momedia{max-height:58dvh;aspect-ratio:auto;height:min(58dvh,calc((100vw - 32px)*1.25))}.moinfo{padding:18px}}
+.er{font-size:34px;font-weight:800;letter-spacing:-.02em}
+pre.raw{background:var(--field);border-radius:12px;padding:12px;font:12px/1.4 var(--mono);overflow:auto;max-height:240px;white-space:pre-wrap;word-break:break-all}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--on-ink);padding:10px 18px;border-radius:999px;font-size:14px;font-weight:600;z-index:50}
+
+@media (max-width:760px){
+  .compose{grid-template-columns:minmax(0,1fr)}
+  .compose>.left{max-width:360px;width:100%;margin:0 auto}
+  .kpis{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .week:not(.month){grid-template-columns:minmax(0,1fr)}
+  .week:not(.month) .day{min-height:0}
+  .month{gap:4px}.month .day{min-height:96px;padding:6px;border-radius:12px;gap:4px}
+  .month .ev{padding:4px 5px;font-size:10.5px;border-radius:7px}.month .ev .me{display:none}
+  .month .ev:has(.evi){padding:2px}.month .ev .evi{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:5px}.month .ev:has(.evi) .ti{display:none}
+  .month .slot{padding:3px 4px;font-size:10px;border-radius:7px}
+  .month .dayhead{font-size:10px}.month .dayhead b{font-size:12px}.month .dayhead span{display:none}
+}
+@media (max-width:560px){
+  h1{font-size:30px}
+  .card{padding:18px;border-radius:18px}
+  .grid2{grid-template-columns:minmax(0,1fr)}
+  .tabs{width:100%}.tabs a{flex:1;text-align:center;padding:8px 6px}
+  .kpi .v{font-size:24px}
+  .ahead .tabs a{padding:8px 4px;font-size:13px}
+  .chart svg.pb text{font-size:28px}
+  .hb{grid-template-columns:90px minmax(0,1fr) auto}
+  .li{grid-template-columns:52px minmax(0,1fr)}
+  .li>.row{grid-column:1 / -1;justify-content:space-between}
+}
+
+/* iPad-App */
+html{-webkit-tap-highlight-color:transparent;-webkit-text-size-adjust:100%}
+button,a,.pill,.thumb,.ev,.slot,.tile,[role=button],label.btn,tr.click{touch-action:manipulation}
+nav,.tabs,.btn,.pill,.ev,.slot,.thumb,.tile,.dayhead,.lbl{-webkit-user-select:none;user-select:none}
+.tile img,.mini img,.thumb img,.evi,.momedia img,.drop img{-webkit-touch-callout:none}
+header.top{position:sticky;top:0;z-index:40;padding:calc(10px + env(safe-area-inset-top,0px)) 0 12px;margin-top:-18px;border-image:conic-gradient(color-mix(in srgb,var(--bg) 84%,transparent) 0 0) fill 0//0 100vw;-webkit-backdrop-filter:saturate(1.5) blur(18px);backdrop-filter:saturate(1.5) blur(18px);transition:padding .2s}
+header.top h1{transition:font-size .2s}
+body.sc header.top{padding-bottom:8px}
+body.sc header.top h1{font-size:22px}
+body.sc header.top .sub{display:none}
+label.btn{cursor:pointer}
+.btn:active,.pill:active,.ev:active,.slot:active,.tabs a:active{transform:scale(.97)}
+@media (pointer:coarse){
+  .field,select.field,textarea.field{font-size:16px}
+  .tabs a{padding:11px 22px;font-size:15px}
+  .pill{min-height:44px;padding:10px 16px}.pill.sm{min-height:40px;padding:8px 14px}
+  .btn{min-height:46px}.btn.sm{min-height:40px;padding:9px 16px;font-size:14px}
+  .linkish{min-height:40px}
+  .thumb{width:68px}.thumb .x{width:26px;height:26px;font-size:13px;top:3px;right:3px}
+  .ev{padding:9px 10px;min-height:44px}.slot{min-height:40px}
+  .mop,.mon{width:48px;height:48px}.mox{width:44px;height:44px}
+  .pb .col .bar{filter:none}
+}
+@media (hover:none){.pill:hover{border-color:var(--line)}a.home:hover{opacity:1}tr.click:hover td{background:none}}
+@media (min-width:701px) and (max-width:1100px){
+  h1{font-size:32px}
+  .compose{grid-template-columns:minmax(0,300px) minmax(0,1fr);gap:22px}
+  .month .ev{font-size:11.5px;padding:6px 7px}.month .day{padding:8px}
+}
+
+/* Seitenleiste */
+nav.side{position:fixed;left:0;top:0;bottom:0;z-index:45;width:calc(var(--side-w) + env(safe-area-inset-left,0px));padding:calc(22px + env(safe-area-inset-top,0px)) 0 calc(18px + env(safe-area-inset-bottom,0px)) env(safe-area-inset-left,0px);background:var(--side);border-right:1px solid var(--line);display:flex;flex-direction:column;align-items:center;gap:6px}
+.side .logo{width:44px;height:44px;border-radius:13px;background:var(--amber);color:var(--on-amber);font-weight:800;font-size:16px;letter-spacing:-.04em;display:grid;place-items:center;text-decoration:none;margin-bottom:20px;flex:none}
+.side a.nv{width:80px;padding:10px 0 8px;border-radius:14px;display:flex;flex-direction:column;align-items:center;gap:5px;color:var(--text-3);font-size:11px;font-weight:600;text-decoration:none;-webkit-user-select:none;user-select:none}
+.side a.nv svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.side a.nv:hover{color:var(--text-2)}
+.side a.nv[aria-current="page"]{background:var(--field);color:var(--accent)}
+.side .sp{flex:1}
+.mono-d{font:600 13px var(--mono);color:var(--accent);letter-spacing:.03em}
+.chip{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;border:1px solid var(--field-2);color:var(--text-2);border-radius:999px;padding:3px 9px;white-space:nowrap}
+/* Als Nächstes */
+.strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:14px}
+.st-i{background:none;border:0;padding:0;text-align:left;cursor:pointer;color:inherit;min-width:0;font:inherit}
+.st-i .ph{aspect-ratio:4/5;max-width:100%;border-radius:6px;overflow:hidden;background:var(--field);position:relative}
+.st-i .ph img{width:100%;height:100%;object-fit:cover;display:block}
+.st-i .ph b{position:absolute;left:6px;top:6px;font:700 10px var(--mono);background:rgba(0,0,0,.62);color:#fff;padding:2px 6px;border-radius:4px}
+.st-i.on .ph{outline:2px solid var(--amber);outline-offset:2px}
+.st-i .t{font-weight:600;font-size:13px;margin-top:8px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.st-i .d{font:500 11px var(--mono);color:var(--text-3);display:flex;gap:6px;align-items:center;margin-top:2px;white-space:nowrap}
+.st-i .d.a{color:var(--accent)}
+.st-i.add .ph{border:1.5px dashed var(--field-2);background:transparent;display:grid;place-items:center;font-size:28px;font-weight:300;color:var(--text-3)}
+.rowgrid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:3px;border-radius:10px;overflow:hidden}
+.rowgrid div{aspect-ratio:4/5;background:var(--field);position:relative;overflow:hidden}
+.rowgrid img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.rowgrid .me::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--amber)}
+/* Raster */
+.rgrid{display:grid;grid-template-columns:minmax(0,390px) minmax(0,1fr);gap:22px;align-items:start}
+.rgrid .phone{position:sticky;top:calc(84px + env(safe-area-inset-top,0px))}
+.prof{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+.prof .av{width:44px;height:44px;border-radius:50%;background:var(--amber);color:var(--on-amber);display:grid;place-items:center;font-weight:800;font-size:14px;flex:none}
+.prof b{font-size:15px}
+/* Einstellungen */
+.setgrid{display:grid;gap:22px;max-width:860px}
+.themes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.themeopt{border:1.5px solid var(--line);background:var(--card);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:4px;text-align:left;cursor:pointer;color:inherit;font:inherit;min-width:0}
+.themeopt[aria-pressed="true"]{border-color:var(--amber);box-shadow:0 0 0 3px var(--accent-fill)}
+.themeopt b{margin-top:8px;font-size:15px}
+.tprev{display:block;aspect-ratio:16/10;max-width:100%;border-radius:10px;position:relative;overflow:hidden;border:1px solid var(--line)}
+.tprev.light{background:#F2F0EB}.tprev.dark{background:#0D0D0C}.tprev.auto{background:linear-gradient(120deg,#F2F0EB 50%,#0D0D0C 50%)}
+.tprev i{position:absolute;display:block;border-radius:4px}
+.tprev i:nth-child(1){left:0;top:0;bottom:0;width:16%;background:rgba(128,120,110,.28)}
+.tprev i:nth-child(2){left:24%;top:16%;width:30%;height:66%;background:#9C8F7A}
+.tprev i:nth-child(3){left:60%;top:20%;width:28%;height:12%;background:#E8A33D}
+.setrow{display:grid;grid-template-columns:minmax(0,180px) minmax(0,1fr);gap:14px;padding:12px 0;border-top:1px solid var(--line);align-items:center}
+.setrow:first-child{border-top:0}
+@media (max-width:900px){.rgrid{grid-template-columns:minmax(0,1fr)}.rgrid .phone{position:static}}
+@media (max-width:700px){
+  :root{--side-w:0px}
+  body{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}
+  .wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  nav.side{top:auto;right:0;width:auto;height:auto;flex-direction:row;justify-content:space-around;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));border-right:0;border-top:1px solid var(--line)}
+  .side .logo,.side .sp{display:none}
+  .side a.nv{width:auto;flex:1;padding:6px 0;font-size:10px}
+  .themes{grid-template-columns:minmax(0,1fr)}
+  .setrow{grid-template-columns:minmax(0,1fr);gap:4px}
+  .rowgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+</style>
+<style>body{min-height:100dvh}html{overscroll-behavior-y:none}</style>
+</head>
+<body>
+<nav class="side" aria-label="Bereiche">
+  <a href="#posten" id="home" class="logo" title="Studio Sommer_gram, zur Startseite" aria-label="Studio Sommer_gram, zur Startseite">sg</a>
+  <a class="nv" href="#posten" data-v="posten"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><circle cx="12" cy="11" r="3.2"/><path d="M8 17.5h8"/></svg>Posten</a>
+  <a class="nv" href="#plan" data-v="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Plan</a>
+  <a class="nv" href="#raster" data-v="raster"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3" width="7" height="8" rx="1"/><rect x="13.5" y="3" width="7" height="8" rx="1"/><rect x="3.5" y="14" width="7" height="8" rx="1"/><rect x="13.5" y="14" width="7" height="8" rx="1"/></svg>Raster</a>
+  <a class="nv" href="#analytics" data-v="analytics"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M11 20V5M17 20v-6M3 20.5h18"/></svg>Zahlen</a>
+  <span class="sp"></span>
+  <a class="nv" href="#einstellungen" data-v="einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M18 7h2M4 17h3M11 17h9"/><circle cx="15.5" cy="7" r="2.3"/><circle cx="9" cy="17" r="2.3"/></svg>Einstellungen</a>
+</nav>
+<div class="wrap">
+  <header class="top">
+    <h1 id="ptitle">Posten</h1>
+    <div class="sub"><span class="conn" id="conn"><span class="dot" style="background:var(--muted)"></span><span>Metricool wird geprüft …</span></span></div>
+  </header>
+  <div id="banner"></div>
+  <main id="view"></main>
+</div>
+<input type="file" id="fileIn" accept="image/*,video/*" multiple hidden>
+<script>
+/* Web-App: Speicher und Bilder kommen aus studio-firebase.js (Firebase) statt aus Claude. */
+(function(){
+  var res,p=new Promise(function(r){res=r;});window.__studioResolve=res;window.__STUDIO_APP=true;
+  window.claude={use:function(n){return p.then(function(api){return api[n]||null;});}};
+  var T="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",cache=new Map(),pend=new Set();
+  window.__bildSet=function(id,url){cache.set(id,url);};
+  window.__bild=function(id){var u=cache.get(id);if(u)return u;if(!pend.has(id)){pend.add(id);
+    p.then(function(api){return api.loadBild(id);}).then(function(url){if(!url)return;cache.set(id,url);
+      document.querySelectorAll('img[src$="#bid='+id+'"]').forEach(function(i){i.src=url;});}).catch(function(){}).then(function(){pend.delete(id);});}
+    return T+"#bid="+id;};
+  if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
+})();
+</script>
+<script type="module" src="studio-firebase.js"></script>
+<script>
+/* ---------- Grundlagen ---------- */
+const BRAND_FALLBACK="7224830";
+const MC="Metricool Social Media Management";
+const FORMATS={POST:"Foto",KARUSSELL:"Karussell",REEL:"Reel",STORY:"Story"};
+const STATUS={entwurf:["Entwurf","var(--muted)"],geplant:["Geplant","var(--info)"],freigegeben:["Freigegeben für Instagram","var(--warn)"],instagram:["In Instagram eingeplant","var(--ok)"],metricool:["Bei Metricool","var(--accent)"],veroeffentlicht:["Veröffentlicht","var(--ok)"]};
+const SLOTS={3:"18:30",5:"19:30",0:"18:00"}; // Mi, Fr, So
+const WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const nf=n=>n==null||isNaN(n)?"–":Number(n).toLocaleString("de-DE");
+const pad=n=>String(n).padStart(2,"0");
+const iso=d=>d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate());
+const parse=s=>new Date(s+"T12:00:00");
+const fmtD=s=>{if(!s)return "ohne Termin";const d=parse(s);return WD[d.getDay()]+", "+pad(d.getDate())+"."+pad(d.getMonth()+1)+"."};
+const uid=()=>"p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+const imgSrc=im=>{if(!im)return "";if(im.local)return im.local;const id=im.id||((im.url||"").match(/_blob\/([^/?#]+)/)||[])[1];if(window.__bild&&id)return window.__bild(id);return im.url||(id?"/_blob/"+id:"")};
+const countTags=s=>(String(s).match(/#[\p{L}\p{N}_]+/gu)||[]).length;
+function toast(t){const el=document.createElement("div");el.className="toast";el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.remove(),2200)}
+function statusHTML(s){const x=STATUS[s]||STATUS.entwurf;return `<span class="status"><span class="dot" style="background:${x[1]}"></span>${x[0]}</span>`}
+function er(st){if(!st||!st.views)return null;const parts=["likes","comments","shares","saves"].map(k=>st[k]).filter(v=>v!=null&&v!=="");const sum=parts.length?parts.reduce((a,b)=>a+(+b||0),0):(+st.interactions||0);return sum/st.views*100}
+function tzOffset(dateStr,timeStr){const d=new Date(dateStr+"T"+timeStr+":00");const m=-d.getTimezoneOffset();const s=m>=0?"+":"-";return s+pad(Math.floor(Math.abs(m)/60))+":"+pad(Math.abs(m)%60)}
+
+/* ---------- Zustand ---------- */
+const S={view:"posten",posts:[],insights:[],pool:[],poolSel:null,planSel:null,poolBusy:0,loaded:false,mode:"lokal",
+  draft:null,cur:0,blobs:{},suggest:null,suggesting:false,confirm:false,sending:false,
+  weekStart:null,chartMetric:"followers",mc:{state:"checking",brandId:BRAND_FALLBACK,tz:"Europe/Berlin",msg:""},live:null,media:[],aTab:"ueberblick",aPer:"d30",mSort:"neu",calc:{post:"",views:"",likes:"",comments:"",shares:"",saves:""}};
+function monday(d){const x=new Date(d);const k=(x.getDay()+6)%7;x.setDate(x.getDate()-k);x.setHours(12,0,0,0);return x}
+S.weekStart=monday(new Date());
+function newDraft(date,time){return {id:null,title:"",format:"POST",images:[],ort:"",caption:"",tags:"",date:date||"",time:time||"",mediaUrl:"",status:"entwurf"}}
+S.draft=newDraft();
+
+/* ---------- Speicher: db, sonst lokal ---------- */
+let db=null,assets=null,sample=null,mcp=null;
+const LS="sg-studio-local";
+function lsLoad(){try{const o=JSON.parse(localStorage.getItem(LS)||"{}");S.posts=o.posts||[];S.insights=o.insights||[]}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS,JSON.stringify({posts:S.posts,insights:S.insights}))}catch(e){}}
+async function savePost(p){p.updatedAt=new Date().toISOString();const clean=JSON.parse(JSON.stringify(p,(k,v)=>k==="local"?undefined:v));
+  if(db){await db.collection("posts").doc(p.id).set(clean)}else{const i=S.posts.findIndex(x=>x.id===p.id);if(i>=0)S.posts[i]=clean;else S.posts.push(clean);lsSave();render()}}
+async function deletePost(id){if(db){await db.collection("posts").doc(id).delete()}else{S.posts=S.posts.filter(p=>p.id!==id);lsSave();render()}}
+async function saveInsight(i){if(db){await db.collection("insights").doc(i.date).set(i)}else{S.insights=S.insights.filter(x=>x.date!==i.date);S.insights.push(i);lsSave();render()}}
+
+/* ---------- Navigation ---------- */
+function route(){let h=location.hash.slice(1);const mm=decodeURIComponent(h).match(/^analytics(?:\/m\/|-)(\d+)$/);if(mm){S.pendingMO=mm[1];h="analytics"}if(h==="zahlen")h="analytics";const prev=S.view;S.view=VIEWS.includes(h)?h:"posten";
+  document.querySelectorAll("nav.side a[data-v]").forEach(a=>{if(a.dataset.v===S.view)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  document.getElementById("ptitle").textContent=TITLES[S.view];render();if(prev!==S.view)scrollTo({top:0})}
+const VIEWS=["posten","plan","raster","analytics","einstellungen"];
+const TITLES={posten:"Posten",plan:"Plan",raster:"Raster",analytics:"Zahlen",einstellungen:"Einstellungen"};
+addEventListener("hashchange",route);
+document.getElementById("home").addEventListener("click",e=>{e.preventDefault();S.planSel=null;S.poolSel=null;S.confirm=false;S.suggest=null;S.weekStart=monday(new Date());
+  if(location.hash==="#posten")render();else location.hash="posten";scrollTo({top:0,behavior:"smooth"})});
+const V=document.getElementById("view");
+function render(){renderConn();renderBanner();({posten:vPosten,plan:vPlan,raster:vRaster,analytics:vAnalytics,einstellungen:vSettings})[S.view]();if(S.pendingMO&&S.view==="analytics"&&S.loaded){const m=S.media.find(x=>x.id===S.pendingMO);if(m){const id=S.pendingMO;S.pendingMO=null;setTimeout(()=>openMO(id),60)}}}
+function renderBanner(){const b=document.getElementById("banner");
+  if(!S.loaded&&db){b.innerHTML=`<div class="notice">Lade deine Posts …</div>`;return}
+  b.innerHTML=S.mode==="lokal"&&S.loaded?`<div class="notice">Gerade ohne Sync: Änderungen bleiben nur in diesem Browser.</div>`:""}
+function mcInfo(){const map={checking:["var(--muted)","Metricool wird geprüft …"],ok:["var(--ok)","Metricool verbunden"],nonet:["var(--warn)","Instagram in Metricool noch nicht verbunden"],off:["var(--muted)","Metricool hier nicht verfügbar"],auth:["var(--bad)","Metricool neu verbinden"]};return map[S.mc.state]||map.off}
+function renderConn(){const c=document.getElementById("conn");c.hidden=false;const m=S.mc;const L=latestIns();
+  if(L&&L.checkedAt){const age=(Date.now()-new Date(L.checkedAt).getTime())/36e5;c.innerHTML=`<span class="dot" style="background:${age<30?"var(--ok)":"var(--warn)"}"></span><span>Instagram-Zahlen: ${standTxt(L)}</span>`;c.title="Kommt jeden Morgen direkt aus dem Professional-Dashboard";return}
+  if(window.__STUDIO_APP){c.hidden=true;return}const x=mcInfo();c.innerHTML=`<span class="dot" style="background:${x[0]}"></span><span>${x[1]}</span>`;c.title=m.msg||""}
+
+/* ---------- 1 Posten ---------- */
+function checks(d){const all=(d.caption+" "+d.tags);const n=countTags(all);const isV=d.format==="REEL"||d.format==="STORY";
+  const ratioOk=d.images.length?d.images.every(im=>!im.ratio||Math.abs(im.ratio-(isV?0.5625:0.8))<0.02):null;
+  return [
+    ["Ort gesetzt",!!d.ort.trim()],
+    [n+" Hashtags (max. 5)",n<=5],
+    ["Keine Frage am Ende",!/\?\s*$/.test(d.caption.trim())],
+    [isV?"Format 9:16":"Format 4:5",ratioOk],
+    [(d.caption.length+(d.tags?d.tags.length+2:0))+" / 2.200 Zeichen",d.caption.length+(d.tags?d.tags.length+2:0)<=2200]
+  ]}
+function nextSlots(){const out=[];const taken=new Set(S.posts.filter(p=>p.date&&p.status!=="entwurf").map(p=>p.date));const now=new Date();const nowHM=pad(now.getHours())+":"+pad(now.getMinutes());const d=new Date();d.setHours(12);
+  for(let i=0;i<14&&out.length<3;i++){const x=new Date(d);x.setDate(d.getDate()+i);const t=SLOTS[x.getDay()];if(i===0&&t&&t<=nowHM)continue;if(t&&!taken.has(iso(x)))out.push([iso(x),t])}return out}
+function selImg(){if(S.poolSel){const x=S.pool.find(p=>p.id===S.poolSel);return x?x.img:null}
+  if(S.planSel){const p=S.posts.find(x=>x.id===S.planSel);return p&&p.images&&p.images[0]||null}return null}
+function feedItems(){
+  const pub=S.posts.filter(p=>p.status==="veroeffentlicht"&&p.format!=="STORY").sort((a,b)=>(b.date||"0").localeCompare(a.date||"0"));
+  const im=selImg();
+  return [...(im?[{_draft:true,_prev:true,images:[im],title:"Vorschau"}]:[]),...pub].slice(0,9)}
+function upcoming(){const today=iso(new Date());
+  const planned=S.posts.filter(p=>(p.status==="geplant"||p.status==="freigegeben"||p.status==="instagram"||p.status==="metricool")&&p.format!=="STORY"&&p.date>=today).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
+  const stories=S.posts.filter(p=>p.format==="STORY"&&(p.status==="geplant"||p.status==="instagram"||p.status==="metricool")&&p.date>=today).sort((a,b)=>a.date.localeCompare(b.date));
+  const drafts=S.posts.filter(p=>p.status==="entwurf"&&p.images&&p.images.length&&p.format!=="STORY");
+  return {planned,stories,drafts}}
+function vPosten(){
+  const d=S.draft;const cur=d.images[S.cur]||d.images[0];const isV=d.format==="REEL"||d.format==="STORY";
+  const full=d.caption+(d.tags?"\n\n"+d.tags:"");
+  const vis=full.replace(/\n/g," ").slice(0,125);
+  const ch=checks(d);
+  const mcReady=S.mc.state==="ok";
+  const hasMedia=d.mediaUrl.trim().length>0;
+  const slots=nextSlots();
+  V.innerHTML=`<div style="display:grid;grid-template-columns:minmax(0,1fr);gap:22px">
+  <section class="card">
+    <div class="cardhead"><div class="row" style="gap:12px"><h2>${d.id?"Post bearbeiten":"Neuer Post"}</h2>${d.date?`<span class="mono-d">${esc(fmtD(d.date).toUpperCase())}${d.time?" · "+esc(d.time):""}</span>`:""}<span class="chip">${FORMATS[d.format]||"Foto"}</span></div>
+      <div class="row">${d.id?statusHTML(d.status):""}${d.id?`<button class="linkish" id="newPost">Neuen Post anfangen</button>`:""}</div></div>
+    <div class="compose">
+      <div class="left">
+        <div class="drop ${cur?"has":""} ${isV?"reel":""}" id="drop" ${cur?(cur.type&&cur.type.startsWith("video")?"":'role="button" tabindex="0" aria-label="Foto groß anzeigen" title="Antippen zum Vergrößern"'):'role="button" tabindex="0" aria-label="Foto hochladen"'}>
+          ${cur?(cur.type&&cur.type.startsWith("video")?`<video src="${esc(imgSrc(cur))}" muted playsinline controls style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>`:`<img src="${esc(imgSrc(cur))}" alt="Vorschau">`):`<span class="plus">+</span><b>Foto hochladen</b><span class="small muted">${isV?"Hochformat 9:16":"Hochformat 4:5, ohne Rahmen"}</span>`}
+        </div>
+        ${d.images.length?`<div class="thumbs">${d.images.map((im,i)=>`<div class="thumb ${i===S.cur?"on":""}" data-cur="${i}" role="button" tabindex="0" aria-label="Bild ${i+1}${d.images.length>1?", ziehen zum Sortieren, oder Alt und Pfeiltaste":""}">${im.type&&im.type.startsWith("video")?`<span class="small" style="display:grid;place-items:center;height:100%">▶</span>`:`<img src="${esc(imgSrc(im))}" alt="" draggable="false">`}${d.images.length>1?`<span class="tn">${i+1}</span>`:""}<button class="x" data-rm="${i}" aria-label="Bild ${i+1} entfernen">✕</button></div>`).join("")}<button class="thumb add" id="addMore" aria-label="Weitere Bilder hinzufügen">+</button></div>${d.images.length>1?`<p class="small muted" style="margin:6px 0 0">Bilder ziehen, um die Reihenfolge zu ändern. Das erste ist das Titelbild.</p>`:""}`:""}
+        <p class="small muted" style="margin:10px 0 0">${assets?"Bilder werden im Studio gespeichert und sind auf iPhone und Mac zu sehen.":"Bilder werden hier nur als Vorschau gezeigt."}</p>
+      </div>
+      <div class="stack" style="gap:16px">
+        <div class="stack"><span class="lbl">Format</span><div class="row">${Object.entries(FORMATS).map(([k,v])=>`<button class="pill" data-fmt="${k}" aria-pressed="${d.format===k}">${v}</button>`).join("")}</div></div>
+        <div class="grid2">
+          <label class="stack"><span class="lbl">Ort</span><input class="field" id="f-ort" value="${esc(d.ort)}" placeholder="z. B. Bochum, Westpark"></label>
+          <label class="stack"><span class="lbl">Titel (nur für dich)</span><input class="field" id="f-title" value="${esc(d.title)}" placeholder="z. B. Herbst im Westpark"></label>
+        </div>
+        <div class="stack">
+          <div class="row" style="justify-content:space-between"><label class="lbl" for="f-cap">Caption</label><span class="counter" id="cnt">${d.caption.length} / 2.200 · ${countTags(d.caption+" "+d.tags)} Hashtags</span></div>
+          <textarea class="field" id="f-cap" placeholder="Kurz, beobachtend, ohne Frage am Ende.">${esc(d.caption)}</textarea>
+          <input class="field" id="f-tags" value="${esc(d.tags)}" placeholder="#bochum #herbst #westpark" aria-label="Hashtags">
+          <div class="row"><button class="btn ghost sm" id="copyCap" ${d.caption.trim()||d.tags.trim()?"":"disabled"}>Caption kopieren</button><button class="btn soft sm" id="suggest" ${sample?"":"disabled"}>${S.suggesting?"Schreibt …":"Caption vorschlagen"}</button><span class="small muted">${sample?"Nutzt Foto, Ort und Format. Erfindet nichts dazu.":"Caption-Vorschläge schreibt dir Claude im Chat."}</span></div>
+          ${S.suggest?`<div class="sugg">${S.suggest.err?`<div class="notice bad">${esc(S.suggest.err)}</div>`:S.suggest.v.map((t,i)=>`<button data-sg="${i}">${esc(t)}</button>`).join("")+(S.suggest.h?`<button data-sgh="1"><span class="lbl">Hashtags übernehmen</span><br>${esc(S.suggest.h)}</button>`:"")}</div>`:""}
+        </div>
+        <div class="stack"><span class="lbl">Im Feed sichtbar</span><div class="feedprev" id="fp"><b>sommer_gram</b> ${esc(vis)||'<span class="more">Noch keine Caption</span>'}${full.length>125?' <span class="more">… mehr</span>':""}</div></div>
+        <div class="checks" id="checks">${ch.map(([t,ok])=>`<span><span class="dot" style="background:${ok===null?"var(--muted)":ok?"var(--ok)":"var(--warn)"}"></span>${esc(t)}</span>`).join("")}</div>
+        <div class="stack"><span class="lbl">Zeitpunkt</span>
+          <div class="grid2"><input type="date" class="field" id="f-date" value="${esc(d.date)}" aria-label="Datum"><input type="time" class="field" id="f-time" value="${esc(d.time)}" aria-label="Uhrzeit"></div>
+          ${slots.length?`<div class="row small"><span class="muted">Freie Rhythmus-Termine:</span>${slots.map(([dt,t])=>`<button class="pill" style="min-height:30px;padding:4px 12px;font-size:13px" data-slot="${dt}|${t}">${fmtD(dt)} ${t}</button>`).join("")}</div>`:""}
+        </div>
+        ${d.id&&d.status==="geplant"&&d.format!=="STORY"?`<div class="notice" style="align-items:center;justify-content:space-between"><span><b>Bereit für Instagram?</b> Nach der Freigabe plant Claude den Post über Chrome in Instagram ein. Bis zum Termin kannst du ihn in der App unter „Geplanter Content“ noch ändern oder löschen.</span><button class="btn sm" id="approve" ${d.date&&d.time&&d.images.length?"":"disabled"}>Für Instagram freigeben</button></div>`:""}
+        ${d.id&&d.status==="freigegeben"?`<div class="notice" style="align-items:center;justify-content:space-between"><span><b>Freigegeben.</b> Sag Claude im Chat kurz Bescheid, dann wird der Post in Instagram eingeplant.</span><button class="linkish" id="unapprove">Freigabe zurücknehmen</button></div>`:""}
+        ${d.id&&d.status==="instagram"?`<div class="notice"><span><b>Liegt in Instagram.</b> Änderungen hier im Studio kommen nicht automatisch bei Instagram an. Ändern oder löschen geht in der App unter „Geplanter Content“.</span></div>`:""}
+        <div class="row">
+          ${d.id&&d.status!=="entwurf"?`<button class="btn" id="saveKeep">Änderungen speichern</button>`:""}
+          <button class="btn ghost" id="saveDraft">Als Entwurf speichern</button>
+          <button class="btn${d.id&&d.status!=="entwurf"?" ghost":""}" id="schedule">Einplanen</button>
+          ${d.id?`<button class="linkish" id="del">Löschen</button>`:""}
+          ${d.id&&d.status!=="veroeffentlicht"?`<button class="linkish" id="markPub">Als veröffentlicht markieren</button>`:""}
+        </div>
+        ${d.plannerUrl?`<a class="small" href="${esc(d.plannerUrl)}" target="_blank" rel="noopener">In Metricool öffnen</a>`:""}
+      </div>
+    </div>
+  </section>
+  ${nextHTML()}
+  </div>`;
+  bindPosten();
+}
+function syncDraftFromInputs(){const d=S.draft;const g=id=>document.getElementById(id);
+  if(g("f-ort")){d.ort=g("f-ort").value;d.title=g("f-title").value;d.caption=g("f-cap").value;d.tags=g("f-tags").value;d.date=g("f-date").value;d.time=g("f-time").value}}
+function liveUpdate(){syncDraftFromInputs();const d=S.draft;const full=d.caption+(d.tags?"\n\n"+d.tags:"");
+  document.getElementById("cnt").textContent=`${d.caption.length} / 2.200 · ${countTags(d.caption+" "+d.tags)} Hashtags`;
+  document.getElementById("fp").innerHTML=`<b>sommer_gram</b> ${esc(full.replace(/\n/g," ").slice(0,125))||'<span class="more">Noch keine Caption</span>'}${full.length>125?' <span class="more">… mehr</span>':""}`;
+  const cc=document.getElementById("copyCap");if(cc)cc.disabled=!(d.caption.trim()||d.tags.trim());
+  document.getElementById("checks").innerHTML=checks(d).map(([t,ok])=>`<span><span class="dot" style="background:${ok===null?"var(--muted)":ok?"var(--ok)":"var(--warn)"}"></span>${esc(t)}</span>`).join("");
+}
+function bindPosten(){
+  const fi=document.getElementById("fileIn");
+  const open=()=>{syncDraftFromInputs();fi.click()};
+  const drop=document.getElementById("drop");
+  if(!S.draft.images.length){drop.onclick=open;drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();open()}}}
+  else{const cu=S.draft.images[S.cur]||S.draft.images[0];if(!(cu.type||"").startsWith("video")){const zo=()=>{syncDraftFromInputs();openLB(S.cur)};drop.onclick=zo;drop.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();zo()}}}}
+  drop.ondragover=e=>{e.preventDefault()};drop.ondrop=e=>{e.preventDefault();syncDraftFromInputs();addFiles(e.dataTransfer.files)};
+  const am=document.getElementById("addMore");if(am)am.onclick=open;
+  V.querySelectorAll("[data-cur]").forEach(t=>{t.onclick=e=>{if(e.target.dataset.rm!==undefined||Date.now()-thumbDragAt<400)return;syncDraftFromInputs();S.cur=+t.dataset.cur;render()};
+    t.onkeydown=e=>{if(!e.altKey||!["ArrowLeft","ArrowRight"].includes(e.key))return;e.preventDefault();const i=+t.dataset.cur,j=i+(e.key==="ArrowLeft"?-1:1);if(j<0||j>=S.draft.images.length)return;const o=S.draft.images.map((_,k)=>k);[o[i],o[j]]=[o[j],o[i]];applyOrder(o,j)}});
+  initThumbDrag();
+  V.querySelectorAll("[data-rm]").forEach(b=>b.onclick=e=>{e.stopPropagation();syncDraftFromInputs();S.draft.images.splice(+b.dataset.rm,1);S.cur=0;if(S.draft.format==="KARUSSELL"&&S.draft.images.length<2)S.draft.format="POST";render()});
+  V.querySelectorAll("[data-fmt]").forEach(b=>b.onclick=()=>{syncDraftFromInputs();S.draft.format=b.dataset.fmt;render()});
+  ["f-ort","f-title","f-cap","f-tags","f-date","f-time"].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener("input",liveUpdate)});
+  V.querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{syncDraftFromInputs();const [dt,t]=b.dataset.slot.split("|");S.draft.date=dt;S.draft.time=t;render()});
+  V.querySelectorAll("[data-sg]").forEach(b=>b.onclick=()=>{syncDraftFromInputs();S.draft.caption=S.suggest.v[+b.dataset.sg];render()});
+  V.querySelectorAll("[data-sgh]").forEach(b=>b.onclick=()=>{syncDraftFromInputs();S.draft.tags=S.suggest.h;render()});
+  V.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>editPost(b.dataset.edit));
+  const g=id=>document.getElementById(id);
+  if(g("newPost"))g("newPost").onclick=()=>{S.draft=newDraft();S.cur=0;S.suggest=null;S.confirm=false;render()};
+  g("suggest").onclick=suggestCaption;
+  g("copyCap").onclick=()=>{syncDraftFromInputs();const d=S.draft;const t=d.caption.trim()+(d.tags.trim()?"\n\n"+d.tags.trim():"");
+    const fail=()=>{const ta=g("f-cap");ta.focus();ta.select();toast("Caption markiert, jetzt kopieren")};
+    try{navigator.clipboard.writeText(t).then(()=>toast("Caption kopiert"),fail)}catch(e){fail()}};
+  g("saveDraft").onclick=()=>commit("entwurf");
+  if(g("saveKeep"))g("saveKeep").onclick=()=>commit(S.draft.status);
+  g("schedule").onclick=()=>{syncDraftFromInputs();if(!S.draft.date||!S.draft.time){toast("Erst Datum und Uhrzeit wählen");return}commit("geplant")};
+  if(g("mcNo"))g("mcNo").onclick=()=>{S.confirm=false;render()};
+  if(g("mcYes"))g("mcYes").onclick=sendToMetricool;
+  if(g("del"))g("del").onclick=async()=>{const id=S.draft.id;S.draft=newDraft();S.cur=0;try{await deletePost(id);toast("Post gelöscht")}catch(e){toast("Löschen hat nicht geklappt")}render()};
+  if(g("markPub"))g("markPub").onclick=()=>commit("veroeffentlicht");
+  if(g("approve"))g("approve").onclick=()=>{syncDraftFromInputs();if(!S.draft.date||!S.draft.time){toast("Erst Datum und Uhrzeit wählen");return}commit("freigegeben")};
+  if(g("unapprove"))g("unapprove").onclick=()=>commit("geplant");
+  if(g("stripNew"))g("stripNew").onclick=()=>{S.draft=newDraft();S.cur=0;S.suggest=null;S.confirm=false;render();scrollTo({top:0,behavior:"smooth"})};
+}
+const poolIn=document.createElement("input");poolIn.type="file";poolIn.accept="image/*";poolIn.multiple=true;poolIn.hidden=true;document.body.appendChild(poolIn);
+poolIn.onchange=async()=>{const files=[...poolIn.files].filter(f=>f.type.startsWith("image/"));poolIn.value="";if(!db||!assets||!files.length)return;
+  S.poolBusy=files.length;render();let fail=0;
+  for(const f of files){
+    try{const local=URL.createObjectURL(f);let ratio=null;await new Promise(r=>{const i=new Image();i.onload=()=>{ratio=i.naturalWidth/i.naturalHeight;r()};i.onerror=r;i.src=local});
+      const res=await assets.upload(f);const fo=curFolder();await db.collection("pool").doc(uid()).set({img:{id:res.id,type:f.type,ratio},addedAt:new Date().toISOString(),...(fo&&fo!==DRAFTS?{folder:fo}:{})});}
+    catch(e){fail++}
+    S.poolBusy--;render()}
+  if(fail)toast(fail+" Foto(s) konnten nicht gespeichert werden")};
+const fileIn=document.getElementById("fileIn");
+fileIn.onchange=()=>{addFiles(fileIn.files);fileIn.value=""};
+/* Reihenfolge per Ziehen */
+let thumbDragAt=0;
+function applyOrder(order,focusIdx){syncDraftFromInputs();const ims=S.draft.images;const curIm=ims[S.cur];const changed=order.some((x,i)=>x!==i);if(!changed)return;
+  S.draft.images=order.map(i=>ims[i]);S.cur=Math.max(0,S.draft.images.indexOf(curIm));render();
+  if(focusIdx!=null){const el=V.querySelector(`.thumb[data-cur="${focusIdx}"]`);if(el)el.focus()}
+  toast(S.draft.id&&S.draft.status!=="entwurf"?"Neue Reihenfolge. Speichern nicht vergessen":"Neue Reihenfolge")}
+/* Sortieren per Ziehen (Maus, Stift, Finger) */
+function sortable(wrap,sel,{canDrag=()=>true,onEnd,longPress=false}={}){if(!wrap||wrap.dataset.dnd)return;wrap.dataset.dnd="1";wrap.addEventListener("dragstart",e=>e.preventDefault());wrap.querySelectorAll("img").forEach(i=>i.draggable=false);
+  const items=()=>[...wrap.querySelectorAll(sel)];
+  items().forEach(t=>{if(!canDrag(t))return;t.classList.add("dragable");t.addEventListener("contextmenu",e=>e.preventDefault());
+    t.addEventListener("pointerdown",e=>{if(e.target.closest(".x")||(e.pointerType==="mouse"&&e.button!==0))return;
+      const sx=e.clientX,sy=e.clientY,pid=e.pointerId;let g=null,dx=0,dy=0,armed=!(longPress&&e.pointerType!=="mouse"),timer=null;
+      if(!armed)timer=setTimeout(()=>{armed=true;t.classList.add("lift");try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}},300);
+      const tm=ev=>{if(armed&&ev.cancelable)ev.preventDefault()};t.addEventListener("touchmove",tm,{passive:false});
+      const others=()=>items().filter(x=>x!==t);
+      const flip=fn=>{const els=others();const before=new Map(els.map(x=>[x,x.getBoundingClientRect()]));fn();if(noMotion())return;els.forEach(x=>{const a=before.get(x),b=x.getBoundingClientRect();if(a.left!==b.left||a.top!==b.top)x.animate([{transform:`translate(${a.left-b.left}px,${a.top-b.top}px)`},{transform:"none"}],{duration:200,easing:"cubic-bezier(.2,.8,.2,1)"})})};
+      const cleanup=()=>{clearTimeout(timer);t.classList.remove("lift");t.removeEventListener("touchmove",tm);removeEventListener("pointermove",move);removeEventListener("pointerup",up);removeEventListener("pointercancel",up)};
+      const move=ev=>{if(ev.pointerId!==pid)return;const dist=Math.hypot(ev.clientX-sx,ev.clientY-sy);
+        if(!g){if(!armed){if(dist>8)cleanup();return}if(dist<6)return;const r=t.getBoundingClientRect();dx=sx-r.left;dy=sy-r.top;
+          g=t.cloneNode(true);g.classList.add("dragghost");g.classList.remove("on","lift");g.removeAttribute("id");g.style.width=r.width+"px";g.style.height=r.height+"px";document.body.appendChild(g);t.classList.add("dragph");t.classList.remove("lift")}
+        ev.preventDefault();g.style.left=(ev.clientX-dx)+"px";g.style.top=(ev.clientY-dy)+"px";
+        let best=null,bd=1e9;for(const o of others()){const r=o.getBoundingClientRect();const cx=r.left+r.width/2,cy=r.top+r.height/2;const d=Math.hypot(ev.clientX-cx,(ev.clientY-cy)*1.4);if(d<bd){bd=d;best=[o,cx]}}
+        if(!best)return;const [o,cx]=best;const before=ev.clientX<cx;if((before&&o.previousElementSibling===t)||(!before&&o.nextElementSibling===t))return;
+        flip(()=>wrap.insertBefore(t,before?o:o.nextElementSibling))};
+      const up=ev=>{if(ev.pointerId!==pid)return;cleanup();if(!g)return;thumbDragAt=Date.now();const order=items().map(x=>x.dataset.key);const tr=t.getBoundingClientRect();
+        const fin=()=>{g.remove();t.classList.remove("dragph");onEnd&&onEnd(order)};
+        if(noMotion()||!g.animate){fin();return}const gr=g.getBoundingClientRect();const an=g.animate([{transform:"scale(1.06)"},{transform:`translate(${tr.left-gr.left}px,${tr.top-gr.top}px) scale(1)`}],{duration:170,easing:"ease-out",fill:"forwards"});an.onfinish=fin};
+      addEventListener("pointermove",move,{passive:false});addEventListener("pointerup",up);addEventListener("pointercancel",up)})})}
+function initThumbDrag(){const wrap=V.querySelector(".thumbs");if(!wrap||S.draft.images.length<2)return;wrap.querySelectorAll(".thumb[data-cur]").forEach(t=>t.dataset.key=t.dataset.cur);
+  sortable(wrap,".thumb[data-cur]",{onEnd:order=>{const o=order.map(Number);if(o.some((x,i)=>x!==i))applyOrder(o)}})}
+/* Ordner der Galerie (wie auf dem Mac unter „Instagram Bilder“) */
+const DRAFTS="Entwürfe";
+const poolFolder=x=>x.folder||(x.src&&x.src.includes("/")?x.src.split("/")[0]:"Ohne Ordner");
+function folders(){const m=new Map();S.pool.forEach(x=>{const f=poolFolder(x);const t=x.addedAt||"";if(!m.has(f)||m.get(f)<t)m.set(f,t)});(S.extraFolders||[]).forEach(f=>{if(!m.has(f))m.set(f,"9")});
+  const list=[...m.entries()].sort((a,b)=>b[1].localeCompare(a[1])).map(e=>e[0]);if(upcoming().drafts.length)list.push(DRAFTS);return list}
+function curFolder(){const fs=folders();if(!S.poolFolder){try{S.poolFolder=localStorage.getItem("sg-folder")||""}catch(e){}}if(!fs.includes(S.poolFolder))S.poolFolder=fs[0]||"";return S.poolFolder}
+/* Reihenfolge der möglichen Posts: nur Ansicht, ändert keine Termine */
+const gRank=k=>{const i=(S.gorder||[]).indexOf(k);return i<0?1e6:i};
+async function saveGalleryOrder(){const vis=[...V.querySelectorAll("#planGrid .tile,#looseGrid .tile")].map(t=>t.dataset.key);const keys=[...vis,...(S.gorder||[]).filter(k=>!vis.includes(k))];S.gorder=keys;render();
+  if(!db){try{localStorage.setItem("sg-gorder",JSON.stringify(keys))}catch(e){}return}
+  try{await db.collection("gallery").doc("order").set({keys,updatedAt:new Date().toISOString()})}catch(e){toast("Reihenfolge konnte nicht gespeichert werden")}}
+async function addFiles(files){
+  for(const f of files){
+    if(!/^(image|video)\//.test(f.type))continue;
+    const local=URL.createObjectURL(f);const im={local,type:f.type,ratio:null,name:f.name};
+    if(f.type.startsWith("image/")){await new Promise(r=>{const i=new Image();i.onload=()=>{im.ratio=i.naturalWidth/i.naturalHeight;r()};i.onerror=r;i.src=local})}
+    else{await new Promise(r=>{const v=document.createElement("video");v.onloadedmetadata=()=>{im.ratio=v.videoWidth/v.videoHeight;r()};v.onerror=r;v.src=local})}
+    S.draft.images.push(im);
+    S.blobs[local]=f;
+    if(assets){im.up=assets.upload(f).then(res=>{im.id=res.id;im.url=res.url}).catch(e=>{toast(e&&e.code==="too_large"?"Datei zu groß für den Speicher (max. 20 MB)":"Bild konnte nicht gespeichert werden")})}
+  }
+  if(S.draft.images.length>1&&S.draft.format==="POST")S.draft.format="KARUSSELL";
+  if(S.draft.images.some(i=>(i.type||"").startsWith("video"))&&S.draft.format!=="STORY")S.draft.format="REEL";
+  S.cur=S.draft.images.length-1;render();
+}
+async function commit(status){
+  syncDraftFromInputs();const d=S.draft;
+  const ups=d.images.map(i=>i.up).filter(u=>u&&typeof u.then==="function");
+  if(ups.length&&d.images.some(i=>i.local&&!i.id)){toast("Bilder werden noch hochgeladen …");await Promise.allSettled(ups)}
+  const usedPool=d.images.map(i=>i.poolId).filter(Boolean);
+  const p={...d,id:d.id||uid(),status,images:d.images.map(i=>({id:i.id||null,url:i.id?null:(i.url||null),type:i.type||"image/jpeg",ratio:i.ratio||null})).filter(i=>i.id||i.url)};
+  if(!assets)p.images=[];
+  try{await savePost(p);S.draft={...p,images:d.images.map(i=>{const c={...i};delete c.poolId;return c})};
+    if(db)for(const pid of usedPool){db.collection("pool").doc(pid).delete().catch(()=>{})}toast(status==="entwurf"?"Entwurf gespeichert":status==="geplant"?"Eingeplant für "+fmtD(p.date)+" "+p.time:status==="metricool"?"Gespeichert":"Gespeichert, im Raster als veröffentlicht");render()}
+  catch(e){toast(e&&e.code==="quota_exceeded"?"Speicher voll, bitte alte Posts löschen":"Speichern hat nicht geklappt")}
+}
+function editPost(id){const p=S.posts.find(x=>x.id===id);if(!p)return;S.draft=JSON.parse(JSON.stringify({...newDraft(),...p}));S.cur=0;S.suggest=null;S.confirm=false;location.hash="posten";render();scrollTo({top:0})}
+
+/* Caption-Vorschlag über Claude */
+async function suggestCaption(){
+  syncDraftFromInputs();if(!sample||S.suggesting)return;const d=S.draft;
+  S.suggesting=true;S.suggest=null;render();
+  const prompt=`Du schreibst Instagram-Bildunterschriften für Bruno, Hobbyfotograf aus Bochum. Account sommer_gram: Reisen, Natur, Urban Photography.
+Ton: Fotograf, nicht Influencer. Deutsch, kurz, beobachtend, trocken oder erzählerisch. 1 bis 2 Sätze, gern auch nur wenige Wörter.
+Schreib so, wie Bruno es selbst ins Handy tippen würde: alltägliche Wörter, gern trocken oder mit leisem Humor. Seinen Sohn nennt er „der kleine Mann" oder „der Knirps". Erlaubt ist ein englisches Stichwort vorne mit Strich, z. B. „Sunday |", das ist aber kein Muss.
+Verboten: Fragen, Aufrufe zur Interaktion („Was meint ihr", „Markiere"), Gedankenstriche, Superlative, mehr als ein Emoji, Werbe- oder Prospektton, Aufzählungen zu dritt, das Muster „nicht X, sondern Y", aufgeblasene Bedeutung („ein besonderer Moment", „Magie"), gespielte Lockerheit, Floskeln wie perfekt für, ideal für, zeitlos, Klassiker, Hingucker, Begleiter, für jeden Anlass, und KI-Wörter wie eintauchen, Zauber, unterstreichen, Landschaft im übertragenen Sinn.
+Die drei Vorschläge sollen unterschiedlich gebaut sein: einer nur ein paar Wörter, einer mit Ort, einer als kleine Beobachtung.
+Erfinde keinen Ort, keine Personen und keine Details, die weder auf dem Bild zu sehen sind noch unten stehen.
+Beispiele seines Tons: „Abendessen" · „Der Frühling kommt" · „Die Sonnenuntergänge sind auch ganz okay hier" · „Anflug über dem Cap Formentor. Das Blau sieht aus, als wäre es extra angemischt worden." · „Heimweg. Mein Junge hat die bessere Aussicht."
+Angaben: Format ${FORMATS[d.format]}. Ort: ${d.ort||"nicht angegeben, dann keinen Ort nennen"}. Titel/Notiz: ${d.title||"–"}. Bisheriger Entwurf: ${d.caption||"–"}.
+Antworte nur als JSON: {"vorschlaege":["…","…","…"],"hashtags":"#… #… #…"} mit drei Vorschlägen und zwei bis drei Hashtags (zum Ort und zum Motiv; ohne Ort keinen Orts-Hashtag).`;
+  try{
+    const opts={modelTier:"default"};
+    try{const lim=await sample.limits();if(lim.images){const blobs=[];for(const im of d.images.slice(0,Math.min(3,lim.images.maxCount))){if((im.type||"").startsWith("video"))continue;let b=im.local&&S.blobs[im.local];if(!b&&im.id){try{b=await (await fetch("/_blob/"+im.id)).blob()}catch(e){}}if(b&&b.size<=lim.images.maxInputBytes&&lim.images.mediaTypes.includes(b.type))blobs.push(b)}if(blobs.length)opts.images=blobs}}catch(e){}
+    const r=await sample.json(prompt,opts);
+    const v=(r&&Array.isArray(r.vorschlaege)?r.vorschlaege:[]).filter(x=>typeof x==="string").slice(0,3);
+    S.suggest=v.length?{v,h:typeof r.hashtags==="string"?r.hashtags:""}:{err:"Kein Vorschlag gekommen. Versuch es noch einmal."};
+  }catch(e){S.suggest={err:e&&e.code==="not_granted"?"Vorschläge brauchen deine Freigabe für dieses Studio.":e&&e.code==="rate_limited"?"Gerade zu viele Anfragen. Gleich noch einmal probieren.":"Vorschlag hat nicht geklappt."}}
+  S.suggesting=false;render();
+}
+
+/* Metricool senden */
+async function sendToMetricool(){
+  syncDraftFromInputs();const d=S.draft;if(!mcp||S.sending)return;S.sending=true;render();
+  const media=d.mediaUrl.split(/\s+/).map(s=>s.trim()).filter(Boolean);
+  const type=d.format==="REEL"?"REEL":d.format==="STORY"?"STORY":"POST";
+  const text=type==="STORY"?"":(d.caption+(d.tags?"\n\n"+d.tags:""));
+  const info={autoPublish:true,draft:false,descendants:[],firstCommentText:"",hasNotReadNotes:false,media,mediaAltText:[],
+    providers:[{network:"instagram"}],publicationDate:{dateTime:`${d.date}T${d.time}:00`,timezone:S.mc.tz},shortener:false,smartLinkData:{ids:[]},text,
+    instagramData:{type,showReelOnFeed:true,isAiGenerated:false}};
+  try{
+    const res=await mcp.callTool(MC,"createScheduledPost",{blogId:S.mc.brandId,date:`${d.date}T${d.time}:00${tzOffset(d.date,d.time)}`,info:JSON.stringify(info)});
+    const url=findKey(res.payload,"plannerUrl");
+    S.draft.plannerUrl=typeof url==="string"?url:"";S.confirm=false;S.sending=false;await commit("metricool");toast("Bei Metricool eingeplant");
+  }catch(e){S.sending=false;S.confirm=false;
+    const m={tool_error:"Metricool hat abgelehnt: "+(e.message||"").slice(0,200),needs_reauth:"Metricool in claude.ai unter Einstellungen → Konnektoren neu verbinden.",server_not_connected:"Metricool ist für dich nicht als Konnektor verbunden.",not_in_manifest:"Metricool ist für dieses Studio nicht freigegeben.",approval_required:"Das Senden braucht deine Freigabe. Bitte noch einmal tippen.",server_unavailable:"Metricool antwortet gerade nicht. Prüf in Metricool, ob der Post trotzdem angekommen ist, bevor du neu sendest.",upstream_error:"Unklar, ob der Post angekommen ist. Bitte erst in Metricool nachsehen."};
+    showError(m[e&&e.code]||"Senden hat nicht geklappt ("+(e&&e.code||"unbekannt")+").");render()}
+}
+function findKey(o,k,depth=0){if(!o||typeof o!=="object"||depth>6)return null;if(k in o)return o[k];for(const v of Object.values(o)){const r=findKey(v,k,depth+1);if(r!=null)return r}return null}
+function showError(t){const b=document.getElementById("banner");b.innerHTML=`<div class="notice bad">${esc(t)}</div>`;setTimeout(()=>{if(b.firstChild&&b.firstChild.classList.contains("bad"))renderBanner()},9000)}
+
+
+/* ---------- Raster ---------- */
+function vRaster(){
+  V.innerHTML=`<div class="rgrid">
+  <section class="card phone">
+    <div class="prof"><span class="av" aria-hidden="true">sg</span><div><b>sommer_gram</b><div class="counter">${(()=>{const L=[...S.insights].filter(i=>i.followers!=null).sort((a,b)=>a.date.localeCompare(b.date)).pop();return L?nf(L.followers)+" FOLLOWER · ":""})()}WAS SCHON ONLINE IST</div></div></div>
+    <div class="feedgrid">${feedItems().map(p=>{const im=p.images&&p.images[0];return `<button class="tile" ${p._draft?"":`data-edit="${p.id}"`} aria-label="${esc(p.title||p.ort||"Post")}">${im&&!(im.type||"").startsWith("video")?`<img src="${esc(imgSrc(im))}" alt="">`:""}${p._draft?`<span class="badge">${p._prev?"Vorschau":"Neu"}</span>`:p.status==="geplant"||p.status==="metricool"?`<span class="badge">${fmtD(p.date)}</span>`:""}${im?"":`<span class="t">${esc(p.title||p.ort||(p._draft?"Dein neuer Post":"Post"))}</span>`}</button>`}).join("")}</div>
+  </section>
+  <section class="card">
+    <div class="cardhead"><div><h2>Mögliche neue Posts</h2><div class="small muted" style="margin-top:4px">In der Reihenfolge, in der ich sie posten würde</div></div>
+      <button class="btn ghost sm" id="poolAdd" ${db&&assets?"":"disabled"}>Fotos hinzufügen${curFolder()&&curFolder()!==DRAFTS?" in "+esc(curFolder()):""}</button></div>
+    ${(()=>{const u=upcoming();const tile=(key,im,badge,label,rk)=>`<button data-key="${key}" class="tile ${(S.planSel===key.slice(2)&&key[0]==="p")||(S.poolSel===key.slice(2)&&key[0]==="g")?"on":""}" data-sel="${key}" aria-label="${esc(label)}">${im?`<img src="${esc(imgSrc(im))}" alt="" loading="lazy">`:""}${badge?`<span class="badge${/✓/.test(badge)?" ok":""}">${esc(badge)}</span>`:""}${rk?`<span class="rk">${rk}</span>`:""}${im?"":`<span class="t">${esc(label)}</span>`}</button>`;
+      let h="";
+      const pl=[...u.planned].sort((a,b)=>gRank("p:"+a.id)-gRank("p:"+b.id));if(u.planned.length)h+=`<div class="lbl" style="margin-bottom:8px">Eingeplant</div><div class="feedgrid" id="planGrid">${pl.map((p,i)=>tile("p:"+p.id,p.images&&p.images[0],(i+1)+" · "+fmtD(p.date)+(p.status==="instagram"?" · ✓ eingeplant":p.status==="freigegeben"?" · freigegeben":""),p.title||p.ort||"Post")).join("")}</div>`;
+      if(u.stories.length)h+=`<p class="small muted" style="margin:10px 0 0">Dazu als Story: ${u.stories.map(p=>esc(p.title||"Story")+", "+fmtD(p.date)).join(" · ")}</p>`;
+      const fl=folders(),cf=curFolder();
+      const loose=(cf===DRAFTS?u.drafts.map(p=>({k:"p:"+p.id,im:p.images[0],b:"Entwurf",l:p.title||"Entwurf"})):S.pool.filter(x=>poolFolder(x)===cf).map(x=>({k:"g:"+x.id,im:x.img,b:"",l:"Foto aus "+cf}))).map((x,i)=>({...x,i})).sort((a,b)=>(gRank(a.k)-gRank(b.k))||(a.i-b.i));
+      const cnt=f=>f===DRAFTS?u.drafts.length:S.pool.filter(x=>poolFolder(x)===f).length;
+      h+=`<div class="lbl" style="margin:${u.planned.length?"18px":"0"} 0 8px">Noch ohne Termin${S.poolBusy?` · ${S.poolBusy} werden hochgeladen …`:""}</div>`;
+      h+=`<div class="fchips" role="group" aria-label="Ordner">${fl.map(f=>`<button class="pill sm" data-folder="${esc(f)}" aria-pressed="${f===cf}">${f===DRAFTS?"":"📁 "}${esc(f)} <span class="muted">${cnt(f)}</span></button>`).join("")}${S.newFolder?`<span class="row" style="gap:6px"><input class="field sm" id="nfName" placeholder="Ordnername" style="width:150px"><button class="btn sm" id="nfOk">Anlegen</button></span>`:`<button class="pill sm ghostpill" id="nfBtn">+ Ordner</button>`}</div>`;
+      h+=loose.length?`<div class="feedgrid" id="looseGrid">${loose.map((x,i)=>tile(x.k,x.im,x.b,x.l,i+1)).join("")}</div>`:(db&&assets?`<div class="drop" id="poolDrop" role="button" tabindex="0" style="aspect-ratio:auto;min-height:160px"><span class="plus">+</span><b>Fotos sammeln</b><span class="small muted">Alles, was mal ein Post werden könnte</span></div>`:`<p class="small muted">Die Galerie geht nur im geöffneten Studio auf claude.ai.</p>`);
+      return h})()}
+    ${S.poolSel?`<div class="row" style="margin-top:14px"><button class="btn sm" id="poolNew">Neuer Post damit</button><button class="btn ghost sm" id="poolToDraft">Zum aktuellen Post</button><button class="linkish" id="poolDel">Aus Galerie entfernen</button></div>`:S.planSel?`<div class="row" style="margin-top:14px"><button class="btn sm" id="planEdit">Post öffnen</button><span class="small muted">Im Raster siehst du ihn jetzt vorne.</span></div>`:`<p class="small muted" style="margin:12px 0 0">Bild antippen, dann siehst du es vorne in deinem Raster. Zum Sortieren ziehen (am iPad kurz gedrückt halten). Das ändert nur die Reihenfolge hier, Termine im Kalender bleiben, wie sie sind.</p>`}
+  </section>
+  </div>`;
+  bindRaster();
+}
+function bindRaster(){const g=id=>document.getElementById(id);
+  V.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>editPost(b.dataset.edit));
+  // Galerie
+  const pa=g("poolAdd");if(pa)pa.onclick=()=>{syncDraftFromInputs();poolIn.click()};
+  const pd=g("poolDrop");if(pd){pd.onclick=()=>{syncDraftFromInputs();poolIn.click()};pd.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();syncDraftFromInputs();poolIn.click()}}}
+  V.querySelectorAll("[data-sel]").forEach(b=>b.onclick=()=>{if(Date.now()-thumbDragAt<400)return;syncDraftFromInputs();const [t,id]=[b.dataset.sel[0],b.dataset.sel.slice(2)];
+    if(t==="g"){S.planSel=null;S.poolSel=S.poolSel===id?null:id}else{S.poolSel=null;S.planSel=S.planSel===id?null:id}render()});
+  V.querySelectorAll("[data-folder]").forEach(b=>b.onclick=()=>{S.poolFolder=b.dataset.folder;S.poolSel=null;try{localStorage.setItem("sg-folder",S.poolFolder)}catch(e){}render()});
+  if(g("nfBtn"))g("nfBtn").onclick=()=>{S.newFolder=true;render();const i=g("nfName");if(i)i.focus()};
+  const mkF=()=>{const n=(g("nfName").value||"").trim().replace(/[\/]/g,"-").slice(0,40);S.newFolder=false;if(n&&n!==DRAFTS){S.extraFolders=[...new Set([...(S.extraFolders||[]),n])];S.poolFolder=n}render()};
+  if(g("nfOk"))g("nfOk").onclick=mkF;if(g("nfName"))g("nfName").onkeydown=e=>{if(e.key==="Enter")mkF();if(e.key==="Escape"){S.newFolder=false;render()}};
+  sortable(g("planGrid"),".tile",{longPress:true,onEnd:saveGalleryOrder});
+  sortable(g("looseGrid"),".tile",{longPress:true,onEnd:saveGalleryOrder});
+  if(g("planEdit"))g("planEdit").onclick=()=>{const id=S.planSel;S.planSel=null;editPost(id)};
+  const fromPool=()=>{const x=S.pool.find(p=>p.id===S.poolSel);return x?{id:x.img.id,url:null,type:x.img.type||"image/jpeg",ratio:x.img.ratio||null,poolId:x.id}:null};
+  if(g("poolNew"))g("poolNew").onclick=()=>{const im=fromPool();if(!im)return;S.draft=newDraft();S.draft.images=[im];S.cur=0;S.poolSel=null;S.suggest=null;S.confirm=false;location.hash="posten"};
+  if(g("poolToDraft"))g("poolToDraft").onclick=()=>{syncDraftFromInputs();const im=fromPool();if(!im)return;if(!S.draft.images.some(i=>i.id===im.id))S.draft.images.push(im);if(S.draft.images.length>1&&S.draft.format==="POST")S.draft.format="KARUSSELL";S.cur=S.draft.images.length-1;S.poolSel=null;render();toast("Zum Post hinzugefügt")};
+  if(g("poolDel"))g("poolDel").onclick=async()=>{const id=S.poolSel;S.poolSel=null;try{await db.collection("pool").doc(id).delete();toast("Aus der Galerie entfernt")}catch(e){toast("Entfernen hat nicht geklappt")}render()};
+}
+/* Posten: Als Nächstes und Rastervorschau */
+function nextHTML(){const today=iso(new Date());const d=S.draft;
+  const list=S.posts.filter(p=>p.date&&p.date>=today&&["geplant","freigegeben","instagram","metricool"].includes(p.status)&&p.format!=="STORY").sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||""))).slice(0,7);
+  const tile=(p,i)=>{const im=p.images&&p.images.find(x=>!(x.type||"").startsWith("video"));const n=(p.images||[]).length;
+    return `<button class="st-i${p.id===d.id?" on":""}" data-edit="${p.id}" aria-label="${esc(p.title||p.ort||"Post")} öffnen"><div class="ph">${im?`<img src="${esc(imgSrc(im))}" alt="" loading="lazy">`:""}${n>1?`<b>${n}</b>`:""}</div><div class="t">${esc(p.title||p.ort||"Post")}</div><div class="d${i===0?" a":""}"><span class="dot" style="background:${(STATUS[p.status]||STATUS.entwurf)[1]}"></span>${esc(fmtD(p.date).toUpperCase())} ${esc(p.time||"")}</div></button>`};
+  const strip=`<section class="card"><div class="cardhead"><h2>Als Nächstes</h2><span class="small muted">Antippen zum Bearbeiten</span></div>
+    <div class="strip">${list.map(tile).join("")}<button class="st-i add" id="stripNew" aria-label="Neuen Post anfangen"><div class="ph">+</div><div class="t">Neuer Post</div><div class="d">ENTWURF</div></button></div>
+    ${list.length?"":`<p class="small muted" style="margin:12px 0 0">Noch nichts eingeplant. Im Plan auf einen freien Termin tippen oder oben einen Post anlegen.</p>`}</section>`;
+  const im=d.images.find(x=>!(x.type||"").startsWith("video"));
+  if(!im)return strip;
+  const pub=S.posts.filter(p=>p.status==="veroeffentlicht"&&p.format!=="STORY"&&p.id!==d.id).sort((a,b)=>(b.date||"0").localeCompare(a.date||"0")).slice(0,5);
+  const prev=`<section class="card"><div class="cardhead"><h2>So wirkt er im Raster</h2><span class="small muted">vorne, dahinter was schon online ist</span></div>
+    <div class="rowgrid"><div class="me"><img src="${esc(imgSrc(im))}" alt="Dein Post"></div>${pub.map(p=>{const pi=p.images&&p.images.find(x=>!(x.type||"").startsWith("video"));return `<div>${pi?`<img src="${esc(imgSrc(pi))}" alt="" loading="lazy">`:""}</div>`}).join("")}</div></section>`;
+  return `<div class="bottom">${strip}${prev}</div>`}
+
+/* ---------- Einstellungen ---------- */
+function themeNow(){try{return localStorage.getItem("sg-theme")||"dark"}catch(e){return "dark"}}
+function setTheme(k){try{localStorage.setItem("sg-theme",k)}catch(e){}const r=document.documentElement;if(k==="auto")r.removeAttribute("data-sg");else r.setAttribute("data-sg",k);render();toast(k==="auto"?"Darstellung folgt jetzt dem Gerät":k==="dark"?"Dunkel eingestellt":"Hell eingestellt")}
+function vSettings(){const cur=themeNow();const L=latestIns();const mc=mcInfo();
+  const opt=(k,l,t)=>`<button class="themeopt" data-theme-set="${k}" aria-pressed="${cur===k}"><span class="tprev ${k}" aria-hidden="true"><i></i><i></i><i></i></span><b>${l}</b><span class="small muted">${t}</span></button>`;
+  const row=(l,v)=>`<div class="setrow"><span class="lbl">${l}</span><span>${v}</span></div>`;
+  V.innerHTML=`<div class="setgrid">
+  <section class="card"><h2>Darstellung</h2><p class="small muted" style="margin:6px 0 16px">Gilt für dieses Gerät. iPad und iPhone kannst du unterschiedlich einstellen.</p>
+    <div class="themes" role="group" aria-label="Darstellung">${opt("light","Hell","Helles Papier, gut bei Tageslicht")}${opt("dark","Dunkel","Dunkelkammer, die Fotos leuchten mehr")}${opt("auto","Automatisch","Wechselt mit dem iPad zwischen hell und dunkel")}</div></section>
+  <section class="card"><h2>Verbindungen</h2><div style="margin-top:8px">
+    ${row("Speichern",S.mode==="sync"?`<span class="status"><span class="dot" style="background:var(--ok)"></span>Synchron auf iPad, iPhone und Mac</span>`:`<span class="status"><span class="dot" style="background:var(--warn)"></span>Nur in diesem Browser</span>`)}
+    ${row("Konto",esc(window.__studioUser||"")+` · <button class="linkish" type="button" onclick="document.getElementById('stOut')&&document.getElementById('stOut').click()">Abmelden</button>`)}
+    ${row("Instagram-Zahlen",L?`Stand ${esc(standTxt(L))}, kommen jeden Morgen automatisch`:"Noch keine, der Morgen-Check trägt sie ein")}
+    ${row("Posting-Rhythmus",`<span class="mono-d" style="color:var(--text)">MI 18:30 · FR 19:30 · SO 18:00</span>`)}
+  </div></section></div>`;
+  V.querySelectorAll("[data-theme-set]").forEach(b=>b.onclick=()=>setTheme(b.dataset.themeSet));
+}
+
+/* ---------- 2 Plan ---------- */
+const MONTHS=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
+function postMedia(p){return S.media.find(m=>m.id===p.igId)||S.media.find(m=>m.type!=="Story"&&!S.posts.some(x=>x.igId===m.id)&&mPost(m)===p)||null}
+function evHTML(p){const ig=p.status==="instagram",pub=p.status==="veroeffentlicht";const st=p.stats&&p.stats.views!=null?p.stats:null;const mm=pub?postMedia(p):null;const v=mm?mm.views:st?st.views:null;
+  return `<button class="ev${ig?" ig":""}${pub?" pub":""}${p.format==="STORY"?" story":""}" data-edit="${p.id}" ${ig?'title="In Instagram eingeplant. Geht so raus, wenn du nichts änderst."':""}>${(()=>{const im=p.images&&p.images.find(x=>!(x.type||"").startsWith("video"));return im?`<img class="evi" src="${esc(imgSrc(im))}" alt="" loading="lazy">`:""})()}<span class="ti">${esc(p.title||p.ort||"Post")}</span><span class="me"><span class="dot" style="background:${p.format==="STORY"&&pub?TYPC.Story:(STATUS[p.status]||STATUS.entwurf)[1]}"></span>${esc(p.time||"")} ${FORMATS[p.format]||""}</span>${ig?`<span class="me">✓ in Instagram eingeplant</span>`:pub&&v!=null?`<span class="me">${nf(v)} Aufrufe</span>`:""}</button>`}
+function dayHTML(d,today,dim){const ds=iso(d);const ps=S.posts.filter(p=>p.date===ds).sort((a,b)=>(a.time||"").localeCompare(b.time||""));const slot=SLOTS[d.getDay()];
+  const nowHM=pad(new Date().getHours())+":"+pad(new Date().getMinutes());
+  return `<div class="day ${ds===today?"today":""}${dim?" dim":""}" data-date="${ds}"><div class="dayhead"><span>${WD[d.getDay()]}</span><b>${d.getDate()}.</b></div>
+    ${ps.map(evHTML).join("")}
+    ${slot&&!ps.some(p=>p.format!=="STORY")&&(ds>today||(ds===today&&slot>nowHM))?`<button class="slot" data-new="${ds}|${slot}">+ frei · ${slot}</button>`:""}</div>`}
+/* Posts im Kalender verschieben */
+function calMovable(p){return p&&p.date&&!["instagram","veroeffentlicht","metricool"].includes(p.status)}
+async function movePost(id,date){const p=S.posts.find(x=>x.id===id);if(!p||p.date===date)return;const slot=SLOTS[parse(date).getDay()];
+  const np={...p,date,time:slot||p.time||"",status:p.status==="freigegeben"?"geplant":p.status};const i=S.posts.indexOf(p);S.posts[i]=np;render();
+  try{await savePost(np);toast(`${np.title||np.ort||"Post"} → ${fmtD(date)}${np.time?" "+np.time:""}${p.status==="freigegeben"?" · Freigabe zurückgesetzt":""}`)}catch(e){S.posts[i]=p;render();toast("Verschieben hat nicht geklappt")}}
+function initCalDrag(){V.querySelectorAll(".week .ev[data-edit]").forEach(t=>{const p=S.posts.find(x=>x.id===t.dataset.edit);
+  if(!calMovable(p)){if(p&&p.status==="instagram")t.title="Liegt schon in Instagram. Verschieben geht dort unter „Geplanter Content“.";return}
+  t.classList.add("dragable");t.addEventListener("contextmenu",e=>e.preventDefault());t.querySelectorAll("img").forEach(i=>i.draggable=false);t.addEventListener("dragstart",e=>e.preventDefault());
+  t.addEventListener("pointerdown",e=>{if(e.pointerType==="mouse"&&e.button!==0)return;const sx=e.clientX,sy=e.clientY,pid=e.pointerId;let g=null,dx=0,dy=0,over=null,armed=e.pointerType==="mouse",timer=null;
+    if(!armed)timer=setTimeout(()=>{armed=true;t.classList.add("lift");try{navigator.vibrate&&navigator.vibrate(8)}catch(_){}},300);
+    const tm=ev=>{if(armed&&ev.cancelable)ev.preventDefault()};t.addEventListener("touchmove",tm,{passive:false});
+    const cleanup=()=>{clearTimeout(timer);t.classList.remove("lift");t.removeEventListener("touchmove",tm);removeEventListener("pointermove",move);removeEventListener("pointerup",up);removeEventListener("pointercancel",up);if(over)over.classList.remove("dropto")};
+    const move=ev=>{if(ev.pointerId!==pid)return;const dist=Math.hypot(ev.clientX-sx,ev.clientY-sy);
+      if(!g){if(!armed){if(dist>8)cleanup();return}if(dist<6)return;const r=t.getBoundingClientRect();dx=sx-r.left;dy=sy-r.top;g=t.cloneNode(true);g.classList.add("dragghost");g.classList.remove("lift");g.style.width=r.width+"px";document.body.appendChild(g);t.classList.add("dragph")}
+      ev.preventDefault();g.style.left=(ev.clientX-dx)+"px";g.style.top=(ev.clientY-dy)+"px";
+      const el=document.elementFromPoint(ev.clientX,ev.clientY);const d=el&&el.closest(".day[data-date]");if(d!==over){if(over)over.classList.remove("dropto");over=d;if(over)over.classList.add("dropto")}};
+    const up=ev=>{if(ev.pointerId!==pid)return;const target=over;cleanup();if(!g)return;thumbDragAt=Date.now();g.remove();t.classList.remove("dragph");
+      if(target&&target.dataset.date!==p.date){if(target.dataset.date<iso(new Date())){toast("In die Vergangenheit geht nicht");return}movePost(p.id,target.dataset.date)}};
+    addEventListener("pointermove",move,{passive:false});addEventListener("pointerup",up);addEventListener("pointercancel",up)})})}
+function vPlan(){
+  const today=iso(new Date());const mode=S.planMode||"monat";
+  let head,grid,cnt;
+  if(mode==="monat"){const ms=S.monthStart||(S.monthStart=new Date(new Date().getFullYear(),new Date().getMonth(),1,12));
+    const first=monday(ms);const last=new Date(ms.getFullYear(),ms.getMonth()+1,0,12);const end=new Date(last);end.setDate(last.getDate()+((7-last.getDay())%7));
+    const days=[];for(const d=new Date(first);d<=end;d.setDate(d.getDate()+1))days.push(new Date(d));
+    const inM=S.posts.filter(p=>p.date&&p.date.slice(0,7)===iso(ms).slice(0,7));const nP=inM.filter(p=>p.format!=="STORY"&&p.status!=="entwurf").length,nS=inM.filter(p=>p.format==="STORY").length;
+    head=`<h2>${MONTHS[ms.getMonth()]} ${ms.getFullYear()}</h2><div class="small muted" style="margin-top:4px">${nP} ${nP===1?"Post":"Posts"} und ${nS} ${nS===1?"Story":"Stories"} in diesem Monat · Rhythmus Mi 18:30, Fr 19:30, So 18:00</div>`;
+    grid=`<div class="week month"><div class="wdh">Mo</div><div class="wdh">Di</div><div class="wdh">Mi</div><div class="wdh">Do</div><div class="wdh">Fr</div><div class="wdh">Sa</div><div class="wdh">So</div>${days.map(d=>dayHTML(d,today,d.getMonth()!==ms.getMonth())).join("")}</div>`}
+  else{const ws=S.weekStart;const days=[...Array(7)].map((_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d});
+    const kw=(()=>{const d=new Date(ws);d.setDate(d.getDate()+3);const y=new Date(d.getFullYear(),0,4);return 1+Math.round(((d-y)/864e5-3+((y.getDay()+6)%7))/7)})();
+    const goal=S.posts.filter(p=>p.date&&p.date>=iso(days[0])&&p.date<=iso(days[6])&&p.format!=="STORY").length;
+    head=`<h2>Wochenplan · KW ${kw}</h2><div class="small muted" style="margin-top:4px">${goal} von 3 Posts in dieser Woche · Rhythmus Mi 18:30, Fr 19:30, So 18:00</div>`;
+    grid=`<div class="week">${days.map(d=>dayHTML(d,today,false)).join("")}</div>`}
+  const drafts=S.posts.filter(p=>p.status==="entwurf"&&!p.date);
+  const upcoming=S.posts.filter(p=>p.date&&p.date>=today&&p.status!=="veroeffentlicht").sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
+  const li=p=>{const im=p.images&&p.images[0];return `<div class="li"><div class="mini">${im&&!(im.type||"").startsWith("video")?`<img src="${esc(imgSrc(im))}" alt="">`:""}</div><div style="min-width:0"><div class="ti">${esc(p.title||p.ort||"Ohne Titel")}</div><div class="small muted">${FORMATS[p.format]||"Foto"} · ${p.date?fmtD(p.date)+(p.time?" "+p.time:""):"ohne Termin"}${p.ort?" · "+esc(p.ort):""}</div></div><div class="row">${statusHTML(p.status)}<button class="btn ghost sm" data-edit="${p.id}">Öffnen</button></div></div>`};
+  V.innerHTML=`<div style="display:grid;gap:22px">
+  <section class="card">
+    <div class="cardhead"><div>${head}</div>
+      <div class="row"><div class="tabs" role="group" aria-label="Ansicht"><a href="javascript:void 0" data-pm="monat" ${mode==="monat"?'aria-current="page"':""}>Monat</a><a href="javascript:void 0" data-pm="woche" ${mode==="woche"?'aria-current="page"':""}>Woche</a></div>
+      <button class="pill" id="wPrev" aria-label="${mode==="monat"?"Voriger Monat":"Vorige Woche"}">←</button><button class="pill" id="wNow">Heute</button><button class="pill" id="wNext" aria-label="${mode==="monat"?"Nächster Monat":"Nächste Woche"}">→</button></div></div>
+    ${grid}
+    <p class="small muted" style="margin:12px 0 0">Posts zum Verschieben auf einen anderen Tag ziehen (am iPad kurz gedrückt halten). Die Uhrzeit springt auf den festen Termin des Tages. Was schon in Instagram eingeplant ist, bleibt fest.</p><div class="legend" style="margin-top:8px"><span><span class="dot" style="background:var(--info)"></span>geplant</span><span><span class="dot" style="background:var(--warn)"></span>freigegeben</span><span><span class="dot" style="background:var(--ok)"></span>in Instagram eingeplant oder veröffentlicht</span><span><span class="dot" style="background:${TYPC.Story}"></span>Story</span></div>
+  </section>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px">
+    <section class="card"><h2>Als Nächstes</h2><div class="list" style="margin-top:8px">${upcoming.length?upcoming.map(li).join(""):`<p class="muted small">Nichts eingeplant. Tipp auf einen freien Termin im Plan.</p>`}</div></section>
+    <section class="card"><h2>Entwürfe ohne Termin</h2><div class="list" style="margin-top:8px">${drafts.length?drafts.map(li).join(""):`<p class="muted small">Keine offenen Entwürfe.</p>`}</div></section>
+  </div></div>`;
+  const step=n=>{if(mode==="monat"){const m=S.monthStart;S.monthStart=new Date(m.getFullYear(),m.getMonth()+n,1,12)}else{const d=new Date(S.weekStart);d.setDate(d.getDate()+7*n);S.weekStart=d}render()};
+  document.getElementById("wPrev").onclick=()=>step(-1);document.getElementById("wNext").onclick=()=>step(1);
+  document.getElementById("wNow").onclick=()=>{S.weekStart=monday(new Date());S.monthStart=null;render()};
+  V.querySelectorAll("[data-pm]").forEach(a=>a.onclick=e=>{e.preventDefault();S.planMode=a.dataset.pm;if(a.dataset.pm==="monat"){const w=new Date(S.weekStart);w.setDate(w.getDate()+3);S.monthStart=new Date(w.getFullYear(),w.getMonth(),1,12)}render()});
+  initCalDrag();
+  V.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>{if(Date.now()-thumbDragAt<400)return;const p=S.posts.find(x=>x.id===b.dataset.edit);const m=p&&p.status==="veroeffentlicht"&&b.classList.contains("ev")?postMedia(p):null;if(m)openMO(m.id,b);else editPost(b.dataset.edit)});
+  V.querySelectorAll("[data-new]").forEach(b=>b.onclick=()=>{const [d,t]=b.dataset.new.split("|");S.draft=newDraft(d,t);S.cur=0;S.suggest=null;location.hash="posten"});
+}
+
+/* ---------- 3 Analytics ---------- */
+function lineChart(pts,label){
+  const W=1000,H=280,L=56,R=16,T=16,B=30;
+  if(!pts.length)return `<p class="muted small">Noch keine Werte. Trag unten deine Zahlen aus den Insights ein, am besten jeden Sonntag. Dann wächst hier dein Verlauf.</p>`;
+  const xs=pts.map(p=>parse(p.date).getTime());const ys=pts.map(p=>p.v);
+  let x0=Math.min(...xs),x1=Math.max(...xs);if(x0===x1){x0-=3*864e5;x1+=3*864e5}
+  let y0=Math.min(...ys),y1=Math.max(...ys);const padY=Math.max((y1-y0)*.15,y1*.02,1);y0=Math.max(0,y0-padY);y1=y1+padY;
+  const sx=x=>L+(x-x0)/(x1-x0)*(W-L-R),sy=y=>T+(1-(y-y0)/(y1-y0))*(H-T-B);
+  const ticks=[0,1,2,3].map(i=>y0+(y1-y0)*i/3);
+  const line=pts.map((p,i)=>(i?"L":"M")+sx(xs[i]).toFixed(1)+" "+sy(p.v).toFixed(1)).join(" ");
+  const area=line+` L${sx(xs[xs.length-1]).toFixed(1)} ${H-B} L${sx(xs[0]).toFixed(1)} ${H-B} Z`;
+  const last=pts[pts.length-1];
+  const xl=pts.length<=8?pts:pts.filter((_,i)=>i%Math.ceil(pts.length/6)===0||i===pts.length-1);
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(label)} im Verlauf">
+    ${ticks.map(t=>`<line x1="${L}" x2="${W-R}" y1="${sy(t)}" y2="${sy(t)}" stroke="var(--line)" stroke-width="1"/><text x="${L-8}" y="${sy(t)+4}" text-anchor="end">${nf(Math.round(t))}</text>`).join("")}
+    <path d="${area}" fill="var(--accent-fill)"/>
+    <path d="${line}" fill="none" stroke="var(--accent)" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+    ${pts.map((p,i)=>`<circle cx="${sx(xs[i])}" cy="${sy(p.v)}" r="${i===pts.length-1?5:3}" fill="${i===pts.length-1?"var(--accent)":"var(--card)"}" stroke="var(--accent)" stroke-width="2"><title>${fmtD(p.date)}: ${nf(p.v)}</title></circle>`).join("")}
+    <text x="${Math.min(sx(xs[xs.length-1]),W-R-4)}" y="${sy(last.v)-12}" text-anchor="end" style="fill:var(--text);font-weight:700">${nf(last.v)}</text>
+    ${xl.map(p=>`<text x="${sx(parse(p.date).getTime())}" y="${H-8}" text-anchor="middle">${pad(parse(p.date).getDate())}.${pad(parse(p.date).getMonth()+1)}.</text>`).join("")}
+  </svg>`}
+const PER={d7:[7,"7 Tage"],d30:[30,"30 Tage"],d90:[90,"90 Tage"]};
+const TYPC={Bild:"var(--accent)",Karussell:"var(--info)",Reel:"var(--c-reel)",Story:"var(--ok)"};
+const pc=(v,d=1)=>v==null||isNaN(v)?"–":v.toLocaleString("de-DE",{maximumFractionDigits:d})+" %";
+const sum=(a,k)=>a.reduce((s,x)=>s+(+x[k]||0),0);
+const avg=(a,k)=>{const v=a.map(x=>x[k]).filter(x=>x!=null);return v.length?v.reduce((s,x)=>s+(+x||0),0)/v.length:null};
+const mER=m=>{if(!m||!m.reach)return null;const i=m.interactions!=null?+m.interactions:(+m.likes||0)+(+m.comments||0)+(+m.shares||0)+(+m.saves||0);return i/m.reach*100};
+const mDay=m=>iso(new Date(m.ts));
+const mTime=m=>{const d=new Date(m.ts);return pad(d.getHours())+":"+pad(d.getMinutes())};
+function mPost(m){const k=S.posts.find(p=>p.igId===m.id);if(k)return k;if(m.type==="Story")return null;const d=mDay(m);const c=S.posts.filter(p=>p.date===d&&p.format!=="STORY"&&p.status!=="entwurf");const want={Reel:"REEL",Karussell:"KARUSSELL",Bild:"POST"}[m.type];return c.find(p=>p.format===want)||c[0]||null}
+const SC64="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+function shortcode(id){let n=BigInt(id),s="";while(n>0n){s=SC64[Number(n%64n)]+s;n/=64n}return s}
+function igLink(m){return m.type==="Story"?`https://www.instagram.com/insights/media/${m.id}/`:`https://www.instagram.com/${m.type==="Reel"?"reel":"p"}/${shortcode(m.id)}/`}
+function latestIns(){return [...S.insights].filter(i=>i.periods).sort((a,b)=>(a.checkedAt||a.date).localeCompare(b.checkedAt||b.date)).pop()||null}
+function standTxt(i){if(!i)return "";if(i.checkedAt){const d=new Date(i.checkedAt);const today=iso(new Date())===iso(d);return (today?"heute":fmtD(iso(d)))+", "+pad(d.getHours())+":"+pad(d.getMinutes())+" Uhr"}return fmtD(i.date)}
+function bars(rows,opt={}){const max=Math.max(1,...rows.map(r=>+r[1]||0));
+  return `<div class="hbars">${rows.map(([l,v,sub,col])=>`<div class="hb"><span class="hl">${esc(l)}</span><span class="ht"><span style="width:${(+v||0)/max*100}%;background:${col||"var(--accent)"}"></span></span><span class="hv">${opt.pct?pc(+v):nf(v)}${sub?`<span class="small muted"> ${esc(sub)}</span>`:""}</span></div>`).join("")}</div>`}
+function postBars(list){const W=1000,H=260,L=48,R=10,T=14,B=34;if(!list.length)return `<p class="small muted">In diesem Zeitraum gibt es noch keine Beiträge mit Zahlen.</p>`;
+  const max=Math.max(...list.map(m=>m.views||0),1);const step=(W-L-R)/list.length;const bw=Math.min(54,step*.62);
+  const sy=v=>T+(1-v/max)*(H-T-B);const ticks=[0,.5,1].map(f=>Math.round(max*f));
+  return `<svg class="pb" viewBox="0 0 ${W} ${H}" aria-label="Aufrufe pro Beitrag. Balken antippen öffnet den Beitrag">
+  ${ticks.map(t=>`<line x1="${L}" x2="${W-R}" y1="${sy(t)}" y2="${sy(t)}" stroke="var(--line)"/><text x="${L-8}" y="${sy(t)+4}" text-anchor="end">${nf(t)}</text>`).join("")}
+  ${list.map((m,i)=>{const x=L+step*i+(step-bw)/2;const y=sy(m.views||0);const p=mPost(m);return `<g class="col" data-mid="${m.id}" tabindex="0" role="button" aria-label="${esc((p&&p.title)||m.type)}, ${fmtD(mDay(m))}, ${nf(m.views)} Aufrufe. Öffnen"><rect class="hit" x="${(L+step*i).toFixed(1)}" y="${T}" width="${step.toFixed(1)}" height="${H-T}" fill="transparent"/><rect class="bar" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${(H-B-y).toFixed(1)}" rx="5" fill="${TYPC[m.type]||"var(--accent)"}"><title>${esc((p&&p.title)||m.type)} · ${fmtD(mDay(m))}: ${nf(m.views)} Aufrufe, ${nf(m.interactions)} Interaktionen</title></rect>
+    ${list.length<=16?`<text x="${(x+bw/2).toFixed(1)}" y="${(y-6).toFixed(1)}" text-anchor="middle" style="fill:var(--text);font-weight:700">${nf(m.views)}</text>`:""}
+    ${i%Math.ceil(list.length/12)===0?`<text x="${(x+bw/2).toFixed(1)}" y="${H-12}" text-anchor="middle">${pad(new Date(m.ts).getDate())}.${pad(new Date(m.ts).getMonth()+1)}.</text>`:""}</g>`}).join("")}
+  </svg><div class="legend">${["Bild","Karussell","Reel","Story"].filter(t=>list.some(m=>m.type===t)).map(t=>`<span><span class="dot" style="background:${TYPC[t]}"></span>${t}</span>`).join("")}</div>`}
+function thumbHTML(m){const p=mPost(m);const im=p&&p.images&&p.images.find(x=>!(x.type||"").startsWith("video"));
+  return `<div class="mini">${im?`<img src="${esc(imgSrc(im))}" alt="" loading="lazy">`:`<span class="mtype" style="background:${TYPC[m.type]}">${m.type[0]}</span>`}</div>`}
+
+function vAnalytics(){
+  const tab=S.aTab||"ueberblick",per=S.aPer||"d30",[days,perL]=PER[per];
+  const L=latestIns();const P=L&&L.periods&&L.periods[per]||null;
+  const ref=L&&L.checkedAt?new Date(L.checkedAt):new Date();const from=ref.getTime()-days*864e5;
+  const media=S.media.filter(m=>m.ts>=from).sort((a,b)=>a.ts-b.ts);
+  const posts=media.filter(m=>m.type!=="Story"),stories=media.filter(m=>m.type==="Story");
+  const ins=[...S.insights].filter(i=>i.followers!=null).sort((a,b)=>a.date.localeCompare(b.date));
+  const lastF=ins[ins.length-1];const lt=lastF?parse(lastF.date).getTime():0;const base=lastF?[...ins].reverse().find(i=>{const t=parse(i.date).getTime();return t<=lt-days*864e5+432e5&&t>=lt-(days+Math.max(2,days*.15))*864e5}):null;
+  const fd=lastF&&base?lastF.followers-base.followers:null;
+  const head=`<div class="ahead">
+    <div class="tabs" role="group" aria-label="Bereich">${[["ueberblick","Überblick"],["beitraege","Beiträge"],["stories","Stories"],["demografie","Demografie"]].map(([k,l])=>`<a href="javascript:void 0" data-at="${k}" ${tab===k?'aria-current="page"':""}>${l}</a>`).join("")}</div>
+    ${tab!=="demografie"?`<div class="tabs" role="group" aria-label="Zeitraum">${Object.entries(PER).map(([k,[,l]])=>`<a href="javascript:void 0" data-ap="${k}" ${per===k?'aria-current="page"':""}>${l}</a>`).join("")}</div>`:""}
+  </div>
+  <p class="small muted" style="margin:10px 2px 0">${L?`Direkt aus deinem Instagram-Professional-Dashboard · Stand ${standTxt(L)}. Claude schaut jeden Morgen nach und aktualisiert das hier.`:"Noch keine Zahlen aus Instagram. Der Morgen-Check trägt sie automatisch ein."}</p>`;
+  let body="";
+  if(tab==="ueberblick"){
+    const er=avg(posts.map(m=>({e:mER(m)})),"e");const avgReach=avg(posts,"reach");
+    const it=[["„Gefällt mir“",sum(media,"likes"),"","var(--accent)"],["Kommentare",sum(media,"comments"),"","var(--info)"],["Geteilt",sum(media,"shares"),"","var(--warn)"],["Gespeichert",sum(media,"saves"),"","var(--ok)"],["Story-Antworten",sum(stories,"replies"),"","var(--muted)"]];
+    const vt=P&&P.viewsByType,itT=P&&P.intByType;
+    body=`<section class="card"><h2>Überblick · letzte ${perL}</h2>
+      <div class="kpis" style="margin-top:16px">
+        <div class="kpi hi"><span class="s">Follower</span><span class="v">${nf(lastF&&lastF.followers)}</span>${fd!=null?`<span class="d" style="color:${fd>=0?"var(--ok)":"var(--bad)"}">${fd>=0?"▲ +":"▼ "}${nf(fd)} in ${perL}</span>`:`<span class="s">Veränderung kommt, sobald genug Tage gesammelt sind</span>`}</div>
+        <div class="kpi"><span class="s">Aufrufe</span><span class="v">${nf(P&&P.views)}</span>${P&&P.viewsFollowerPct!=null?`<span class="s">${pc(P.viewsFollowerPct)} von Followern</span>`:""}</div>
+        <div class="kpi"><span class="s">Erreichte Konten</span><span class="v">${nf(P&&P.reach)}</span><span class="s">Betrachter laut Instagram</span></div>
+        <div class="kpi"><span class="s">Interaktionen</span><span class="v">${nf(P&&P.interactions)}</span>${P&&P.engaged!=null?`<span class="s">von ${nf(P.engaged)} Konten</span>`:""}</div>
+        <div class="kpi"><span class="s">Engagement</span><span class="v">${pc(er)}</span><span class="s">Interaktionen pro erreichtem Konto, Schnitt je Beitrag</span></div>
+        <div class="kpi"><span class="s">Ø Reichweite pro Beitrag</span><span class="v">${avgReach==null?"–":nf(Math.round(avgReach))}</span><span class="s">ohne Stories</span></div>
+        <div class="kpi"><span class="s">Beiträge</span><span class="v">${posts.length}</span><span class="s">dazu ${stories.length} ${stories.length===1?"Story":"Stories"}</span></div>
+        <div class="kpi"><span class="s">Profilaufrufe</span><span class="v">${nf(P&&P.profile)}</span><span class="s">Leute, die dein Profil geöffnet haben</span></div>
+      </div></section>
+    <section class="card chart"><div class="cardhead"><h2>Aufrufe pro Beitrag</h2><span class="small muted">inklusive Stories, älteste links · Balken antippen</span></div>${postBars(media)}</section>
+    <div class="agrid">
+      <section class="card"><h2>Interaktionen</h2><p class="small muted" style="margin:6px 0 14px">Summe aller Beiträge und Stories der letzten ${perL}.</p>${bars(it)}</section>
+      <section class="card"><h2>Nach Content-Art</h2><p class="small muted" style="margin:6px 0 14px">Anteil an Aufrufen und Interaktionen, so wie Instagram es aufteilt.</p>
+        ${vt?`<h3 class="lbl" style="margin:0 0 8px">Aufrufe</h3>${bars([["Beiträge",vt.posts,P.views?"· "+nf(Math.round(P.views*vt.posts/100)):"",TYPC.Karussell],["Stories",vt.stories,P.views?"· "+nf(Math.round(P.views*vt.stories/100)):"",TYPC.Story],["Reels",vt.reels,P.views?"· "+nf(Math.round(P.views*vt.reels/100)):"",TYPC.Reel]],{pct:1})}`:`<p class="small muted">Kommt mit dem nächsten Morgen-Check.</p>`}
+        ${itT?`<h3 class="lbl" style="margin:18px 0 8px">Interaktionen</h3>${bars([["Beiträge",itT.posts,"",TYPC.Karussell],["Stories",itT.stories,"",TYPC.Story],["Reels",itT.reels,"",TYPC.Reel]],{pct:1})}`:""}
+      </section>
+    </div>
+    ${vHistory()}`;
+  }else if(tab==="beitraege"){
+    const srt=S.mSort||"neu";const list=[...posts].sort(srt==="neu"?(a,b)=>b.ts-a.ts:srt==="aufrufe"?(a,b)=>(b.views||0)-(a.views||0):(a,b)=>(mER(b)||0)-(mER(a)||0));
+    body=`<section class="card"><div class="cardhead"><h2>Beiträge · letzte ${perL}</h2><label class="row small" style="gap:8px"><span class="muted">Sortieren</span><select class="field sm" id="mSort"><option value="neu" ${srt==="neu"?"selected":""}>Neueste zuerst</option><option value="aufrufe" ${srt==="aufrufe"?"selected":""}>Meiste Aufrufe</option><option value="er" ${srt==="er"?"selected":""}>Bestes Engagement</option></select></label></div>
+      <div class="kpis" style="margin:4px 0 18px">
+        <div class="kpi"><span class="s">Beiträge</span><span class="v">${posts.length}</span></div>
+        <div class="kpi"><span class="s">Ø Aufrufe</span><span class="v">${posts.length?nf(Math.round(avg(posts,"views"))):"–"}</span></div>
+        <div class="kpi"><span class="s">Ø Reichweite</span><span class="v">${posts.length?nf(Math.round(avg(posts,"reach"))):"–"}</span></div>
+        <div class="kpi"><span class="s">Ø Engagement</span><span class="v">${pc(avg(posts.map(m=>({e:mER(m)})),"e"))}</span></div>
+      </div>
+      ${list.length?`<div class="tblw"><table class="mt"><thead><tr><th>Beitrag</th><th class="num">Aufrufe</th><th class="num">Reichweite</th><th class="num">Interakt.</th><th class="num">Likes</th><th class="num">Komm.</th><th class="num">Geteilt</th><th class="num">Gespeich.</th><th class="num">Engagement</th><th class="num">Neue Follower</th></tr></thead><tbody>
+      ${list.map(m=>{const p=mPost(m);return `<tr class="click" data-mid="${m.id}" tabindex="0"><td><div class="mrow">${thumbHTML(m)}<div><div class="ti">${esc((p&&p.title)||m.type)}</div><div class="small muted">${m.type} · ${fmtD(mDay(m))}, ${mTime(m)}</div></div></div></td><td class="num">${nf(m.views)}</td><td class="num">${nf(m.reach)}</td><td class="num">${nf(m.interactions)}</td><td class="num">${nf(m.likes)}</td><td class="num">${nf(m.comments)}</td><td class="num">${nf(m.shares)}</td><td class="num">${nf(m.saves)}</td><td class="num"><b>${pc(mER(m))}</b></td><td class="num">${nf(m.follows)}</td></tr>`}).join("")}
+      </tbody></table></div>`:`<p class="small muted">In den letzten ${perL} kam kein Beitrag. Sobald der nächste online ist, taucht er am Morgen danach hier auf.</p>`}
+      <p class="small muted" style="margin:14px 0 0">Engagement heißt hier: Interaktionen geteilt durch erreichte Konten. Das Bild kommt aus dem Studio, wenn am selben Tag ein Post von dir geplant war.</p></section>`;
+  }else if(tab==="stories"){
+    const list=[...stories].sort((a,b)=>b.ts-a.ts);
+    body=`<section class="card"><h2>Stories · letzte ${perL}</h2>
+      <div class="kpis" style="margin:16px 0 18px">
+        <div class="kpi"><span class="s">Stories</span><span class="v">${stories.length}</span></div>
+        <div class="kpi"><span class="s">Ø Aufrufe</span><span class="v">${stories.length?nf(Math.round(avg(stories,"views"))):"–"}</span></div>
+        <div class="kpi"><span class="s">Ø Reichweite</span><span class="v">${stories.length?nf(Math.round(avg(stories,"reach"))):"–"}</span></div>
+        <div class="kpi"><span class="s">Interaktionen</span><span class="v">${nf(sum(stories,"interactions"))}</span><span class="s">davon ${nf(sum(stories,"replies"))} Antworten</span></div>
+      </div>
+      ${list.length?`<div class="tblw"><table class="mt"><thead><tr><th>Story</th><th class="num">Aufrufe</th><th class="num">Reichweite</th><th class="num">Interakt.</th><th class="num">Antworten</th><th class="num">Profilaufrufe</th><th class="num">Neue Follower</th></tr></thead><tbody>
+      ${list.map(m=>`<tr class="click" data-mid="${m.id}" tabindex="0"><td><div class="mrow">${thumbHTML(m)}<div><div class="ti">${fmtD(mDay(m))}</div><div class="small muted">${mTime(m)} Uhr</div></div></div></td><td class="num">${nf(m.views)}</td><td class="num">${nf(m.reach)}</td><td class="num">${nf(m.interactions)}</td><td class="num">${nf(m.replies)}</td><td class="num">${nf(m.profile)}</td><td class="num">${nf(m.follows)}</td></tr>`).join("")}
+      </tbody></table></div>`:`<p class="small muted">Keine Stories in den letzten ${perL}.</p>`}
+      <p class="small muted" style="margin:14px 0 0">Instagram zeigt Stories nur bis 90 Tage zurück.</p></section>`;
+  }else{
+    const D=[...S.insights].filter(i=>i.demo).sort((a,b)=>a.date.localeCompare(b.date)).pop();
+    if(!D)body=`<section class="card"><h2>Demografie</h2><p class="muted" style="margin-top:8px;max-width:62ch">Wer deine Follower sind, also Länder, Städte, Alter und Geschlecht, zeigt Instagram nur in der App. Im Browser fehlt der Bereich, deshalb kann der Morgen-Check ihn nicht lesen.</p><p class="muted" style="max-width:62ch">So geht's: In der Instagram-App auf Professional-Dashboard → Insights → Zielgruppe, Screenshots machen und mir schicken. Ich trage die Werte hier ein. Einmal im Monat reicht völlig, das ändert sich kaum.</p></section>`;
+    else{const d=D.demo;const g=d.gender||{};
+      body=`<section class="card"><div class="cardhead"><h2>Demografie</h2><span class="small muted">Stand ${fmtD(D.date)}${d.source?" · "+esc(d.source):""}</span></div>
+      <div class="agrid" style="margin-top:12px">
+        ${d.countries?`<div><h3 class="lbl" style="margin:0 0 8px">Länder</h3>${bars(d.countries.map(([l,v])=>[l,v,"",""]),{pct:1})}</div>`:""}
+        ${d.cities?`<div><h3 class="lbl" style="margin:0 0 8px">Städte</h3>${bars(d.cities.map(([l,v])=>[l,v,"","var(--info)"]),{pct:1})}</div>`:""}
+        ${d.ages?`<div><h3 class="lbl" style="margin:0 0 8px">Alter</h3>${bars(d.ages.map(([l,v])=>[l,v,"","var(--warn)"]),{pct:1})}</div>`:""}
+        ${g.f!=null||g.m!=null?`<div><h3 class="lbl" style="margin:0 0 8px">Geschlecht</h3>${bars([["Frauen",g.f,"","var(--accent)"],["Männer",g.m,"","var(--info)"]],{pct:1})}</div>`:""}
+      </div><p class="small muted" style="margin:14px 0 0">Neue Screenshots aus der App (Insights → Zielgruppe) einfach schicken, dann aktualisiere ich das.</p></section>`}
+  }
+  V.innerHTML=`<div style="display:grid;gap:22px">${head}${body}</div>`;
+  V.querySelectorAll("[data-mid]").forEach(el=>{const go=()=>openMO(el.dataset.mid,el.querySelector(".bar")||el.querySelector(".mini")||el);el.onclick=go;el.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}}});
+  V.querySelectorAll("[data-at]").forEach(a=>a.onclick=e=>{e.preventDefault();S.aTab=a.dataset.at;render()});
+  V.querySelectorAll("[data-ap]").forEach(a=>a.onclick=e=>{e.preventDefault();S.aPer=a.dataset.ap;render()});
+  V.querySelectorAll("[data-m]").forEach(a=>a.onclick=e=>{e.preventDefault();S.chartMetric=a.dataset.m;render()});
+  const ms=document.getElementById("mSort");if(ms)ms.onchange=e=>{S.mSort=e.target.value;render()};
+  const f=document.getElementById("insForm");if(f)f.onsubmit=async e=>{e.preventDefault();const date=document.getElementById("i-date").value;const fv=document.getElementById("i-f").value,v=document.getElementById("i-v").value;
+    if(!date||(fv===""&&v==="")){toast("Mindestens einen Wert eintragen");return}
+    const old=S.insights.find(x=>x.date===date)||{};const i={...old,date,followers:fv===""?(old.followers??null):+fv,views30:v===""?(old.views30??null):+v};
+    try{await saveInsight(i);toast("Zahlen gespeichert")}catch(err){toast("Speichern hat nicht geklappt")}};
+}
+/* Beitrag als Overlay */
+let moEl=null,moId=null,moIdx=0,moSrc=null,moBusy=false;
+function moImgs(m){const p=mPost(m);return p&&p.images?p.images.filter(x=>!(x.type||"").startsWith("video")):[]}
+function openMO(id,src){const m=S.media.find(x=>x.id===id);if(!m)return;moId=id;moIdx=0;moSrc=src||null;
+  if(!moEl){moEl=document.createElement("div");moEl.className="mo";moEl.setAttribute("role","dialog");moEl.setAttribute("aria-modal","true");document.body.appendChild(moEl);
+    moEl.addEventListener("click",e=>{const b=e.target.closest("[data-mo]");if(b){const a=b.dataset.mo;if(a==="x")closeMO();else if(a==="edit"){const m=S.media.find(x=>x.id===moId);const p=m&&mPost(m);moEl.hidden=true;moEl.innerHTML="";document.documentElement.style.overflow="";if(p)editPost(p.id)}else stepMO(a==="n"?1:-1);return}if(!e.target.closest(".mocard"))closeMO()});
+    document.addEventListener("keydown",e=>{if(!moEl||moEl.hidden)return;if(e.key==="Escape")closeMO();else if(e.key==="ArrowRight")stepMO(1);else if(e.key==="ArrowLeft")stepMO(-1)});
+    let sx=null;moEl.addEventListener("touchstart",e=>{if(e.target.closest(".momedia"))sx=e.touches[0].clientX},{passive:true});moEl.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>45)stepMO(dx<0?1:-1);sx=null})}
+  moEl.hidden=false;drawMO();document.documentElement.style.overflow="hidden";
+  const card=moEl.querySelector(".mocard");moEl.querySelector(".mox").focus({preventScroll:true});
+  if(noMotion()||!card.animate)return;
+  let from={transform:"translateY(14px) scale(.94)",opacity:0};
+  if(moSrc&&moSrc.getBoundingClientRect){const a=moSrc.getBoundingClientRect(),b=card.getBoundingClientRect();if(a.width&&b.width){const s=Math.max(.06,Math.min(.5,a.width/b.width));from={transform:`translate(${(a.left+a.width/2)-(b.left+b.width/2)}px,${(a.top+a.height/2)-(b.top+b.height/2)}px) scale(${s})`,opacity:.2,borderRadius:"40px"}}}
+  card.animate([from,{transform:"none",opacity:1,borderRadius:"22px"}],{duration:460,easing:"cubic-bezier(.16,1,.3,1)"});
+  moEl.animate([{backgroundColor:"rgba(10,10,10,0)",backdropFilter:"blur(0px)"},{backgroundColor:"rgba(10,10,10,.62)",backdropFilter:"blur(10px)"}],{duration:360,easing:"ease-out"})}
+async function trimShot(f){const url=URL.createObjectURL(f);const img=await new Promise((r,j)=>{const i=new Image();i.onload=()=>r(i);i.onerror=j;i.src=url});
+  const W=img.naturalWidth,H=img.naturalHeight;const sw=Math.min(240,W),sh=Math.round(H*sw/W);const c=document.createElement("canvas");c.width=sw;c.height=sh;const x=c.getContext("2d",{willReadFrequently:true});x.drawImage(img,0,0,sw,sh);
+  const d=x.getImageData(0,0,sw,sh).data;const lum=(i)=>.2126*d[i]+.7152*d[i+1]+.0722*d[i+2];
+  const colDark=cx=>{let mx=0,sum=0;for(let y=0;y<sh;y++){const l=lum((y*sw+cx)*4);sum+=l;if(l>mx)mx=l}return sum/sh<16&&mx<60};
+  const rowDark=cy=>{let mx=0,sum=0;for(let xx=0;xx<sw;xx++){const l=lum((cy*sw+xx)*4);sum+=l;if(l>mx)mx=l}return sum/sw<16&&mx<60};
+  let l=0,r=sw-1,t=0,b=sh-1;while(l<r&&colDark(l))l++;while(r>l&&colDark(r))r--;while(t<b&&rowDark(t))t++;while(b>t&&rowDark(b))b--;
+  const k=W/sw;let cx=Math.floor(l*k),cy=Math.floor(t*k),cw=Math.ceil((r-l+1)*k),ch=Math.ceil((b-t+1)*k);if(cw<W*.2||ch<H*.2){cx=0;cy=0;cw=W;ch=H}
+  const ow=Math.min(1080,cw),oh=Math.round(ch*ow/cw);const o=document.createElement("canvas");o.width=ow;o.height=oh;o.getContext("2d").drawImage(img,cx,cy,cw,ch,0,0,ow,oh);URL.revokeObjectURL(url);
+  const blob=await new Promise(r=>o.toBlob(r,"image/jpeg",.86));return {file:new File([blob],"bild.jpg",{type:"image/jpeg"}),ratio:ow/oh}}
+async function attachShot(m,f){if(!f)return;if(!assets||!db){toast("Bilder speichern geht nur im Studio auf claude.ai");return}
+  const lab=moEl.querySelector(".upl");if(lab)lab.firstChild.textContent="Lädt …";moEl.dataset.saved="";
+  try{const t=await trimShot(f);const res=await assets.upload(t.file);let p=mPost(m);const d=new Date(m.ts);
+    if(!p)p={id:"ig-"+m.id,title:m.type==="Story"?"Story":m.type,format:{Story:"STORY",Reel:"REEL",Karussell:"KARUSSELL",Bild:"POST"}[m.type],status:"veroeffentlicht",source:"instagram",date:iso(d),time:pad(d.getHours())+":"+pad(d.getMinutes()),ort:"",caption:"",tags:"",images:[]};
+    const np={...p,igId:m.id,images:[{id:res.id,type:"image/jpeg",ratio:t.ratio,shot:true}],stats:p.stats||{views:m.views,interactions:m.interactions,likes:m.likes}};
+    await savePost(np);const i=S.posts.findIndex(x=>x.id===np.id);if(i>=0)S.posts[i]=np;else S.posts.push(np);
+    if(moId===m.id&&!moEl.hidden){drawMO();moEl.dataset.saved=m.id}toast("Bild gespeichert")}
+  catch(e){if(lab)lab.firstChild.textContent="Nochmal versuchen";toast(e&&e.code==="too_large"?"Bild zu groß":"Bild konnte nicht gespeichert werden")}}
+document.addEventListener("paste",e=>{if(!moEl||moEl.hidden||!moEl.querySelector("[data-sbfile]"))return;const it=[...(e.clipboardData&&e.clipboardData.items||[])].find(x=>x.kind==="file"&&/^image\//.test(x.type));if(!it)return;e.preventDefault();const m=S.media.find(x=>x.id===moId);const f=it.getAsFile();if(m&&f)attachShot(m,f)});
+function closeMO(){if(!moEl||moEl.hidden||moBusy)return;const card=moEl.querySelector(".mocard");
+  const done=()=>{moBusy=false;moEl.hidden=true;moEl.innerHTML="";document.documentElement.style.overflow="";const f=moSrc&&moSrc.closest&&moSrc.closest("[data-mid]");if(f&&document.contains(f))f.focus({preventScroll:true})};
+  if(noMotion()||!card||!card.animate){done();return}moBusy=true;
+  let to={transform:"translateY(14px) scale(.94)",opacity:0};
+  if(moSrc&&document.contains(moSrc)){const a=moSrc.getBoundingClientRect(),b=card.getBoundingClientRect();if(a.width&&b.width){const s=Math.max(.06,Math.min(.5,a.width/b.width));to={transform:`translate(${(a.left+a.width/2)-(b.left+b.width/2)}px,${(a.top+a.height/2)-(b.top+b.height/2)}px) scale(${s})`,opacity:0}}}
+  card.animate([{transform:"none",opacity:1},to],{duration:300,easing:"cubic-bezier(.4,0,.2,1)",fill:"forwards"});
+  const an=moEl.animate([{backgroundColor:"rgba(10,10,10,.62)"},{backgroundColor:"rgba(10,10,10,0)"}],{duration:300,fill:"forwards"});an.onfinish=done;setTimeout(()=>{if(moBusy)done()},600)}
+function stepMO(d){const m=S.media.find(x=>x.id===moId);const ims=m?moImgs(m):[];if(ims.length<2)return;moIdx=(moIdx+d+ims.length)%ims.length;
+  const box=moEl.querySelector(".momedia");box.querySelector("img").src=imgSrc(ims[moIdx]);box.querySelector(".mocnt").textContent=(moIdx+1)+" / "+ims.length;
+  box.querySelectorAll(".modots i").forEach((x,i)=>x.classList.toggle("on",i===moIdx));
+  const im=box.querySelector("img");if(im.animate&&!noMotion())im.animate([{transform:`translateX(${d*30}px)`,opacity:.3},{transform:"none",opacity:1}],{duration:240,easing:"cubic-bezier(.2,.8,.2,1)"})}
+function drawMO(){const m=S.media.find(x=>x.id===moId);const p=mPost(m);const ims=moImgs(m);const n=ims.length;const isS=m.type==="Story";
+  const st=[["Aufrufe",nf(m.views)],["Reichweite",nf(m.reach)],["Interaktionen",nf(m.interactions)],["Engagement",pc(mER(m))],["Likes",nf(m.likes)]].concat(isS?[["Antworten",nf(m.replies)],["Geteilt",nf(m.shares)]]:[["Kommentare",nf(m.comments)],["Geteilt",nf(m.shares)],["Gespeichert",nf(m.saves)]]).concat([["Profilaufrufe",nf(m.profile)],["Neue Follower",nf(m.follows)]]);
+  const src=[["Startseite",m.fromHome],["Profil",m.fromProfile],["Entdecken",m.fromExplore],["Sonstige",m.fromOther]].filter(x=>x[1]!=null);
+  const cap=p&&p.caption?String(p.caption).trim():"";
+  moEl.innerHTML=`<div class="mocard${isS&&n?" st":""}">
+    <div class="momedia${n?"":" noimg"}">${n?`<img src="${esc(imgSrc(ims[0]))}" alt="${esc((p&&p.title)||m.type)}">${n>1?`<button class="mop" data-mo="p" aria-label="Vorheriges Foto">‹</button><button class="mon" data-mo="n" aria-label="Nächstes Foto">›</button><span class="mocnt">1 / ${n}</span><span class="modots">${ims.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</span>`:""}`
+      :`<div class="moph" style="--c:${TYPC[m.type]}"><span>${m.type}</span><small>${isS?"Noch kein Bild zu dieser Story":"Zu diesem Beitrag liegt kein Bild im Studio"}. Bild hierher ziehen, einfügen oder unten hinzufügen.</small></div>`}</div>
+    <div class="moinfo">
+      <div class="lbl" style="color:${TYPC[m.type]}">${m.type} · ${fmtD(mDay(m))}, ${mTime(m)} Uhr</div>
+      <h2 style="margin:6px 0 0">${esc((p&&p.title)||(isS?"Story":m.type))}</h2>
+      ${cap?`<p class="small muted moc">${esc(cap.length>220?cap.slice(0,220).replace(/\s\S*$/,"")+" …":cap)}</p>`:""}
+      <div class="mostats">${st.map(([l,v])=>`<div><span class="s">${l}</span><b>${v}</b></div>`).join("")}</div>
+      ${src.length?`<h3 class="lbl" style="margin:18px 0 8px">Woher die Aufrufe kamen</h3>${bars(src.map(([l,v])=>[l,v,"",TYPC[m.type]]))}`:""}
+      ${m.followerPct!=null?`<p class="small muted" style="margin:12px 0 0">${pc(m.followerPct)} der Aufrufe kamen von Leuten, die dir folgen.</p>`:""}
+      <div class="row" style="margin-top:16px;gap:8px"><a class="btn ghost sm" href="${igLink(m)}" target="_blank" rel="noopener">${isS?"Insights in Instagram öffnen":"In Instagram ansehen"} ↗</a>${p&&p.source!=="instagram"?`<button class="btn ghost sm" data-mo="edit">Im Studio öffnen</button>`:""}${!n||(ims[0]&&ims[0].shot)?`<label class="btn ghost sm upl">${n?"Bild ersetzen":"Bild hinzufügen"}<input type="file" accept="image/*" data-sbfile hidden aria-label="Bild zu diesem Beitrag"></label>`:""}</div>
+    </div>
+    <button class="mox" data-mo="x" aria-label="Schließen">✕</button></div>`;
+  const fi=moEl.querySelector("[data-sbfile]");if(fi)fi.onchange=e=>attachShot(m,e.target.files[0]);
+  const mb=moEl.querySelector(".momedia");if(mb&&fi){mb.ondragover=e=>{e.preventDefault();mb.classList.add("dz")};mb.ondragleave=()=>mb.classList.remove("dz");mb.ondrop=e=>{e.preventDefault();mb.classList.remove("dz");const f=e.dataTransfer&&e.dataTransfer.files[0];if(f&&/^image\//.test(f.type))attachShot(m,f)}}
+  const im=moEl.querySelector(".momedia img");if(im)im.onerror=()=>{im.replaceWith(Object.assign(document.createElement("div"),{className:"moph",innerHTML:`<span>${m.type}</span><small>Bild nicht geladen</small>`}))}}
+function vHistory(){const ins=[...S.insights].sort((a,b)=>a.date.localeCompare(b.date));const last=ins[ins.length-1];
+  const key=S.chartMetric;const pts=ins.filter(i=>i[key]!=null).map(i=>({date:i.date,v:+i[key]}));
+  return `<section class="card chart">
+    <div class="cardhead"><h2>Verlauf</h2><div class="tabs" role="group" aria-label="Kennzahl"><a href="javascript:void 0" data-m="followers" ${key==="followers"?'aria-current="page"':""}>Follower</a><a href="javascript:void 0" data-m="views30" ${key==="views30"?'aria-current="page"':""}>Aufrufe 30 Tage</a></div></div>
+    ${lineChart(pts,key==="followers"?"Follower":"Aufrufe 30 Tage")}
+    <p class="small muted" style="margin:10px 0 0">Jeder Morgen-Check setzt einen Punkt. Nach ein paar Wochen siehst du hier, wie sich der Account entwickelt.</p>
+    <details style="margin-top:12px"><summary class="small">Zahlen von Hand nachtragen</summary>
+    <form id="insForm" class="row" style="margin-top:12px;align-items:flex-end">
+      <label class="stack" style="flex:1 1 140px"><span class="lbl">Datum</span><input class="field" type="date" id="i-date" value="${iso(new Date())}" required></label>
+      <label class="stack" style="flex:1 1 140px"><span class="lbl">Follower</span><input class="field" type="number" min="0" inputmode="numeric" id="i-f" placeholder="${last&&last.followers!=null?last.followers:""}"></label>
+      <label class="stack" style="flex:1 1 160px"><span class="lbl">Aufrufe, 30 Tage</span><input class="field" type="number" min="0" inputmode="numeric" id="i-v" placeholder="${last&&last.views30!=null?last.views30:""}"></label>
+      <button class="btn" type="submit">Eintragen</button>
+    </form></details>
+  </section>`}
+function liveHTML(){const m=S.mc;
+  if(m.state==="nonet")return `<h2>Live aus Metricool</h2><p class="small muted" style="margin-top:8px">Metricool ist verbunden, aber sommer_gram noch nicht. Metricool braucht dafür ein Creator- oder Business-Konto bei Instagram. Danach kommen Follower, Aufrufe und Reichweite hier automatisch rein.</p><a class="small" href="https://app.metricool.com/brands/connections?blogId=${esc(m.brandId)}" target="_blank" rel="noopener">Instagram in Metricool verbinden</a>`;
+  if(m.state!=="ok")return `<h2>Live aus Metricool</h2><p class="small muted" style="margin-top:8px">${m.state==="checking"?"Verbindung wird geprüft …":m.state==="auth"?"Metricool in claude.ai unter Einstellungen → Konnektoren neu verbinden.":"Live-Zahlen gehen nur, wenn du das Studio in claude.ai geöffnet hast und Metricool verbunden ist. Bis dahin zählen deine eingetragenen Werte."}</p>`;
+  const L=S.live;
+  return `<div class="cardhead"><h2>Live aus Metricool</h2><button class="btn ghost sm" id="liveLoad">${L&&L.loading?"Lädt …":"Letzte 30 Tage laden"}</button></div>
+  ${!L?`<p class="small muted">Holt Follower, Aufrufe, Reichweite und Interaktionen der letzten 30 Tage.</p>`:L.err?`<div class="notice bad">${esc(L.err)}</div>`:L.vals?`<div class="kpis">${L.vals.map(([k,v])=>`<div class="kpi"><span class="s">${esc(k)}</span><span class="v">${nf(v)}</span></div>`).join("")}</div>${L.vals.every(v=>!v[1])?`<p class="small muted">Alles noch 0. Nach dem Verbinden holt Metricool die Daten erst nach, das kann bis zu einem Tag dauern.</p>`:`<div class="row" style="margin-top:12px"><button class="btn ghost sm" id="liveTake">Follower als heutigen Stand übernehmen</button>${L.storedAt?`<span class="small muted">Stand ${new Date(L.storedAt).toLocaleString("de-DE")}</span>`:""}</div>`}`:L.raw?`<p class="small muted">Antwort erhalten, aber in einem Format, das das Studio noch nicht kennt. Sag Claude Bescheid, dann wird es angepasst.</p><pre class="raw">${esc(L.raw)}</pre>`:""}`}
+const LIVE_METRICS=[["IGEV01","Follower"],["IGEV05","Aufrufe"],["IGEV06","Reichweite"],["IGEV38","Interaktionen"]];
+async function loadLive(){if(!mcp)return;S.live={loading:true};render();
+  const to=new Date(),from=new Date();from.setDate(to.getDate()-30);
+  const off=tzOffset(iso(to),"12:00");
+  try{const r=await mcp.callTool(MC,"getAnalyticsDataByMetrics",{brandId:S.mc.brandId,from:iso(from)+"T00:00:00"+off,to:iso(to)+"T23:59:59"+off,metrics:LIVE_METRICS.map(m=>m[0])});
+    const p=r.payload;const vals=[];
+    // Metricool liefert {rows:[[wert1, wert2, …, "JJJJMMTT"]]} in der Reihenfolge der angefragten Kennzahlen
+    const rows=p&&Array.isArray(p.rows)?p.rows:null;
+    if(rows&&rows.length){const row=rows[rows.length-1];LIVE_METRICS.forEach(([id,label],i)=>{const v=parseFloat(row[i]);if(!isNaN(v))vals.push([label,v])})}
+    S.live=vals.length?{vals,storedAt:r.cache&&r.cache.storedAt}:{raw:JSON.stringify(p,null,1).slice(0,3000)};
+  }catch(e){S.live={err:e&&e.code==="tool_error"?"Metricool meldet: "+(e.message||"").slice(0,240):e&&e.code==="needs_reauth"?"Metricool in claude.ai unter Einstellungen → Konnektoren neu verbinden.":e&&e.code==="server_unavailable"?"Metricool antwortet gerade nicht. Später noch einmal laden.":"Laden hat nicht geklappt ("+(e&&e.code||"unbekannt")+")."}}
+  render()}
+
+/* ---------- Start ---------- */
+/* Großansicht */
+let lbEl=null,lbIdx=0;
+function openLB(i){const ims=S.draft.images.filter(x=>!(x.type||"").startsWith("video"));if(!ims.length)return;lbIdx=Math.max(0,Math.min(i,ims.length-1));
+  if(!lbEl){lbEl=document.createElement("div");lbEl.className="lb";lbEl.setAttribute("role","dialog");lbEl.setAttribute("aria-label","Foto groß");document.body.appendChild(lbEl);
+    lbEl.addEventListener("click",e=>{const t=e.target.closest("button");if(!t){closeLB();return}if(t.classList.contains("lbx"))closeLB();else if(t.classList.contains("lbp"))stepLB(-1);else if(t.classList.contains("lbn"))stepLB(1)});
+    document.addEventListener("keydown",e=>{if(!lbEl||lbEl.hidden)return;if(e.key==="Escape")closeLB();else if(e.key==="ArrowLeft")stepLB(-1);else if(e.key==="ArrowRight")stepLB(1)});
+    let sx=null;lbEl.addEventListener("touchstart",e=>{sx=e.touches[0].clientX},{passive:true});lbEl.addEventListener("touchend",e=>{if(sx==null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>50)stepLB(dx<0?1:-1);sx=null})}
+  lbEl.hidden=false;drawLB();flipLB(true)}
+const noMotion=()=>{try{return matchMedia("(prefers-reduced-motion: reduce)").matches}catch(e){return false}};
+function srcRect(){const d=document.querySelector("#drop img");return d?d.getBoundingClientRect():null}
+let lbTok=0;
+async function flipLB(opening){const tok=++lbTok;const img=lbEl.querySelector("img");const from=srcRect();
+  if(noMotion()||!img||!img.animate){if(!opening){lbEl.hidden=true;lbEl.innerHTML=""}return}
+  const ctrls=[...lbEl.querySelectorAll("button,.lbc")];
+  if(opening){
+    img.style.visibility="hidden";ctrls.forEach(c=>c.style.opacity="0");
+    lbEl.animate([{backgroundColor:"rgba(10,10,10,0)",backdropFilter:"blur(0px)"},{backgroundColor:"rgba(10,10,10,.92)",backdropFilter:"blur(14px)"}],{duration:420,easing:"cubic-bezier(.4,0,.2,1)"});
+    if(!(img.complete&&img.naturalWidth)){try{await Promise.race([img.decode(),new Promise(r=>setTimeout(r,150))])}catch(e){}}
+    await new Promise(r=>requestAnimationFrame(r));
+    if(tok!==lbTok||lbEl.hidden){img.style.visibility="";return}
+  }
+  const to=img.getBoundingClientRect();
+  let a="scale(.82)",o0=0;
+  if(from&&to.width){const sc=Math.max(from.width/to.width,from.height/to.height);a=`translate(${(from.left+from.width/2)-(to.left+to.width/2)}px,${(from.top+from.height/2)-(to.top+to.height/2)}px) scale(${sc})`;o0=1}
+  if(opening){
+    img.style.visibility="";
+    img.animate([
+      {transform:a,opacity:o0,borderRadius:"18px",easing:"cubic-bezier(.16,1,.3,1)"},
+      {transform:"scale(1.012)",opacity:1,borderRadius:"8px",offset:.78,easing:"cubic-bezier(.45,0,.55,1)"},
+      {transform:"none",opacity:1,borderRadius:"6px"}],{duration:640});
+    ctrls.forEach((c,i)=>{c.style.opacity="";c.animate([{opacity:0},{opacity:1}],{duration:260,delay:420+i*30,fill:"backwards",easing:"ease-out"})});
+  }else{
+    img.style.visibility="";img.getAnimations().forEach(x=>x.cancel());lbEl.getAnimations().forEach(x=>x.cancel());
+    ctrls.forEach(c=>c.animate([{opacity:1},{opacity:0}],{duration:140,fill:"forwards"}));
+    lbEl.animate([{backgroundColor:"rgba(10,10,10,.92)",backdropFilter:"blur(14px)"},{backgroundColor:"rgba(10,10,10,0)",backdropFilter:"blur(0px)"}],{duration:380,easing:"cubic-bezier(.4,0,.2,1)",fill:"forwards"});
+    const an=img.animate([{transform:"none",opacity:1,borderRadius:"6px"},{transform:a,opacity:o0,borderRadius:"18px"}],{duration:420,easing:"cubic-bezier(.4,0,.2,1)",fill:"forwards"});
+    an.onfinish=()=>{lbEl.hidden=true;lbEl.innerHTML="";lbEl.getAnimations().forEach(x=>x.cancel())};
+  }}
+function drawLB(){const ims=S.draft.images.filter(x=>!(x.type||"").startsWith("video"));const n=ims.length;
+  lbEl.innerHTML=`<img src="${esc(imgSrc(ims[lbIdx]))}" alt="Foto ${lbIdx+1} von ${n}"><button class="lbx" aria-label="Schließen">✕</button>${n>1?`<button class="lbp" aria-label="Vorheriges Foto">‹</button><button class="lbn" aria-label="Nächstes Foto">›</button><span class="lbc">${lbIdx+1} / ${n}</span>`:""}`;
+  const im=lbEl.querySelector("img");sizeLB(im,ims[lbIdx].ratio||0.8);im.addEventListener("load",()=>{if(im.naturalWidth)sizeLB(im,im.naturalWidth/im.naturalHeight)},{once:true});
+  lbEl.querySelector(".lbx").focus()}
+function sizeLB(im,r){if(!im)return;const cs=getComputedStyle(lbEl);const aw=lbEl.clientWidth-parseFloat(cs.paddingLeft)-parseFloat(cs.paddingRight);const ah=lbEl.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+  let w=Math.min(aw,ah*r);let h=w/r;im.style.width=Math.round(w)+"px";im.style.height=Math.round(h)+"px";im.dataset.r=r}
+addEventListener("resize",()=>{if(lbEl&&!lbEl.hidden){const im=lbEl.querySelector("img");if(im)sizeLB(im,+im.dataset.r||0.8)}});
+function stepLB(d){const n=S.draft.images.filter(x=>!(x.type||"").startsWith("video")).length;if(n<2)return;lbIdx=(lbIdx+d+n)%n;drawLB();
+  const img=lbEl.querySelector("img");if(img&&img.animate&&!noMotion())img.animate([{transform:`translateX(${d*40}px)`,opacity:0},{transform:"none",opacity:1}],{duration:260,easing:"cubic-bezier(.2,.8,.2,1)"})}
+let lbClosing=false;
+function closeLB(){if(!lbEl||lbEl.hidden||lbClosing)return;lbClosing=true;
+  flipLB(false);setTimeout(()=>{lbClosing=false;if(lbEl&&!lbEl.hidden&&!lbEl.getAnimations().some(x=>x.playState==="running")){lbEl.hidden=true;lbEl.innerHTML="";if(lbEl.getAnimations)lbEl.getAnimations().forEach(x=>x.cancel())}},520)}
+try{S.gorder=JSON.parse(localStorage.getItem("sg-gorder")||"[]")}catch(e){S.gorder=[]}
+lsLoad();try{route()}catch(e){console.error(e)}
+addEventListener("scroll",()=>{document.body.classList.toggle("sc",scrollY>60)},{passive:true});
+(async()=>{
+  if(!window.claude||!window.claude.use){S.loaded=true;S.mc.state="off";render();return}
+  const timer=setTimeout(()=>{if(!S.loaded){S.loaded=true;render()}},10000);
+  db=await claude.use("db");
+  if(db){S.mode="sync";
+    db.collection("posts").onSnapshot(snap=>{S.posts=snap.docs.map(d=>({...d.data(),id:d.id}));S.loaded=true;clearTimeout(timer);render()},e=>{S.loaded=true;if(e.code==="revoked"||e.code==="not_granted"){db=null;S.mode="lokal";lsLoad()}render()});
+    db.collection("insights").onSnapshot(snap=>{S.insights=snap.docs.map(d=>d.data());render()},()=>{});
+    db.collection("ig_media").onSnapshot(snap=>{S.media=snap.docs.map(d=>({...d.data(),id:d.id})).filter(m=>m.ts);render()},()=>{});
+    db.collection("gallery").onSnapshot(snap=>{const d=snap.docs.find(x=>x.id==="order");S.gorder=d&&d.data().keys||[];render()},()=>{});
+    db.collection("pool").onSnapshot(snap=>{S.pool=snap.docs.map(d=>({...d.data(),id:d.id})).filter(x=>x.img&&x.img.id).sort((a,b)=>(b.addedAt||"").localeCompare(a.addedAt||""));if(S.poolSel&&!S.pool.some(x=>x.id===S.poolSel))S.poolSel=null;render()},()=>{});
+  }else{S.loaded=true;clearTimeout(timer)}
+  claude.use("assets").then(a=>{assets=a;render()});
+  claude.use("sample").then(s=>{sample=s;render()});
+  mcp=await claude.use("mcp");
+  if(!mcp){S.mc.state="off";render();return}
+  try{const r=await mcp.callTool(MC,"getBrandSettings",{},{cache:{staleTime:300000,gcTime:600000}});
+    const p=r.payload;const b=Array.isArray(p)?p[0]:(p&&(p.brands?p.brands[0]:p));
+    const id=b&&(b.blogId??b.id??b.brandId);if(id!=null)S.mc.brandId=String(id);
+    const tz=b&&(b.timezone||b.timeZone);if(typeof tz==="string")S.mc.tz=tz;
+  }catch(e){const m=(e&&e.message||"").match(/blogId=(\d+)/);if(m)S.mc.brandId=m[1];if(e&&e.code==="needs_reauth"){S.mc.state="auth";render();return}}
+  // Verbindung zu Instagram über eine kleine Analytics-Abfrage prüfen
+  try{const t=iso(new Date()),off=tzOffset(t,"12:00");
+    await mcp.callTool(MC,"getAnalyticsDataByMetrics",{brandId:S.mc.brandId,from:t+"T00:00:00"+off,to:t+"T23:59:59"+off,metrics:["IGEV01"]},{cache:{staleTime:600000,gcTime:900000}});
+    S.mc.state="ok";
+  }catch(e){const c=e&&e.code;S.mc.msg=e&&e.message||"";
+    S.mc.state=c==="tool_error"?"nonet":c==="needs_reauth"?"auth":"off"}
+  render();
+})();
+</script>
+</body>
+</html>

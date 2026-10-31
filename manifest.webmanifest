@@ -1,0 +1,16 @@
+{
+  "name": "Studio Sommer_gram",
+  "short_name": "Studio",
+  "description": "Planen, posten und auswerten für sommer_gram",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0D0D0C",
+  "theme_color": "#0D0D0C",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
