@@ -17,7 +17,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="icon-180.png">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
-<script>(function(){var t="dark";try{t=localStorage.getItem("sg-theme")||"dark"}catch(e){}if(t==="light"||t==="dark")document.documentElement.setAttribute("data-sg",t)})()</script>
+<script>(function(){var t="light";try{t=localStorage.getItem("sg-farbe")||"light"}catch(e){}if(t==="light"||t==="dark")document.documentElement.setAttribute("data-sg",t)})()</script>
 <style>
 /* Logo „Horizont“: Seitenleiste links, Fotos groß, die Sonne (Orange-Verlauf) als einziges Signal. Hell = Creme wie „Sommer“, Dunkel = „Nacht“. Schrift wie der Schriftzug: Inter, eng gesetzt. data-sg = Wahl im Studio, ohne Wahl folgt es dem Gerät */
 :root{
@@ -324,6 +324,35 @@ nav.side{position:fixed;left:0;top:0;bottom:0;z-index:45;width:calc(var(--side-w
   .side a.nv[aria-current="page"]{background:var(--field);color:var(--text);box-shadow:inset 0 -2px 0 var(--amber)}
   header.top{top:calc(var(--top-h) + env(safe-area-inset-top,0px));padding-top:10px}
 }
+/* Farbkonzept „Signal · Galerie“ (04.11.2026): hell = Galerie, dunkel = Nachtschicht. Gilt für Studio und Werkstatt */
+:root,:root[data-sg="light"],:root[data-theme="light"]{
+  --bg:#F4F5F6; --card:#FFFFFF; --field:#F1F2F4; --field-2:#DADDE1; --line:#E6E8EB;
+  --text:#0B0D10; --text-2:#50565E; --text-3:#9097A0; --ink:#0B0D10; --on-ink:#FFFFFF;
+  --peach:#FFEAE3; --peach-soft:#FFF4F0; --accent:#E23A12; --amber:#FF4A1C; --on-amber:#FFFFFF; --accent-fill:rgba(255,74,28,.08);
+  --sun:#FF4A1C; --sun1:#FF4A1C; --sun2:#E8401A; --on-sun:#FFFFFF; --sun-line:#0B0D10; --ok:#17996A; --ok-soft:#E3F4EC; --info:#2F6BDB; --warn:#B7791F; --bad:#D92D20; --muted:#9097A0; --c-reel:#7A4FD0;
+  --side:#FFFFFF; --hero-shadow:0 18px 40px rgba(0,0,0,.12); --pu-stage:#16191D; --pu-stage2:#2C3239; --pu-stagetxt:#B7BEC6; --tk-d:#0F1216;
+  --r-card:2px; --r-field:4px; color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-sg]):not([data-theme]){
+  --bg:#0C0E11; --card:#14171B; --field:#1B1F24; --field-2:#2A3038; --line:#20252B;
+  --text:#F2F4F6; --text-2:#A7AFB8; --text-3:#6C747E; --ink:#F2F4F6; --on-ink:#0C0E11;
+  --peach:#3A1A12; --peach-soft:#24140F; --accent:#FF6A40; --amber:#FF5A2E; --on-amber:#FFFFFF; --accent-fill:rgba(255,90,46,.14);
+  --sun:#FF5A2E; --sun1:#FF5A2E; --sun2:#F04A1E; --on-sun:#FFFFFF; --sun-line:#F2F4F6; --ok:#3CCB8E; --ok-soft:#10251C; --info:#6E9BFF; --warn:#E7B45C; --bad:#FF6B5E; --muted:#6C747E; --c-reel:#B79BFF;
+  --side:#0C0E11; --hero-shadow:0 28px 64px rgba(0,0,0,.6); --pu-stage:#000000; --pu-stage2:#2A3038; --pu-stagetxt:#A7AFB8; --tk-d:#1B1F24; color-scheme:dark}}
+:root[data-sg="dark"],:root[data-theme="dark"]{
+  --bg:#0C0E11; --card:#14171B; --field:#1B1F24; --field-2:#2A3038; --line:#20252B;
+  --text:#F2F4F6; --text-2:#A7AFB8; --text-3:#6C747E; --ink:#F2F4F6; --on-ink:#0C0E11;
+  --peach:#3A1A12; --peach-soft:#24140F; --accent:#FF6A40; --amber:#FF5A2E; --on-amber:#FFFFFF; --accent-fill:rgba(255,90,46,.14);
+  --sun:#FF5A2E; --sun1:#FF5A2E; --sun2:#F04A1E; --on-sun:#FFFFFF; --sun-line:#F2F4F6; --ok:#3CCB8E; --ok-soft:#10251C; --info:#6E9BFF; --warn:#E7B45C; --bad:#FF6B5E; --muted:#6C747E; --c-reel:#B79BFF;
+  --side:#0C0E11; --hero-shadow:0 28px 64px rgba(0,0,0,.6); --pu-stage:#000000; --pu-stage2:#2A3038; --pu-stagetxt:#A7AFB8; --tk-d:#1B1F24;
+  --r-card:2px; --r-field:4px; color-scheme:dark}
+body{background:var(--bg)}
+.logo stop,.mlogo stop,.av stop,.mark stop{stop-color:var(--amber)}
+nav.side{background:var(--side);border-color:var(--line)}
+.side .logo{border-radius:2px}
+.side a.nv{text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+@media (min-width:701px){.side a.nv{border-radius:0;color:var(--text-3)}.side a.nv[aria-current="page"]{background:transparent;color:var(--text);box-shadow:inset 0 -3px 0 var(--amber)}}
+@media (max-width:700px){.side a.nv{font-size:9.5px;letter-spacing:.06em}.side a.nv[aria-current="page"]{background:transparent;color:var(--amber)}}
+#proBtn,#pro .qbadge,#pro .qhb.qmain{background:var(--amber)!important;color:#fff!important}
 /* Als Nächstes */
 .strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:14px}
 .st-i{background:none;border:0;padding:0;text-align:left;cursor:pointer;color:inherit;min-width:0;font:inherit}
@@ -434,6 +463,41 @@ body.vpult .wrap{max-width:1560px}
 .pu-strip .tile.add{display:grid;place-items:center;font-size:28px;color:var(--text-3);background:var(--field);border:1.5px dashed var(--field-2)}
 @media (max-width:1000px){.pu{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:700px){.pu-cen{padding:12px 10px 14px}.pu-img{width:100%}.pu-arw{position:absolute;z-index:2;top:50%;margin-top:-18px;width:36px;height:36px;font-size:18px;background:rgba(0,0,0,.45)}#puPrev{left:8px}#puNext{right:8px}.pu-arw:disabled{display:none}.pu-cbar .meta{font-size:12px}.pu-phone{width:min(100%,320px)}.pu-strip .tile{width:84px}}
+.pu-tk{display:flex;align-items:stretch;width:100%;border:1px solid var(--field-2);border-radius:16px;overflow:hidden;padding:0;cursor:pointer;background:none;font:inherit;color:var(--text);text-align:center}
+.pu-tk .d{background:var(--field);padding:9px 12px;min-width:84px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.pu-tk .d b{font:700 11px var(--sans);letter-spacing:.1em;color:var(--accent)}.pu-tk .d strong{font:700 28px/1.05 var(--sans)}.pu-tk .d small{font-size:11px;color:var(--text-2);white-space:nowrap}
+.pu-tk .go{flex:1;display:grid;place-items:center;background:var(--sun);color:var(--on-amber);font:700 15px var(--sans);padding:10px}
+.pu-tk.none .d strong{color:var(--text-3)}.pu-tk:active .go{filter:brightness(.95)}
+/* Signal · Galerie: Bausteine (Buttons wie „Werkbank“, ohne schwarze Ränder) */
+.btn{border-radius:8px;background:var(--sun);color:var(--on-amber)}
+.btn.ghost{background:var(--field);color:var(--text);box-shadow:none}
+.btn.soft{background:var(--peach);color:var(--accent)}
+.pill{border-radius:6px;border-color:var(--line)}
+.pill[aria-pressed="true"]{background:var(--amber);color:var(--on-amber);border-color:var(--amber)}
+.pill[aria-pressed="true"] .muted{color:var(--on-amber);opacity:.8}
+.lbl{letter-spacing:.14em}
+.tile .badge{border-radius:2px}
+.pu-cen{background:var(--pu-stage);border:0;border-radius:0}
+.pu-cbar{color:var(--pu-stagetxt);text-transform:uppercase;letter-spacing:.12em;font-size:11px;font-weight:700}
+.pu-arw{background:transparent;color:#fff;border:1px solid var(--pu-stage2);border-radius:0}
+.pu-tog{background:var(--pu-stage2);border-radius:0}.pu-tog button{border-radius:0;color:var(--pu-stagetxt)}.pu-tog button[aria-pressed="true"]{background:var(--amber);color:#fff}
+.pu-img{border-radius:0;border:8px solid #fff;box-shadow:0 20px 40px rgba(0,0,0,.4)}
+.pu-phone{border:6px solid #2A2F35;border-radius:36px}.pu-phone .prof .av{box-shadow:0 0 0 2px #000,0 0 0 3.5px var(--amber)}
+.pu-phone .tile .badge{background:var(--amber);color:#fff}.pu-phone .tile.plan{box-shadow:inset 0 0 0 2px var(--amber)}
+.pu-hint{color:var(--pu-stagetxt);opacity:.7}
+.pu-cal button{border-radius:3px;background:var(--field)}
+.pu-cal button.has{background:var(--text);color:var(--bg)}.pu-cal button.has i{background:var(--amber)!important}
+.pu-cal button.sel,.pu-cal button.tgt{box-shadow:inset 0 0 0 2px var(--amber);background:var(--peach);color:var(--text)}
+.pu-leg i[style*="--info"]{background:var(--amber)!important}
+.pu-tk{border:0;border-radius:10px}
+.pu-tk .d{background:var(--tk-d);color:#fff}.pu-tk .d small{color:#9AA2AC}.pu-tk .d b{color:var(--amber)}.pu-tk.none .d strong{color:#6C747E}
+.pu-tk .go{background:var(--sun);color:var(--on-amber)}
+.pu-f .v{border-radius:4px}
+.pu-strip .tile{border-radius:0}.pu-strip .tile.on{outline:3px solid var(--amber);outline-offset:-3px}
+.pu-strip .tile .badge.pl{background:var(--amber);color:#fff}
+.pu-strip .tile.add{border-radius:0}
+.pu-phone .tile .badge.pv{background:#fff;color:#0B0D10}
+@media (max-width:700px){.pu-arw{background:rgba(0,0,0,.55);border-color:transparent}.card{border-radius:var(--r-card)}.pu-img{border-width:5px}}
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;min-height:100dvh}html{overscroll-behavior-y:none}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
@@ -579,8 +643,8 @@ function puInspector(sel){const MON=["Januar","Februar","März","April","Mai","J
       ${!mv&&calMovable(p)?`<p class="small muted" style="margin:0">Zum Verschieben im Kalender auf einen anderen Tag tippen.</p>`:""}`}
   else{const im=sel.im||{};const r=im.ratio;const ok=r?Math.abs(r-0.8)<0.02:null;
     h+=`<div class="pu-f"><span class="lbl">Noch ohne Termin</span><div class="v">${esc(poolFolder(sel.pool))}${r?` · ${ok?"4:5 passt":"nicht 4:5, wird im Post zugeschnitten"}`:""}</div></div>
-      <div class="pu-f"><span class="lbl">Tag</span><div class="v">${tgt?esc(fmtD(tgt))+" · "+tgtT:'<span class="muted">Im Kalender oben einen Tag antippen</span>'}</div></div>
-      <div class="pu-acts"><button class="btn sm wide" id="puNew">${tgt?"Post für "+esc(fmtD(tgt))+" anlegen":"Post daraus machen"}</button>
+      ${(()=>{const d=tgt?parse(tgt):null;const MS=["Jan","Feb","März","Apr","Mai","Juni","Juli","Aug","Sep","Okt","Nov","Dez"];return `<button class="pu-tk${tgt?"":" none"}" id="puNew" aria-label="${tgt?"Post für "+esc(fmtD(tgt))+" um "+tgtT+" anlegen":"Post daraus machen"}"><span class="d">${d?`<b>${WD[d.getDay()].toUpperCase()}</b><strong>${d.getDate()}</strong><small>${MS[d.getMonth()]} · ${tgtT}</small>`:`<b>TAG</b><strong>–</strong><small>im Kalender</small>`}</span><span class="go">${tgt?"Hier einplanen":"Post daraus machen"}</span></button>`})()}
+      <div class="pu-acts">
       <button class="btn ghost sm" id="puAdd">Zum aktuellen Post</button><button class="btn ghost sm" id="puDel">Entfernen</button></div>`}
   return h}
 function vPult(){const items=puItems();const sel=puSel();const idx=sel?items.findIndex(x=>x.k===sel.k):-1;const f=puFilter();
@@ -600,7 +664,7 @@ function vPult(){const items=puItems();const sel=puSel();const idx=sel?items.fin
       <div class="pu-phone" aria-label="So sieht dein Feed aus">
         <div class="prof"><span class="av" aria-hidden="true"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="lgPs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A62"/><stop offset="1" stop-color="#D9612E"/></linearGradient><clipPath id="lgPc"><rect width="200" height="114"/></clipPath></defs><rect width="200" height="200" fill="#1E1B19"/><circle cx="100" cy="114" r="40" fill="url(#lgPs)" clip-path="url(#lgPc)"/><rect x="44" y="110" width="112" height="9" rx="4.5" fill="#FFF6EC"/></svg></span><div><b>sommer_gram</b><div class="counter">${(()=>{const L=[...S.insights].filter(i=>i.followers!=null).sort((a,b)=>a.date.localeCompare(b.date)).pop();return L?nf(L.followers)+" FOLLOWER":"DEIN FEED"})()}</div></div></div>
         <div class="feedgrid">${feed.map(x=>`<button class="tile${x.plan?" plan":""}${sel&&x.k===sel.k?" on":""}" data-pk="${x.k}" aria-label="${esc(x.post?(x.post.title||x.post.ort||"Post")+(x.post.date?", "+fmtD(x.post.date):""):"Vorschau")}">${x.im&&!(x.im.type||"").startsWith("video")?`<img src="${esc(imgSrc(x.im))}" alt="" loading="lazy">`:""}${x.pv?`<span class="badge pv">Vorschau</span>`:x.plan?`<span class="badge">${esc(fmtD(x.post.date).replace(/^\w+, /,"").replace(/\.$/,""))}</span>`:""}${x.im?"":`<span class="t">${esc(x.post?(x.post.title||FORMATS[x.post.format]||""):"")}</span>`}</button>`).join("")||`<p class="small" style="color:#8C8075;grid-column:1/-1;padding:20px;text-align:center">Noch nichts geplant oder veröffentlicht</p>`}</div>
-        <p class="pu-hint">Orange: kommt noch · hell: deine Auswahl</p>
+        <p class="pu-hint">Rot: kommt noch · weiß: deine Auswahl</p>
       </div>
     </div>
   </section>
@@ -946,8 +1010,8 @@ function nextHTML(){const today=iso(new Date());const d=S.draft;
   return `<div class="bottom">${strip}${prev}</div>`}
 
 /* ---------- Einstellungen ---------- */
-function themeNow(){try{return localStorage.getItem("sg-theme")||"dark"}catch(e){return "dark"}}
-function setTheme(k){try{localStorage.setItem("sg-theme",k)}catch(e){}const r=document.documentElement;if(k==="auto")r.removeAttribute("data-sg");else r.setAttribute("data-sg",k);render();toast(k==="auto"?"Darstellung folgt jetzt dem Gerät":k==="dark"?"Dunkel eingestellt":"Hell eingestellt")}
+function themeNow(){try{return localStorage.getItem("sg-farbe")||"light"}catch(e){return "light"}}
+function setTheme(k){try{localStorage.setItem("sg-farbe",k)}catch(e){}const r=document.documentElement;if(k==="auto")r.removeAttribute("data-sg");else r.setAttribute("data-sg",k);render();toast(k==="auto"?"Darstellung folgt jetzt dem Gerät":k==="dark"?"Dunkel eingestellt":"Hell eingestellt")}
 function vSettings(){const cur=themeNow();const L=latestIns();const mc=mcInfo();
   const opt=(k,l,t)=>`<button class="themeopt" data-theme-set="${k}" aria-pressed="${cur===k}"><span class="tprev ${k}" aria-hidden="true"><i></i><i></i><i></i></span><b>${l}</b><span class="small muted">${t}</span></button>`;
   const row=(l,v)=>`<div class="setrow"><span class="lbl">${l}</span><span>${v}</span></div>`;

@@ -6,7 +6,7 @@
 // v6 (04.11.2026): Pro-Schnitt in der Werkstatt (Knopf PRO).
 // v7 (04.11.2026): Freistellung Version 2, Stile Geschnitten und Gespiegelt.
 // v8 (04.11.2026): Wasserzeichen standardmäßig aus.
-const CACHE = 'studio-v9';
+const CACHE = 'studio-v10';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
 const FREMD = ['https://www.gstatic.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://cdn.jsdelivr.net', 'https://storage.googleapis.com'];

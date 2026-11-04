@@ -16,7 +16,7 @@
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="apple-touch-icon" href="icon-180.png">
-<script>(function(){var t="dark";try{t=localStorage.getItem("sg-theme")||"dark"}catch(e){}if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)})()</script>
+<script>(function(){var t="light";try{t=localStorage.getItem("sg-farbe")||"light"}catch(e){}if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=Anton&family=Permanent+Marker&display=swap">
 <style>
@@ -245,6 +245,35 @@ nav.side{position:fixed;left:0;top:0;bottom:0;z-index:45;width:calc(var(--side-w
   .side a.nv[aria-current="page"]{background:var(--field);color:var(--text);box-shadow:inset 0 -2px 0 var(--amber)}
   header.top{top:calc(var(--top-h) + env(safe-area-inset-top,0px));padding-top:10px}
 }
+/* Farbkonzept „Signal · Galerie“ (04.11.2026): hell = Galerie, dunkel = Nachtschicht. Gilt für Studio und Werkstatt */
+:root,:root[data-sg="light"],:root[data-theme="light"]{
+  --bg:#F4F5F6; --card:#FFFFFF; --field:#F1F2F4; --field-2:#DADDE1; --line:#E6E8EB;
+  --text:#0B0D10; --text-2:#50565E; --text-3:#9097A0; --ink:#0B0D10; --on-ink:#FFFFFF;
+  --peach:#FFEAE3; --peach-soft:#FFF4F0; --accent:#E23A12; --amber:#FF4A1C; --on-amber:#FFFFFF; --accent-fill:rgba(255,74,28,.08);
+  --sun:#FF4A1C; --sun1:#FF4A1C; --sun2:#E8401A; --on-sun:#FFFFFF; --sun-line:#0B0D10; --ok:#17996A; --ok-soft:#E3F4EC; --info:#2F6BDB; --warn:#B7791F; --bad:#D92D20; --muted:#9097A0; --c-reel:#7A4FD0;
+  --side:#FFFFFF; --hero-shadow:0 18px 40px rgba(0,0,0,.12); --pu-stage:#16191D; --pu-stage2:#2C3239; --pu-stagetxt:#B7BEC6; --tk-d:#0F1216;
+  --r-card:2px; --r-field:4px; color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-sg]):not([data-theme]){
+  --bg:#0C0E11; --card:#14171B; --field:#1B1F24; --field-2:#2A3038; --line:#20252B;
+  --text:#F2F4F6; --text-2:#A7AFB8; --text-3:#6C747E; --ink:#F2F4F6; --on-ink:#0C0E11;
+  --peach:#3A1A12; --peach-soft:#24140F; --accent:#FF6A40; --amber:#FF5A2E; --on-amber:#FFFFFF; --accent-fill:rgba(255,90,46,.14);
+  --sun:#FF5A2E; --sun1:#FF5A2E; --sun2:#F04A1E; --on-sun:#FFFFFF; --sun-line:#F2F4F6; --ok:#3CCB8E; --ok-soft:#10251C; --info:#6E9BFF; --warn:#E7B45C; --bad:#FF6B5E; --muted:#6C747E; --c-reel:#B79BFF;
+  --side:#0C0E11; --hero-shadow:0 28px 64px rgba(0,0,0,.6); --pu-stage:#000000; --pu-stage2:#2A3038; --pu-stagetxt:#A7AFB8; --tk-d:#1B1F24; color-scheme:dark}}
+:root[data-sg="dark"],:root[data-theme="dark"]{
+  --bg:#0C0E11; --card:#14171B; --field:#1B1F24; --field-2:#2A3038; --line:#20252B;
+  --text:#F2F4F6; --text-2:#A7AFB8; --text-3:#6C747E; --ink:#F2F4F6; --on-ink:#0C0E11;
+  --peach:#3A1A12; --peach-soft:#24140F; --accent:#FF6A40; --amber:#FF5A2E; --on-amber:#FFFFFF; --accent-fill:rgba(255,90,46,.14);
+  --sun:#FF5A2E; --sun1:#FF5A2E; --sun2:#F04A1E; --on-sun:#FFFFFF; --sun-line:#F2F4F6; --ok:#3CCB8E; --ok-soft:#10251C; --info:#6E9BFF; --warn:#E7B45C; --bad:#FF6B5E; --muted:#6C747E; --c-reel:#B79BFF;
+  --side:#0C0E11; --hero-shadow:0 28px 64px rgba(0,0,0,.6); --pu-stage:#000000; --pu-stage2:#2A3038; --pu-stagetxt:#A7AFB8; --tk-d:#1B1F24;
+  --r-card:2px; --r-field:4px; color-scheme:dark}
+body{background:var(--bg)}
+.logo stop,.mlogo stop,.av stop,.mark stop{stop-color:var(--amber)}
+nav.side{background:var(--side);border-color:var(--line)}
+.side .logo{border-radius:2px}
+.side a.nv{text-transform:uppercase;letter-spacing:.12em;font-size:12px}
+@media (min-width:701px){.side a.nv{border-radius:0;color:var(--text-3)}.side a.nv[aria-current="page"]{background:transparent;color:var(--text);box-shadow:inset 0 -3px 0 var(--amber)}}
+@media (max-width:700px){.side a.nv{font-size:9.5px;letter-spacing:.06em}.side a.nv[aria-current="page"]{background:transparent;color:var(--amber)}}
+#proBtn,#pro .qbadge,#pro .qhb.qmain{background:var(--amber)!important;color:#fff!important}
 @media (max-width:700px){:root{--side-w:0px}body{padding-bottom:calc(72px + env(safe-area-inset-bottom,0px))}nav.side{top:auto;right:0;width:auto;height:auto;flex-direction:row;justify-content:space-around;padding:6px max(8px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(8px,env(safe-area-inset-left,0px));border-right:0;border-top:1px solid var(--line)}.side .logo,.side .sp{display:none}.side a.nv{width:auto;flex:1;padding:6px 0;font-size:10px}}
 .side a.nv svg{fill:none}
 </style>
