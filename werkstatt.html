@@ -18,7 +18,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <script>(function(){var t="dark";try{t=localStorage.getItem("sg-theme")||"dark"}catch(e){}if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=Anton&family=Permanent+Marker&display=swap">
 <style>
 /* Gleicher Look wie Studio Sommer_gram im Logo-Stil „Horizont“: Creme oder Nacht, Schrift nur Inter, Hauptknöpfe im Sonnenverlauf.
    Layout: links die 9:16-Bühne (klebt am Desktop), rechts die Arbeitsschritte Material, Texte, Takt, Post, Rendern. */
@@ -301,7 +301,7 @@ nav.side{position:fixed;left:0;top:0;bottom:0;z-index:45;width:calc(var(--side-w
         <div class="styles" id="styles" role="group" aria-label="Stil wählen"></div>
         <div class="spanel" id="spanel">
           <div class="cvw"><canvas id="demoCv" width="270" height="480" aria-label="Kurze Vorschau des Stils"></canvas><span id="demoSrc">Beispiel</span></div>
-          <div><h3 id="stName"></h3><p id="stLine"></p><ul id="stTraits"></ul></div>
+          <div><h3 id="stName"></h3><p id="stLine"></p><ul id="stTraits"></ul><p id="klState" hidden style="margin:10px 0 0"></p></div>
         </div>
         <div class="row"><button class="btn soft sm" id="reroll">Neue Variante</button><span class="small muted">Mischt Übergänge, Bewegungen und Rhythmus neu. Die Variante wird mit dem Reel gespeichert.</span></div>
       </section>
@@ -549,12 +549,13 @@ const STYLES={
   dump:{name:"Fotostapel",line:"Startet mit einem kurzen Blick aufs Ende. Dann eine schnelle Bildfolge mit Blitzen, danach landen Fotos als Abzüge übereinander.",tags:["Schneller Einstieg","Abzüge","Blitz"]},
   film:{name:"Film",line:"Erzählt ruhig wie ein Filmstreifen: lange Einstellungen, Lichtlecks, Filmbrand und weiche Überblendungen, wahlweise mit Kinobalken.",tags:["Lichtlecks","Überblendung","Ruhig"]},
   galerie:{name:"Galerie",line:"Fotos im Passepartout wie in einem Bildband. Harte Masken-Wischer, ab und zu ein Doppelbild, Nummerierung und Titel in Serifenschrift.",tags:["Passepartout","Doppelbild","Serif"]},
+  kalyl:{name:"Kalyl",line:"Nach kalylsfilms: Schrift hinter dem Motiv, ein Split Frame mit drei Feldern und Flicker im Rahmen auf einer Farbfläche. Die Farben kommen aus deinem Material.",tags:["Text hinter dem Motiv","Split Frame","Flicker"]},
   split:{name:"Splitscreen",line:"Startet mit einem ganzen Bild, dann teilt sich der Bildschirm und oben und unten laufen zwei Bilder oder Videos gleichzeitig. Zum Schluss wieder ein ganzes Bild.",tags:["Oben und unten","Parallel","Versetzte Wechsel"]}
 };
 const STYLE_KEYS=Object.keys(STYLES);
-const AUTO_ONLY=new Set(["split_in","pane","split_out"]);
-const TR_NAMES={auto:"Automatisch",split_in:"Teilung öffnet sich",pane:"Feldwechsel",split_out:"Teilung schließt sich",whip_l:"Wisch nach links",whip_r:"Wisch nach rechts",push_u:"Push nach oben",push_d:"Push nach unten",zoom:"Zoom-Durchflug",spin:"Dreh-Zoom",flash:"Warmer Blitz",flash1:"Blitzbild",glitch:"Glitch",dissolve:"Überblendung",dip:"Abblende",leak:"Lichtleck",burn:"Filmbrand",wipe_l:"Masken-Wischer seitlich",wipe_u:"Masken-Wischer von unten",object_l:"Schatten nach links",object_r:"Schatten nach rechts",object_u:"Schatten nach oben",cut:"Harter Schnitt"};
-const TR_LEN={split_in:13,pane:9,split_out:13,whip_l:9,whip_r:9,push_u:9,push_d:9,zoom:10,spin:10,flash:10,flash1:2,glitch:6,dissolve:15,dip:15,leak:21,burn:18,wipe_l:14,wipe_u:14,object_l:12,object_r:12,object_u:12,cut:0};
+const AUTO_ONLY=new Set(["split_in","pane","split_out","kblob","kswap","kmorph","kexpand"]);
+const TR_NAMES={auto:"Automatisch",split_in:"Teilung öffnet sich",pane:"Feldwechsel",split_out:"Teilung schließt sich",whip_l:"Wisch nach links",whip_r:"Wisch nach rechts",push_u:"Push nach oben",push_d:"Push nach unten",zoom:"Zoom-Durchflug",spin:"Dreh-Zoom",flash:"Warmer Blitz",flash1:"Blitzbild",glitch:"Glitch",dissolve:"Überblendung",dip:"Abblende",leak:"Lichtleck",burn:"Filmbrand",wipe_l:"Masken-Wischer seitlich",wipe_u:"Masken-Wischer von unten",object_l:"Schatten nach links",object_r:"Schatten nach rechts",object_u:"Schatten nach oben",cut:"Harter Schnitt",kblob:"Farbform",kswap:"Felder wechseln",kmorph:"Split wird Rahmen",kexpand:"Rahmen wird Bild"};
+const TR_LEN={split_in:13,pane:9,split_out:13,whip_l:9,whip_r:9,push_u:9,push_d:9,zoom:10,spin:10,flash:10,flash1:2,glitch:6,dissolve:15,dip:15,leak:21,burn:18,wipe_l:14,wipe_u:14,object_l:12,object_r:12,object_u:12,cut:0,kblob:14,kswap:8,kmorph:10,kexpand:10};
 function rng(seed){let a=seed>>>0;return ()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const pick=(r,a)=>a[Math.floor(r()*a.length)];
 function wpick(r,w,avoid){const e=Object.entries(w).filter(([k])=>k!==avoid);const tot=e.reduce((s,[,v])=>s+v,0);let x=r()*tot;for(const [k,v] of e){x-=v;if(x<=0)return k}return e[e.length-1][0]}
@@ -568,17 +569,19 @@ function lookFor(st,r){
   if(st==="nahtlos")return {filter:pick(r,["contrast(1.05) saturate(1.03)","contrast(1.04) saturate(0.95)"]),tint:tint(),grain:0.22,vig:0.7};
   if(st==="dump")return {filter:"contrast(1.12) saturate(1.15)",tint:pick(r,[null,["#ffaa5a",0.05]]),grain:0.28,vig:0,card:pick(r,["#F7F6F2","#FFFFFF","#EFEDE8"]),bg:pick(r,["blur","blur","ink"])};
   if(st==="film")return {filter:pick(r,["contrast(0.94) saturate(0.82) sepia(0.2) brightness(1.04)","contrast(0.97) saturate(0.9) sepia(0.12) brightness(1.02) hue-rotate(-6deg)","contrast(0.92) saturate(0.78) sepia(0.26) brightness(1.05)"]),tint:["#ff9650",0.08],grain:0.6,vig:1.5,weave:true,flicker:true,frame:r()<0.5?"letter":"full",stamp:r()<0.7,leak:pick(r,["amber","rose","red"])};
+  if(st==="kalyl")return {grain:0,vig:0};
   if(st==="split"){const lay=pick(r,["tb","tb","tb","tb","tb60","tb40"]);return {filter:pick(r,["contrast(1.06) saturate(1.06)","contrast(1.04) saturate(1.0)"]),tint:tint(),grain:0.2,vig:0.5,lay,
     seam:pick(r,["#000000","#000000","#FFFFFF","none"]),entry:pick(r,["slide","open","open","cut"]),paneTr:pick(r,["slide","slide","cut","flash"]),stagger:r()<0.75,first:r()<0.5?0:1}}
   const bw=r()<0.2;return {bw,filter:bw?"grayscale(1) contrast(1.12)":pick(r,["contrast(1.04) saturate(0.95)","contrast(1.06) saturate(0.9) brightness(1.02)"]),mat:pick(r,[["#F2F0EB","#141414"],["#121212","#EDEBE6"],["#D8D5CE","#161616"]]),grain:0.1,vig:0,index:r()<0.75};
 }
 function cutLook(lk){const o=Object.assign({},lk);for(const k of ["filter","tint","grain","vig","weave","flicker","stamp","bw"])delete o[k];return o}
-function textFor(st,r){if(st==="split")return {kind:"bold"};if(st==="dump")return {kind:"sticker",y:pick(r,[300,760]),rot:(r()-0.5)*0.12};return {kind:{takt:"bold",nahtlos:"center",film:"mono",galerie:"serif"}[st]}}
+function textFor(st,r){if(st==="kalyl")return {kind:"kalyl"};if(st==="split")return {kind:"bold"};if(st==="dump")return {kind:"sticker",y:pick(r,[300,760]),rot:(r()-0.5)*0.12};return {kind:{takt:"bold",nahtlos:"center",film:"mono",galerie:"serif"}[st]}}
 function autoTr(st,s,nx,k,cnt,r,prev,L){
   if(st==="takt")return k===cnt-2?pick(r,["zoom","flash"]):wpick(r,{whip_l:3,whip_r:3,zoom:3,push_u:2,push_d:1,flash:2,spin:1},prev);
   if(st==="nahtlos")return {l:()=>wpick(r,{whip_l:3,object_l:2}),r:()=>wpick(r,{whip_r:3,object_r:2}),u:()=>wpick(r,{push_u:3,object_u:2}),in:()=>"zoom"}[L.dir]();
   if(st==="dump"){r();if(nx.sec==="end")return "flash";if(s.tag==="hook")return "flash1";if(s.sec==="b"&&nx.sec==="b")return wpick(r,{cut:5,flash1:2,glitch:1.5});if(s.sec==="s"&&nx.sec==="s")return "cut";return "flash1"}
   if(st==="film")return wpick(r,{dissolve:3,leak:3,burn:2,dip:1},prev);
+  if(st==="kalyl"){r();if(s.tag==="intro")return "kblob";if(s.mode==="k3"&&nx.mode==="k3")return "kswap";if(s.mode==="k3")return "kmorph";if(s.mode==="kins"&&nx.mode==="kins")return "cut";if(s.mode==="kins")return "kexpand";return "cut"}
   if(st==="split"){r();if(s.mode!=="split"&&nx.mode==="split")return "split_in";if(s.mode==="split"&&nx.mode==="split")return "pane";if(s.mode==="split")return "split_out";return pick(r,["zoom","flash"])}
   return wpick(r,{wipe_l:3,wipe_u:2,cut:2,dissolve:1},prev);
 }
@@ -636,6 +639,17 @@ function timeline(){
     else after.push(...pool);
     after.forEach(i=>S.push({it:its[i],i,beats:ub(its[i],3),mode:"full",motion:{k:"in",a:0.05},main:true}));
     if(outro>=0)S.push({it:its[outro],i:outro,beats:ub(its[outro],its[outro].kind==="video"?8:4),mode:"full",motion:{k:"in",a:0.06},main:true});
+  }else if(st==="kalyl"){
+    // Kalyl: Anfang mit Schrift hinter dem Motiv, Split Frame, Flicker im Rahmen, Schluss als ganzes Bild
+    const last=n-1;const mid=n>2?its.map((it,i)=>i).slice(1,last):its.map((it,i)=>i);const used={};const take=(i,sec)=>{const o=used[i]||0;used[i]=o+sec;return o};
+    S.push({it:its[0],i:0,beats:ub(its[0],n>=3?4:3),mode:"kfull",motion:{k:"in",a:0.04},main:true,tag:"intro"});take(0,(n>=3?4:3)*b);
+    let fl=mid.slice();
+    if(n>=3){const pool=mid.length>=3?mid:[...mid,...its.map((it,i)=>i)].filter((v,k,a)=>a.indexOf(v)===k).slice(0,3);const rounds=pool.length>=6?2:1;let midItem=null;
+      for(let k=0;k<rounds;k++){const ids=[0,1,2].map(j=>pool[(k*3+j)%pool.length]);S.push({it:its[ids[1]],i:ids[1],beats:2,mode:"k3",panes:ids.map(i=>({it:its[i],i,off:take(i,2*b)})),main:false,tag:"split"});midItem=ids[1]}
+      if(midItem!=null)fl=[midItem,...fl.filter(i=>i!==midItem)]}
+    const cuts=Math.max(4,Math.min(8,fl.length*2));
+    for(let k=0;k<cuts;k++){const i=fl[k%fl.length];S.push({it:its[i],i,beats:0.5,mode:"kins",motion:{k:"in",a:0.03},main:true,tag:"flick",sil:k%2===0,off:take(i,0.5*b)})}
+    const eb=ub(its[last],its[last].kind==="video"?6:4);S.push({it:its[last],i:last,beats:eb,mode:"kfull",motion:{k:"in",a:0.05},main:true,tag:"end",off:last===0?take(0,eb*b):(used[last]||0)});
   }else{
     let i=0;while(i<n){const it=its[i];const p=pick(r,[3,4,4,5]);const pp=pick(r,[4,5]);const m=pick(r,["in","out"]);
       const pair=i>0&&i<n-2&&it.kind==="image"&&its[i+1].kind==="image"&&r()<0.4&&it.autoBeats!==false&&its[i+1].autoBeats!==false;
@@ -652,13 +666,14 @@ function timeline(){
     S.forEach(s=>{if(s.mode!=="split")return;s.panes.forEach(pn=>{pn.s0=undefined})});
     S.forEach(s=>{if(s.mode!=="split")return;s.panes.forEach(pn=>{if(pn.s0===undefined)pn.s0=s.start;pn.s1=s.end})});
     S.forEach((s,k)=>{if(s.mode!=="split")return;s.panes.forEach(pn=>{if(L.itemShot[pn.i]==null||!S[L.itemShot[pn.i]].panes)L.itemShot[pn.i]=k;L.itemSecs[pn.i]=pn.s1-pn.s0;pn.it.beats=Math.round((pn.s1-pn.s0)/b*2)/2})});
+    S.forEach((s,k)=>{if(s.mode!=="k3")return;s.panes.forEach(pn=>{pn.s0=s.start;pn.s1=s.end;if(L.itemShot[pn.i]==null)L.itemShot[pn.i]=k;L.itemSecs[pn.i]=(L.itemSecs[pn.i]||0)+(s.end-s.start)})});
     const r2=rng(seedT);let prev=null;
     for(let k=0;k<S.length-1;k++){const s=S[k],nx=S[k+1];const auto=autoTr(st,s,nx,k,S.length,r2,prev,L);s.autoTr=auto;
-      const owner=s.it2||s.it;const user=s.main&&owner.tr&&owner.tr!=="auto"?owner.tr:null;let kind=user&&TR_LEN[user]!=null?user:auto;
-      if(!user&&((s.end-s.start)<0.45||(nx.end-nx.start)<0.45)&&TR_LEN[kind]>6)kind="cut";
+      const owner=s.it2||s.it;const user=st!=="kalyl"&&s.main&&owner.tr&&owner.tr!=="auto"?owner.tr:null;let kind=user&&TR_LEN[user]!=null?user:auto;
+      if(!user&&st!=="kalyl"&&((s.end-s.start)<0.45||(nx.end-nx.start)<0.45)&&TR_LEN[kind]>6)kind="cut";
       const Ls=TR_LEN[kind]/FPS;L.trs.push({i:k,at:s.end,kind,L:Ls});s.ln=Ls;nx.lp=Ls;prev=kind}};
   for(let pass=0;pass<5;pass++){timeAndTr();let ch=false;
-    S.forEach(s=>{if(s.mode==="split"||s.it.kind!=="video"||!s.it.dur)return;const sp=s.it.speed||1;const have=(s.it.dur-0.05)/sp;const ov=(s.lp+s.ln)/2;
+    S.forEach(s=>{if(s.mode==="split"||s.mode==="k3"||s.it.kind!=="video"||!s.it.dur)return;const sp=s.it.speed||1;const have=Math.max(0.05,(s.it.dur-0.05)/sp-(s.off||0));const ov=(s.lp+s.ln)/2;
       const slow=s.slow||1;if(((s.end-s.start)+ov)*(1/slow)>have+1e-6){const raw=Math.floor((have-ov)/b*4)/4;
         if(raw>=0.25){if(raw<s.beats){s.beats=raw;s.capped=true;ch=true}}
         else{if(s.beats!==0.25){s.beats=0.25;s.capped=true;ch=true}const sl=Math.min(1,have/(0.25*b+ov));if(Math.abs(sl-slow)>1e-4){s.slow=sl;ch=true}}}});
@@ -666,17 +681,17 @@ function timeline(){
   L.itemTr=its.map((it,i)=>{const k=L.itemShot[i];const s=S[k];return s&&s.autoTr?s.autoTr:null});
   L.segs=S;
   // Wo welches Video zu sehen ist (für Vorschau, Export und Ton)
-  const uses=[];const seenP=new Set();S.forEach(s=>{if(s.mode==="split"){s.panes.forEach((pn,j)=>{if(seenP.has(pn))return;seenP.add(pn);uses.push({it:pn.it,i:pn.i,start:pn.s0,end:pn.s1,lp:0.5,ln:0.5,ramp:0,pane:j})})}else uses.push(s)});
-  L.uses=uses;return L}
+  const uses=[];const seenP=new Set();S.forEach(s=>{if(s.mode==="k3"){s.panes.forEach((pn,j)=>uses.push({it:pn.it,i:pn.i,start:s.start,end:s.end,lp:s.lp,ln:s.ln,ramp:0,off:pn.off||0,pane:j,mode:"k3"}));return}if(s.mode==="split"){s.panes.forEach((pn,j)=>{if(seenP.has(pn))return;seenP.add(pn);uses.push({it:pn.it,i:pn.i,start:pn.s0,end:pn.s1,lp:0.5,ln:0.5,ramp:0,pane:j})})}else uses.push(s)});
+  L.uses=uses;if(st==="kalyl")L.ktext=klTextTrack(L);return L}
 function srcTime(seg,t){const it=seg.it;const s0=seg.start-seg.lp/2,s1=seg.end+seg.ln/2,span=Math.max(0.001,s1-s0);const u=clamp((t-s0)/span);const sp=(it.speed||1)*(seg.slow||1);
-  const v=seg.ramp?span*sp*(u+seg.ramp*u*u*u)/(1+seg.ramp):span*sp*u;return clamp((it.inT||0)+v,0,Math.max(0,(it.dur||0)-0.05))}
-function needSrc(seg){return ((seg.end-seg.start)+(seg.lp+seg.ln)/2)*(seg.it.speed||1)*(seg.slow||1)}
+  const v=seg.ramp?span*sp*(u+seg.ramp*u*u*u)/(1+seg.ramp):span*sp*u;return clamp((it.inT||0)+(seg.off||0)+v,0,Math.max(0,(it.dur||0)-0.05))}
+function needSrc(seg){return ((seg.end-seg.start)+(seg.lp+seg.ln)/2)*(seg.it.speed||1)*(seg.slow||1)+(seg.off||0)}
 function fitInPoints(tl){P.items.forEach((it,i)=>{if(it.kind!=="video"||!it.dur)return;const us=(tl.uses||tl.segs).filter(u=>u.it===it);if(!us.length)return;const need=Math.max(...us.map(needSrc));const mx=Math.max(0,it.dur-need-0.05);
   if(it.inAuto!==false&&M[it.id]&&M[it.id].scores)it.inT=bestStart(M[it.id].scores,need,it.dur);it.inT=clamp(it.inT||0,0,mx)})}
 function bestStart(scores,need,dur){if(!scores||!scores.length)return 0;let best=0,bs=-1;
   for(const [s] of scores){if(s+need>dur-0.05)break;const win=scores.filter(([t])=>t>=s&&t<=s+need);if(!win.length)continue;const m=win.reduce((a,[,v])=>a+v,0)/win.length;if(m>bs){bs=m;best=s}}
   return best}
-function rebuild(){R.tl=timeline();fitInPoints(R.tl);prepStats();R.needs=3;updateTransport();renderChips();renderStyles();if(typeof renderEdit==='function'){renderEdit();scheduleThumbs()}}
+function rebuild(){R.tl=timeline();fitInPoints(R.tl);prepStats();if(P.style==="kalyl"){klPaletteUpdate();klSchedule()}renderKlState();R.needs=3;updateTransport();renderChips();renderStyles();if(typeof renderEdit==='function'){renderEdit();scheduleThumbs()}}
 
 /* ================= Render-Engine ================= */
 function mk(w,h){const c=document.createElement("canvas");c.width=w;c.height=h;return c}
@@ -708,6 +723,7 @@ function Engine(canvas){
   this.gp=this.grain.map(c=>this.ctx.createPattern(c,"repeat"));
 }
 Engine.prototype.drawSeg=function(x,seg,t){
+  if(seg.mode&&seg.mode[0]==="k"&&seg.mode.length<6){this.klSeg(x,seg,t);return}
   const look=R.tl.look;const mode=seg.mode;x.globalAlpha=1;x.globalCompositeOperation="source-over";
   x.fillStyle=(mode==="mat"||mode==="duo")?look.mat[0]:mode==="letter"?"#000":"#0b0b0b";x.fillRect(0,0,W,H);
   const s0=seg.start-seg.lp/2,s1=seg.end+seg.ln/2;const e=ease(clamp((t-s0)/Math.max(0.001,s1-s0)));
@@ -736,6 +752,7 @@ Engine.prototype.blurDraw=function(x,src,amt,vertical){x.globalAlpha=1;x.drawIma
 Engine.prototype.zoomLayer=function(dst,src,sc,amt){const x=dst.x;x.globalAlpha=1;x.fillStyle="#0b0b0b";x.fillRect(0,0,W,H);const N=amt>0.004?5:1;
   for(let k=0;k<N;k++){const s=sc*(1+k*amt);x.globalAlpha=1/(k+1);x.drawImage(src,W/2*(1-s),H/2*(1-s),W*s,H*s)}x.globalAlpha=1};
 Engine.prototype.transition=function(tr,p,f){
+  if(tr.kind[0]==="k"){this.klTransition(tr,p,f);return}
   const x=this.ctx,A=this.A.c,B=this.B.c,T=this.T1,e=ease(clamp(p)),bell=Math.sin(Math.PI*clamp(p)),k=tr.kind;
   if(k==="whip_l"||k==="whip_r"){const l=k==="whip_l";T.x.drawImage(A,l?-e*W:e*W,0,W,H);T.x.drawImage(B,l?W-e*W:-W+e*W,0,W,H);this.blurDraw(x,T.c,6+bell*110,false)}
   else if(k==="push_u"||k==="push_d"){const u=k==="push_u";T.x.drawImage(A,0,u?-e*H:e*H,W,H);T.x.drawImage(B,0,u?H-e*H:-H+e*H,W,H);this.blurDraw(x,T.c,6+bell*120,true)}
@@ -787,8 +804,9 @@ Engine.prototype.scene=function(t,u){
   WEAVE=null};
 Engine.prototype.render=function(t,opt){
   const tl=R.tl;const on=editOn()&&!R.compare&&!(opt&&opt.raw);const u=on?editParams(ED().look,edAmt(),ED()):null;
-  this.scene(t,u);if(!tl||!tl.segs.length)return;const f=Math.max(0,Math.floor(t*FPS+0.001));
+  this.kJobs=[];this.scene(t,u);if(!tl||!tl.segs.length)return;const f=Math.max(0,Math.floor(t*FPS+0.001));
   if(u){this.grade(u,f);if(u.stamp)this.stamp(u.stampA)}
+  if(this.kJobs.length)this.klPost(t);
   this.texts(t,tl);if(P.wm&&!(opt&&opt.noMark))drawMark(this.ctx)};
 Engine.prototype.grade=function(u,f){const x=this.ctx;
   if(GRADER_OK){try{if(!this.gr)this.gr=new Grader(this.canvas.width,this.canvas.height);this.gr.apply(this.canvas,u,f);x.save();x.setTransform(1,0,0,1,0,0);x.globalAlpha=1;x.globalCompositeOperation="copy";x.drawImage(this.gr.c,0,0);x.restore();return}catch(e){console.warn("Look-Grader",e)}}
@@ -801,6 +819,7 @@ function drawMark(x){if(!WM_PATH)return;const w=270,s=w/690,h=116*s,X=W-130-w,Y=
   x.translate(376.31,43.67);x.scale(1.1667,1.1667);x.save();x.beginPath();x.rect(0,0,60,31);x.clip();const g=x.createLinearGradient(0,14,0,31);g.addColorStop(0,"#F29A62");g.addColorStop(1,"#D9612E");
   x.fillStyle=g;x.beginPath();x.arc(30,31,17,0,Math.PI*2);x.fill();x.restore();x.fillStyle="#FFFFFF";x.beginPath();if(x.roundRect)x.roundRect(2,29,56,6,3);else x.rect(2,29,56,6);x.fill();x.restore()}
 Engine.prototype.texts=function(t,tl){
+  if(tl.text&&tl.text.kind==="kalyl")return;
   const x=this.ctx,tx=tl.text,look=tl.look;const fade=(a,b,fi,fo)=>t<a||t>=b?0:Math.min(1,(t-a)/fi,(b-t)/fo);
   const first=tl.segs.find(s=>s.tag!=="hook")||tl.segs[0];const h0=Math.min(first.start+0.2,tl.total),h1=Math.max(first.start+1.5,Math.min(first.end,first.start+2.2));
   const draw=(txt,sub,al)=>{if(al<=0||!txt)return;x.save();x.globalAlpha=al;x.textBaseline="top";
@@ -972,6 +991,7 @@ const TRAITS={
   dump:["Startet mit einem kurzen Blick aufs Ende","Schnelle Bildfolge mit Blitzbildern und Glitch","Fotos landen als Abzüge übereinander","Text als Aufkleber"],
   film:["Ruhiges Tempo, Bilder bleiben länger stehen","Lichtlecks, Filmbrand und Überblendungen","Langsame Kamerafahrten über jedes Bild","Je nach Variante mit Kinobalken"],
   galerie:["Fotos im Passepartout, hell oder dunkel","Harte Masken-Wischer statt Effekte","Ab und zu ein Doppelbild, dazu Nummern","Titel in Serifenschrift"],
+  kalyl:["Am Anfang Schrift hinter dem Motiv, Wort für Wort auf dem Beat","Eine Farbform öffnet den Split Frame, die drei Felder wechseln versetzt","Der Split Frame wird zum Rahmen: Flicker mit heller Silhouette auf den vollen Beats","Farben, Schrift und Rahmen passen sich deinem Material an"],
   split:["Erst ein ganzes Bild, dann teilt sich der Bildschirm","Oben und unten laufen zwei Bilder oder Videos gleichzeitig","Die Felder wechseln versetzt im Takt","Zum Schluss wieder ein ganzes Bild, Text nur am Anfang und Ende"]
 };
 function demoScenes(){if(R.demoScenes)return R.demoScenes;const mkS=(fn)=>{const c=mk(600,800),x=c.getContext("2d");fn(x);return c};
@@ -995,7 +1015,7 @@ function renderDemo(now){const d=R.demo;if(!d||!R.demoEng||!R.demoOn)return;cons
 function renderStyles(){const box=$("styles");if(!box)return;const cur=STYLES[P.style]?P.style:"takt";
   box.innerHTML=STYLE_KEYS.map(k=>`<button class="stile" data-style="${k}" aria-pressed="${k===cur}"><b>${STYLES[k].name}</b><small>${STYLES[k].tags.join(" · ")}</small></button>`).join("");
   box.querySelectorAll("[data-style]").forEach(b=>b.onclick=()=>chooseStyle(b.dataset.style));
-  $("stName").textContent=STYLES[cur].name;$("stLine").textContent=STYLES[cur].line;$("stTraits").innerHTML=TRAITS[cur].map(t=>`<li>${esc(t)}</li>`).join("");$("varLbl").textContent="Variante "+P.seed}
+  $("stName").textContent=STYLES[cur].name;$("stLine").textContent=STYLES[cur].line;$("stTraits").innerHTML=TRAITS[cur].map(t=>`<li>${esc(t)}</li>`).join("");renderKlState();$("varLbl").textContent="Variante "+P.seed}
 function chooseStyle(k){if(k===P.style&&R.demo){R.demo.t0=performance.now();return}P.style=k;afterStyleChange()}
 function afterStyleChange(){markChanged();rebuild();renderItems();renderApprove();startDemo();R.t=0;R.needs=3;updateTransport()}
 
@@ -1005,7 +1025,7 @@ const MOODS={
   treibend:{name:"Treibend",line:"Klarer Beat und Bass, Tempo um 110 bis 130. Für schnelle Schnitte.",fits:"Takt, Fotostapel",traits:["Deutlicher Beat, auf den die Schnitte fallen","Bass und Schlagzeug von Anfang an","Passt zu Wischern und Zoom-Kicks"]},
   warm:{name:"Warm",line:"Akustisch, gezupft, ein bisschen Nostalgie. Für Familie, Herbst und Abendlicht.",fits:"Film, Nahtlos, Takt",traits:["Gitarre oder Klavier, gezupft","Mittleres Tempo","Weich, nie hektisch"]}
 };
-const STYLE_MOOD={takt:["treibend","warm"],dump:["treibend"],nahtlos:["ruhig","warm"],film:["warm","ruhig"],galerie:["ruhig"],split:["treibend","warm"]};
+const STYLE_MOOD={takt:["treibend","warm"],dump:["treibend"],nahtlos:["ruhig","warm"],film:["warm","ruhig"],galerie:["ruhig"],split:["treibend","warm"],kalyl:["treibend","warm"]};
 function musicUrl(){return P.music&&P.music.assetId?__bs(P.music.assetId):R.music?(R.musicObjUrl||(R.musicObjUrl=URL.createObjectURL(R.music))):null}
 function musicStart(){return P.music?(P.music.start||0):0}
 /* Hörprobe je Richtung: im Browser erzeugt, etwa 6 Sekunden */
@@ -1203,7 +1223,8 @@ async function exportReel(){
   const codec=await pickCodec(br);if(!codec){renderBoxState({err:"Dieser Browser kann hier kein MP4 erzeugen. Öffne die Werkstatt in Chrome auf dem Mac oder in Safari ab Version 17."});return}
   setPlaying(false);R.exporting=true;R.cancel=false;renderBoxState({prog:0,txt:"Ton wird vorbereitet …"});
   try{
-    await Promise.all(['600 92px Inter','700 64px Inter','400 104px "Instrument Serif"'].map(f=>document.fonts.load(f).catch(()=>{})));
+    await Promise.all(['600 92px Inter','700 64px Inter','400 104px "Instrument Serif"','400 200px Anton','400 76px "Permanent Marker"'].map(f=>document.fonts.load(f).catch(()=>{})));
+    if(tl.style==="kalyl"){renderBoxState({prog:0,txt:"Motiv wird erkannt …"});await klEnsure(tl,p=>renderBoxState({prog:0,txt:`Motiv wird erkannt … ${Math.round(p*100)} %`}))}
     const au=await buildAudio(tl);
     const mux=makeMp4Muxer({width:W,height:H,fps:FPS,audio:au.buf?{sampleRate:48000,numberOfChannels:2,bitrate:192000}:null});
     if(au.buf)await encodeAudio(au.buf,mux);
@@ -1239,6 +1260,253 @@ async function exportReel(){
   finally{R.exporting=false;R.needs=3}}
 function t_in(seg,t){return t>=seg.start-seg.lp/2&&t<seg.end+seg.ln/2}
 function coverDefault(tl){const l=tl.segs[tl.segs.length-1];return Math.min(tl.total-0.05,l.start+(l.end-l.start)*0.55)}
+
+
+/* ================= Stil Kalyl ================= */
+/* Nach kalylsfilms: Text hinter dem Motiv, Split Frame mit drei Feldern, Flicker im Rahmen auf einer Farbfläche.
+   Verfeinert: Das Motiv wirft einen weichen Schatten auf die Schrift, die Felder wechseln versetzt,
+   der Split Frame schmilzt zum Rahmen, und alle Farben kommen aus dem Material selbst.
+   Das Motiv erkennt die Werkstatt im Browser: Objekterkennung (MediaPipe) findet Mensch, Tier oder Fahrzeug,
+   im Ausschnitt darum stellt u2netp frei, DeepLab sorgt dafür, dass am Kopf nur der Mensch bleibt. */
+const KL={fps:12,res:512,libs:null,loading:null,busy:false,prog:0,err:null,timer:null,run:0,done:0,total:0};
+const KL_MP="https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14";
+const KL_ORT="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.18.0/dist/";
+const KL_MODELS="https://storage.googleapis.com/mediapipe-models/";
+const KL_U2="models/u2netp.onnx";
+const RECT_INS={x:110,y:195,w:860,h:1529,clip:true};
+const K3_RECTS=[0,1,2].map(j=>({x:0,y:20+j*630,w:W,h:620,clip:true}));
+const KL_DEF={bg1:"#B5542A",bg2:"#6E2A14",ring:"#F6C9A6",acc1:"#F29A62",acc2:"#D9612E",script:"#F4EDE4",light:"#F7F0E8",dark:"#16120F"};
+function loadScript(src){return new Promise((res,rej)=>{if(document.querySelector(`script[data-src="${src}"]`))return res();const s=document.createElement("script");s.src=src;s.dataset.src=src;s.onload=()=>res();s.onerror=()=>rej(new Error("script"));document.head.appendChild(s)})}
+async function klLibs(){
+  if(KL.libs)return KL.libs;if(KL.loading)return KL.loading;
+  KL.loading=(async()=>{
+    const mpv=await import(KL_MP+"/vision_bundle.mjs");
+    const fs=await mpv.FilesetResolver.forVisionTasks(KL_MP+"/wasm");
+    const opt=p=>({baseOptions:{modelAssetPath:KL_MODELS+p,delegate:"CPU"},runningMode:"IMAGE"});
+    const det=await mpv.ObjectDetector.createFromOptions(fs,Object.assign(opt("object_detector/efficientdet_lite0/float16/latest/efficientdet_lite0.tflite"),{scoreThreshold:0.3,maxResults:8}));
+    const seg=await mpv.ImageSegmenter.createFromOptions(fs,Object.assign(opt("image_segmenter/deeplab_v3/float32/1/deeplab_v3.tflite"),{outputConfidenceMasks:true,outputCategoryMask:false}));
+    let sal=null;
+    try{await loadScript(KL_ORT+"ort.min.js");ort.env.wasm.wasmPaths=KL_ORT;ort.env.wasm.numThreads=1;
+      sal=await ort.InferenceSession.create(KL_U2,{executionProviders:["wasm"],graphOptimizationLevel:"all"})}catch(e){console.warn("Freistellung u2netp nicht geladen, nur DeepLab",e)}
+    KL.libs={det,seg,sal};return KL.libs})();
+  try{return await KL.loading}catch(e){KL.loading=null;throw e}}
+
+/* ---------- Motiv in einem Bild finden und freistellen ---------- */
+const KL_KEEP={person:3,dog:2,cat:2,horse:2,bicycle:2,motorcycle:2,car:1,bird:1,boat:1,skateboard:1,surfboard:1};
+const KL_RIDE=new Set(["bicycle","motorcycle","skateboard","surfboard","horse"]);
+const KL_DL=[2,3,7,8,12,13,14,15]; // DeepLab: Fahrrad, Vogel, Auto, Katze, Hund, Pferd, Motorrad, Mensch
+function klPick(dets,Wf,Hf){
+  const hasP=dets.some(d=>d.n==="person");let best=null,bs=-1;
+  for(const d of dets){if(hasP&&!["person","dog","cat"].includes(d.n))continue;const area=d.w*d.h/(Wf*Hf),cx=(d.x+d.w/2)/Wf;
+    const v=KL_KEEP[d.n]*d.s*Math.sqrt(area)*(1.2-Math.abs(cx-0.5));if(v>bs){bs=v;best=d}}
+  if(!best)return null;let {x,y,w,h}=best;let x2=x+w,y2=y+h;
+  if(best.n==="person")for(const d of dets){if(KL_RIDE.has(d.n)&&d.x<x2&&d.x+d.w>x&&d.y<y2+h*0.5){x=Math.min(x,d.x);y=Math.min(y,d.y);x2=Math.max(x2,d.x+d.w);y2=Math.max(y2,d.y+d.h)}}
+  return {x,y,w:x2-x,h:y2-y,n:best.n,s:best.s}}
+function klFrameCanvas(src,sw,sh,side){const f=side/Math.max(sw,sh);const c=mk(Math.round(sw*f),Math.round(sh*f));c.getContext("2d",{willReadFrequently:true}).drawImage(src,0,0,c.width,c.height);return c}
+async function klSal(sess,crop){ // u2netp, 320×320, Ausgabe 0..1
+  const S=320,c=mk(S,S),x=c.getContext("2d",{willReadFrequently:true});x.drawImage(crop,0,0,S,S);const d=x.getImageData(0,0,S,S).data;
+  const inp=new Float32Array(3*S*S),mean=[0.485,0.456,0.406],sd=[0.229,0.224,0.225];
+  for(let i=0;i<S*S;i++){for(let k=0;k<3;k++)inp[k*S*S+i]=(d[i*4+k]/255-mean[k])/sd[k]}
+  const out=await sess.run({[sess.inputNames[0]]:new ort.Tensor("float32",inp,[1,3,S,S])});const o=out[sess.outputNames[0]].data;
+  let mn=1e9,mx=-1e9;for(let i=0;i<S*S;i++){const v=o[i];if(v<mn)mn=v;if(v>mx)mx=v}const r=new Float32Array(S*S);const sp=mx-mn+1e-6;for(let i=0;i<S*S;i++)r[i]=(o[i]-mn)/sp;return {d:r,w:S,h:S}}
+function klDl(seg,crop){ // DeepLab: Wahrscheinlichkeit „Mensch/Tier/Fahrzeug“
+  const res=seg.segment(crop);const ms=res.confidenceMasks;const w=ms[0].width,h=ms[0].height;const r=new Float32Array(w*h);
+  for(const k of KL_DL){const a=ms[k].getAsFloat32Array();for(let i=0;i<a.length;i++)if(a[i]>r[i])r[i]=a[i]}
+  const pr=ms[15].getAsFloat32Array().slice();try{res.close()}catch(e){}return {d:r,p:pr,w,h}}
+function samp(g,u,v){const x=clamp(u,0,1)*(g.w-1),y=clamp(v,0,1)*(g.h-1);const x0=Math.floor(x),y0=Math.floor(y),x1=Math.min(g.w-1,x0+1),y1=Math.min(g.h-1,y0+1),fx=x-x0,fy=y-y0;const d=g.d;
+  return (d[y0*g.w+x0]*(1-fx)+d[y0*g.w+x1]*fx)*(1-fy)+(d[y1*g.w+x0]*(1-fx)+d[y1*g.w+x1]*fx)*fy}
+function dilate(g,r){const {w,h}=g,o=new Float32Array(w*h),t=new Float32Array(w*h);
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let m=0;for(let k=-r;k<=r;k++){const xx=x+k;if(xx>=0&&xx<w){const v=g.d[y*w+xx];if(v>m)m=v}}t[y*w+x]=m}
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){let m=0;for(let k=-r;k<=r;k++){const yy=y+k;if(yy>=0&&yy<h){const v=t[yy*w+x];if(v>m)m=v}}o[y*w+x]=m}return {d:o,w,h}}
+async function klMaskOf(L,fc,prevBox){
+  // fc: Bild (Canvas) des Clips. Ergebnis: Maske im Format des Bildes (lange Seite KL.res) und Motiv-Box (0..1)
+  const Wf=fc.width,Hf=fc.height;const r=L.det.detect(fc);
+  const dets=(r.detections||[]).map(d=>({n:d.categories[0].categoryName,s:d.categories[0].score,x:d.boundingBox.originX,y:d.boundingBox.originY,w:d.boundingBox.width,h:d.boundingBox.height})).filter(d=>KL_KEEP[d.n]);
+  let b=klPick(dets,Wf,Hf);
+  if(b&&prevBox){const p=prevBox;const jump=Math.abs((b.x+b.w/2)/Wf-(p.x+p.w/2))>0.15;if(!jump){const a=0.45;b={x:(p.x*Wf)*(1-a)+b.x*a,y:(p.y*Hf)*(1-a)+b.y*a,w:(p.w*Wf)*(1-a)+b.w*a,h:(p.h*Hf)*(1-a)+b.h*a,n:b.n}}}
+  if(!b&&prevBox&&prevBox.age<4)b={x:prevBox.x*Wf,y:prevBox.y*Hf,w:prevBox.w*Wf,h:prevBox.h*Hf,n:prevBox.n,age:prevBox.age+1};
+  if(!b)return null;
+  const cx=b.x+b.w/2,cy=b.y+b.h/2,s=Math.max(b.w,b.h)*1.7;const x0=Math.max(0,Math.round(cx-s/2)),y0=Math.max(0,Math.round(cy-s/2)),x1=Math.min(Wf,Math.round(cx+s/2)),y1=Math.min(Hf,Math.round(cy+s/2));
+  const cw=x1-x0,ch=y1-y0;const crop=mk(cw,ch);crop.getContext("2d").drawImage(fc,x0,y0,cw,ch,0,0,cw,ch);
+  const dl=klDl(L.seg,crop);const sal=L.sal?await klSal(L.sal,crop):null;
+  const pg=dilate({d:dl.p,w:dl.w,h:dl.h},Math.max(2,Math.round(dl.w*0.02)));const dg=dilate({d:dl.d,w:dl.w,h:dl.h},1);
+  const f=KL.res/Math.max(Wf,Hf),mw=Math.round(Wf*f),mh=Math.round(Hf*f);const m=new Float32Array(mw*mh);
+  const ex=b.w*0.30+20,ey=b.h*0.25+20;const isP=b.n==="person";
+  const X0=Math.floor(x0*f),X1=Math.ceil(x1*f),Y0=Math.floor(y0*f),Y1=Math.ceil(y1*f);
+  for(let my=Y0;my<Math.min(mh,Y1);my++)for(let mx=X0;mx<Math.min(mw,X1);mx++){const px=mx/f,py=my/f;const u=(px-x0)/cw,v=(py-y0)/ch;if(u<0||u>1||v<0||v>1)continue;
+    const dx=Math.max(0,Math.abs(px-cx)-b.w/2)/ex,dy=Math.max(0,Math.abs(py-cy)-b.h/2)/ey;const wgt=clamp(1.4-1.4*Math.hypot(dx,dy),0,1);if(wgt<=0)continue;
+    let val;if(sal){const yrel=clamp((py-(b.y+b.h*0.35))/(b.h*0.2),0,1);const gate=isP?Math.max(samp(pg,u,v),yrel):Math.max(samp(dg,u,v),yrel*0.6);val=samp(sal,u,v)*wgt*gate}
+    else val=samp(dg,u,v)*wgt;
+    m[my*mw+mx]=val}
+  return {m,mw,mh,box:{x:b.x/Wf,y:b.y/Hf,w:b.w/Wf,h:b.h/Hf,n:b.n,age:b.age||0}}}
+function klFinish(list){ // zeitlich glätten, Kante straffen, Saum gegen Lichthof, weich zeichnen → Masken-Canvas
+  const out=[];for(let i=0;i<list.length;i++){const e=list[i];if(!e){out.push(null);continue}const {mw,mh}=e;const n=mw*mh;const a=new Float32Array(n);
+    const nb=[list[i-1],e,list[i+1]].filter(x=>x&&x.mw===mw);for(let k=0;k<n;k++){let s=0;for(const q of nb)s+=q.m[k];a[k]=clamp(((e.m[k]*0.5+0.5*s/nb.length)-0.35)/0.3)}
+    const er=new Float32Array(n);for(let y=0;y<mh;y++)for(let x=0;x<mw;x++){let v=1;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=Math.min(mw-1,Math.max(0,x+dx)),yy=Math.min(mh-1,Math.max(0,y+dy));const q=a[yy*mw+xx];if(q<v)v=q}er[y*mw+x]=v}
+    const c=mk(mw,mh),x=c.getContext("2d");const id=x.createImageData(mw,mh);
+    for(let y=0;y<mh;y++)for(let xx=0;xx<mw;xx++){let s=0,c2=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const X=xx+dx,Y=y+dy;if(X>=0&&X<mw&&Y>=0&&Y<mh){s+=er[Y*mw+X];c2++}}
+      const o=(y*mw+xx)*4;id.data[o]=id.data[o+1]=id.data[o+2]=255;id.data[o+3]=Math.round(s/c2*255)}
+    x.putImageData(id,0,0);out.push({c,box:e.box})}
+  return out}
+/* Welche Stellen jedes Clips brauchen eine Maske */
+function klNeeds(tl){const need=new Map();if(!tl||tl.style!=="kalyl")return need;
+  for(const seg of (tl.uses||tl.segs)){if(!["kfull","kins"].includes(seg.mode))continue;const it=seg.it;if(!need.has(it.id))need.set(it.id,{it,keys:new Set()});const e=need.get(it.id);
+    if(it.kind!=="video"){e.keys.add(0);continue}
+    const a=seg.start-seg.lp/2,b=seg.end+seg.ln/2;for(let t=a;t<=b+1e-6;t+=1/KL.fps)e.keys.add(Math.round(srcTime(seg,t)*KL.fps))}
+  return need}
+function klMissing(tl){let n=0;for(const [id,e] of klNeeds(tl)){const m=M[id];const have=m&&m.kl;for(const k of e.keys)if(!have||!have.has(k))n++}return n}
+function klSchedule(){clearTimeout(KL.timer);if(P.style!=="kalyl")return;KL.timer=setTimeout(()=>{klEnsure(R.tl).catch(()=>{})},700)}
+async function klEnsure(tl,onProg){
+  if(!tl||tl.style!=="kalyl")return;const run=++KL.run;
+  while(KL.busy){await sleep(120);if(run!==KL.run)return}
+  const need=klNeeds(tl);let total=0;for(const [id,e] of need){const m=M[id];if(!m)continue;const have=m.kl||(m.kl=new Map());for(const k of e.keys)if(!have.has(k))total++}
+  if(!total){KL.prog=1;renderKlState();return}
+  KL.busy=true;KL.err=null;KL.total=total;KL.done=0;KL.prog=0;renderKlState();
+  try{
+    const L=await klLibs();
+    for(const [id,e] of need){if(run!==KL.run)break;const m=M[id];if(!m)continue;const have=m.kl;const keys=[...e.keys].filter(k=>!have.has(k)).sort((a,b)=>a-b);if(!keys.length)continue;const it=e.it;
+      if(it.kind!=="video"){if(!m.bmp)continue;const fc=klFrameCanvas(m.bmp,m.w,m.h,640);const r=await klMaskOf(L,fc,null);have.set(0,r?klFinish([r])[0]:null);KL.done++;continue}
+      const v=await loadVideo(m.url).catch(()=>null);if(!v)continue;const raw=[];let prev=null;
+      for(const k of keys){if(run!==KL.run)break;await seek(v,clamp(k/KL.fps,0,Math.max(0,(it.dur||0)-0.05)));const fc=klFrameCanvas(v,v.videoWidth,v.videoHeight,640);
+        const r=await klMaskOf(L,fc,prev);if(r)prev=r.box;raw.push([k,r]);KL.done++;KL.prog=KL.done/KL.total;if(onProg)onProg(KL.prog);if(KL.done%4===0){renderKlState();await sleep(0)}}
+      v.removeAttribute("src");v.load();
+      const fin=klFinish(raw.map(x=>x[1]));raw.forEach(([k],j)=>have.set(k,fin[j]))}
+    KL.prog=1}
+  catch(e){console.warn("Motiv-Erkennung",e);KL.err=String(e&&e.message||e)}
+  finally{KL.busy=false;renderKlState();R.needs=3}}
+function klMask(it,t){const m=M[it.id];if(!m||!m.kl)return null;if(it.kind!=="video")return m.kl.get(0)||null;
+  const st=t!=null?t:(m.video?m.video.currentTime:0);const k=Math.round(st*KL.fps);for(const d of [0,-1,1,-2,2]){const e=m.kl.get(k+d);if(e!==undefined)return e}return null}
+function renderKlState(){const el=$("klState");if(!el)return;if(P.style!=="kalyl"){el.hidden=true;return}el.hidden=false;
+  const pal=klPal();const sw=["bg1","acc1","script","light"].map(k=>`<span title="${k}" style="display:inline-block;width:18px;height:18px;border-radius:5px;background:${pal[k]};border:1px solid var(--line,#0002);vertical-align:-4px;margin-right:4px"></span>`).join("");
+  let st;if(KL.err)st="Motiv-Erkennung gerade nicht möglich (offline?). Die Schrift liegt dann vor dem Bild.";
+  else if(KL.busy)st=`Motiv wird erkannt … ${Math.round(KL.prog*100)} %`;
+  else{const tl=R.tl;const need=klNeeds(tl);let seen=0,hit=0;for(const [id] of need){const m=M[id];if(!m||!m.kl||!m.kl.size)continue;seen++;if([...m.kl.values()].some(x=>x))hit++}
+    st=!need.size?"":seen?`Motiv erkannt in ${hit} von ${need.size} ${need.size===1?"Clip":"Clips"}`:"Motiv-Erkennung startet gleich"}
+  el.innerHTML=`${sw}<span class="small muted" style="margin-left:6px">Farben aus deinem Material${st?" · "+esc(st):""}</span>`}
+
+/* ---------- Farben aus dem Material ---------- */
+function klLin(c){return c<=0.04045?c/12.92:((c+0.055)/1.055)**2.4}
+function klSrgb(c){c=clamp(c,0,1);return c<=0.0031308?c*12.92:1.055*c**(1/2.4)-0.055}
+function klLab(r,g,b){const l=klLin(r),m=klLin(g),s=klLin(b);
+  const L1=Math.cbrt(0.4122214708*l+0.5363325363*m+0.0514459929*s),M1=Math.cbrt(0.2119034982*l+0.6806995451*m+0.1073969566*s),S1=Math.cbrt(0.0883024619*l+0.2817188376*m+0.6299787005*s);
+  return [0.2104542553*L1+0.7936177850*M1-0.0040720468*S1,1.9779984951*L1-2.4285922050*M1+0.4505937099*S1,0.0259040371*L1+0.7827717662*M1-0.8086757660*S1]}
+function klFromLch(L,C,h){let a=C*Math.cos(h*Math.PI/180),b=C*Math.sin(h*Math.PI/180);let rgb=[0,0,0];
+  for(let k=0;k<30;k++){const l_=L+0.3963377774*a+0.2158037573*b,m_=L-0.1055613458*a-0.0638541728*b,s_=L-0.0894841775*a-1.2914855480*b;const l=l_**3,m=m_**3,s=s_**3;
+    rgb=[4.0767416621*l-3.3077115913*m+0.2309699292*s,-1.2684380046*l+2.6097574011*m-0.3413193965*s,-0.0041960863*l-0.7034186147*m+1.7076147010*s];
+    if(Math.min(...rgb)>=-0.001&&Math.max(...rgb)<=1.001)break;a*=0.93;b*=0.93}
+  return "#"+rgb.map(v=>Math.round(klSrgb(v)*255).toString(16).padStart(2,"0")).join("").toUpperCase()}
+const hdist=(a,b)=>{const d=Math.abs(a-b)%360;return Math.min(d,360-d)};
+function klPaletteFrom(px){ // px: Uint8ClampedArray RGBA
+  const B=36,w=new Float64Array(B),sum=[];for(let i=0;i<B;i++)sum.push([]);
+  for(let i=0;i<px.length;i+=4){const r=px[i]/255,g=px[i+1]/255,b=px[i+2]/255;const [L,a,bb]=klLab(r,g,b);const C=Math.hypot(a,bb);if(C<0.05||L<0.3||L>0.92)continue;
+    const h=(Math.atan2(bb,a)*180/Math.PI+360)%360;const k=Math.floor(h/360*B)%B;w[k]+=C**3;sum[k].push([C,L,h])}
+  const ws=[...w].map((v,k)=>v+0.6*w[(k+B-1)%B]+0.6*w[(k+1)%B]);const order=[...ws.keys()].sort((a,b)=>ws[b]-ws[a]);const picks=[];
+  for(const k of order){if(ws[k]<ws[order[0]]*0.01||ws[k]<=0)break;if(picks.every(p=>Math.min(Math.abs(k-p),B-Math.abs(k-p))>=5))picks.push(k);if(picks.length===5)break}
+  return picks.map(k=>{const all=[...sum[(k+B-1)%B],...sum[k],...sum[(k+1)%B]].sort((a,b)=>b[0]-a[0]);const top=all.slice(0,Math.max(6,Math.floor(all.length/5)));
+    const med=i=>{const v=top.map(x=>x[i]).sort((a,b)=>a-b);return v[Math.floor(v.length/2)]};return {C:med(0),L:med(1),h:med(2),w:ws[k]/ws[order[0]]}})}
+function klRoles(cs){
+  if(!cs.length)return Object.assign({},KL_DEF);const dom=cs[0];
+  const far=cs.slice(1).sort((a,b)=>hdist(b.h,dom.h)-hdist(a.h,dom.h));const bgh=far.length&&hdist(far[0].h,dom.h)>=60?far[0].h:(dom.h+180)%360;
+  const rest=cs.filter(c=>hdist(c.h,bgh)>40);const acc=rest.length?rest.reduce((a,c)=>(c.C*(c.h>=20&&c.h<=110?1.25:1))>(a.C*(a.h>=20&&a.h<=110?1.25:1))?c:a):dom;
+  const r2=rest.filter(c=>c!==acc);const acc2=r2.length?r2.reduce((a,c)=>c.w>a.w?c:a):dom;
+  return {bg1:klFromLch(0.47,0.14,bgh),bg2:klFromLch(0.30,0.11,bgh),ring:klFromLch(0.80,0.08,bgh),acc1:klFromLch(Math.max(0.72,acc.L),Math.max(0.15,acc.C),acc.h),acc2:klFromLch(Math.max(0.68,acc.L),Math.max(0.13,acc.C),acc.h+8),
+    script:klFromLch(Math.max(0.75,acc2.L),Math.max(0.14,acc2.C),acc2.h),light:klFromLch(0.97,0.018,bgh),dark:klFromLch(0.17,0.02,bgh)}}
+function klPal(){return (P.kpal&&P.kpal.roles)||KL_DEF}
+async function klPaletteUpdate(){
+  if(P.style!=="kalyl"||!P.items.length)return;const sig=P.items.map(it=>it.id).join(",");if(P.kpal&&P.kpal.sig===sig)return;
+  const c=mk(72,128),x=c.getContext("2d",{willReadFrequently:true});const all=[];
+  for(const it of P.items){let src=null;const m=M[it.id];
+    if(m&&m.bmp)src=m.bmp;else if(it.thumb){src=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=it.thumb})}
+    if(!src)continue;x.clearRect(0,0,72,128);drawCover(x,{src,sw:src.width||src.naturalWidth,sh:src.height||src.naturalHeight},{x:0,y:0,w:72,h:128},1,0,0,0.5);all.push(x.getImageData(0,0,72,128).data)}
+  if(!all.length)return;const px=new Uint8ClampedArray(all.reduce((s,a)=>s+a.length,0));let o=0;for(const a of all){px.set(a,o);o+=a.length}
+  const cs=klPaletteFrom(px);P.kpal={sig,cols:cs.map(c=>klFromLch(c.L,c.C,c.h)),roles:klRoles(cs)};markChanged();renderKlState();R.needs=3}
+
+/* ---------- Texte ---------- */
+function klWords(s){return String(s||"").replace(/#[\p{L}\p{N}_]+/gu,"").trim()}
+function klLines(s,max){const w=klWords(s).toUpperCase().split(/\s+/).filter(Boolean).slice(0,6);if(!w.length)return [];if(w.length===1)return w;
+  const a=[w[0]];let i=1;while(i<w.length-1&&(a.join(" ")+" "+w[i]).length<=6){a.push(w[i]);i++}const rest=w.slice(i).join(" ");return [a.join(" "),rest].slice(0,max||2)}
+function klHookText(){if(P.hook)return P.hook;const c=klWords(P.caption).split(/[.!?\n]/)[0]||"";const w=c.trim().split(/\s+/).filter(Boolean);return w.slice(0,4).join(" ")}
+function klTextTrack(L){const b=beatLen();const out=[];const S=L.segs;
+  const intro=S.find(s=>s.tag==="intro");if(intro){const lines=klLines(klHookText());if(lines.length)out.push({from:intro.start,to:intro.end-intro.ln/2-0.03,lines:lines.map((t,i)=>({t,role:i?"acc":"light",at:intro.start+0.05+i*b})),script:P.sub?{t:P.sub,at:intro.start+0.05+lines.length*b}:null,seg:intro})}
+  const fl=S.filter(s=>s.tag==="flick");if(fl.length&&P.ort){const lines=klLines(P.ort);const t0=fl[Math.min(2,fl.length-1)].start;out.push({from:t0,to:fl[fl.length-1].end,lines:lines.map((t,i)=>({t,role:i?"acc":"light",at:t0+i*b*0.5})),scope:"flick"})}
+  const end=S.find(s=>s.tag==="end");if(end&&P.ende){const lines=klLines(P.ende);out.push({from:end.start,to:end.end,lines:lines.map((t,i)=>({t,role:i?"acc":"light",at:end.start+b*0.5+i*b})),seg:end})}
+  return out}
+
+/* ---------- Zeichnen ---------- */
+function klGeom(seg,t){const s0=seg.start-seg.lp/2,s1=seg.end+seg.ln/2;const e=ease(clamp((t-s0)/Math.max(0.001,s1-s0)));const mo=seg.motion||{k:"in",a:0.03};
+  const z=mo.k==="out"?1+mo.a*(1-e):1+mo.a*e;return {Rc:seg.mode==="kins"?RECT_INS:RECT_FULL,z,px:0,py:0,cx:seg.it.cx}}
+function klMap(S,Rc,z,px,py,cx){const sc=Math.max(Rc.w/S.sw,Rc.h/S.sh)*z,dw=S.sw*sc,dh=S.sh*sc;let dx=Rc.x+Rc.w/2-(cx??0.5)*dw,dy=Rc.y+Rc.h/2-0.5*dh;dx+=px*(dw-Rc.w)/2;dy+=py*(dh-Rc.h)/2;
+  dx=Math.min(Rc.x,Math.max(Rc.x+Rc.w-dw,dx));dy=Math.min(Rc.y,Math.max(Rc.y+Rc.h-dh,dy));return {dx,dy,dw,dh}}
+function klPy(it){const k=M[it.id]&&M[it.id].kl;if(!k)return 0;const e=klMask(it);if(!e||!e.box)return 0;return clamp(((e.box.y+e.box.h*0.4)-0.5)*2.4,-1,1)}
+Engine.prototype.klLayers=function(){if(this.KM)return;const L=()=>{const c=mk(this.canvas.width,this.canvas.height);const x=c.getContext("2d");x.setTransform(this.s,0,0,this.s,0,0);return {c,x}};this.KM=L();this.KS=L();this.KT=L();this.KG=L()};
+Engine.prototype.klClear=function(l){l.x.save();l.x.setTransform(1,0,0,1,0,0);l.x.globalAlpha=1;l.x.globalCompositeOperation="source-over";l.x.clearRect(0,0,l.c.width,l.c.height);l.x.restore()};
+Engine.prototype.klMatte=function(seg,t,g){ // Maske des Motivs in Ausgabe-Koordinaten in KM; gibt Motiv-Mitte zurück
+  this.klLayers();this.klClear(this.KM);const it=seg.it;const e=klMask(it);if(!e)return null;const S=rawSrc(it);if(!S)return null;g=g||klGeom(seg,t);
+  const x=this.KM.x;x.save();if(g.Rc.clip){x.beginPath();x.rect(g.Rc.x,g.Rc.y,g.Rc.w,g.Rc.h);x.clip()}drawCover(x,{src:e.c,sw:S.sw,sh:S.sh},g.Rc,g.z,g.px,g.py,g.cx);x.restore();
+  const m=klMap(S,g.Rc,g.z,g.px,g.py,g.cx);const b=e.box;return {x:m.dx+(b.x+b.w/2)*m.dw,y:m.dy+(b.y+b.h*0.45)*m.dh,top:m.dy+b.y*m.dh,h:b.h*m.dh,w:b.w*m.dw}};
+Engine.prototype.klSubject=function(dst,srcCanvas,alpha,scale,c){ // Motiv aus srcCanvas durch KM auf dst
+  const l=this.KS;this.klClear(l);const x=l.x;x.save();x.setTransform(1,0,0,1,0,0);x.drawImage(srcCanvas,0,0);x.globalCompositeOperation="destination-in";x.drawImage(this.KM.c,0,0);x.restore();
+  dst.save();dst.globalAlpha=alpha==null?1:alpha;if(scale&&scale!==1&&c){dst.translate(c.x,c.y);dst.scale(scale,scale);dst.translate(-c.x,-c.y)}dst.drawImage(l.c,0,0,W,H);dst.restore()};
+function klGrad(x,pal,rect){const r=rect||{x:0,y:0,w:W,h:H};const g=x.createLinearGradient(r.x,r.y,r.x+r.w*0.35,r.y+r.h);g.addColorStop(0,pal.bg1);g.addColorStop(1,pal.bg2);return g}
+Engine.prototype.klSeg=function(x,seg,t){
+  const pal=klPal();const mode=seg.mode;x.globalAlpha=1;x.globalCompositeOperation="source-over";
+  if(mode==="k3"){x.fillStyle=pal.dark;x.fillRect(0,0,W,H);(seg.panes||[]).forEach((pn,j)=>{const Rc=K3_RECTS[j];if(!Rc)return;const sp=Math.max(0.001,seg.end-seg.start);const e=ease(clamp((t-seg.start)/sp));
+      x.save();x.beginPath();x.rect(Rc.x,Rc.y,Rc.w,Rc.h);x.clip();drawCover(x,srcOf(pn.it),Rc,1.02+0.05*e,0,klPy(pn.it),pn.it.cx);x.restore()});return}
+  const g=klGeom(seg,t);const S=srcOf(seg.it);
+  if(mode==="kfull"){x.fillStyle=pal.dark;x.fillRect(0,0,W,H);drawCover(x,S,RECT_FULL,g.z,0,0,seg.it.cx)}
+  else{x.fillStyle=klGrad(x,pal);x.fillRect(0,0,W,H);
+    x.save();x.shadowColor="rgba(0,0,0,0.38)";x.shadowBlur=46*this.s;x.shadowOffsetY=18*this.s;x.fillStyle=pal.dark;roundRect(x,RECT_INS.x,RECT_INS.y,RECT_INS.w,RECT_INS.h,22);x.fill();x.restore();
+    x.save();roundRect(x,RECT_INS.x,RECT_INS.y,RECT_INS.w,RECT_INS.h,22);x.clip();drawCover(x,S,RECT_INS,g.z,0,0,seg.it.cx);
+    const k=t-seg.start;if(seg.sil&&k>=0&&k<2/FPS){const c=this.klMatte(seg,t,g);x.fillStyle="rgba(0,0,0,0.55)";x.fillRect(0,0,W,H);
+      if(c){const l=this.KS;this.klClear(l);l.x.save();l.x.setTransform(1,0,0,1,0,0);l.x.fillStyle=pal.light;l.x.fillRect(0,0,l.c.width,l.c.height);l.x.globalCompositeOperation="destination-in";l.x.drawImage(this.KM.c,0,0);l.x.restore();x.drawImage(l.c,0,0,W,H)}
+      else{x.fillStyle="rgba(255,255,255,0.35)";x.fillRect(0,0,W,H)}}
+    else if(seg.sil===false&&k>=0&&k<1/FPS){x.fillStyle="rgba(255,255,255,0.12)";x.fillRect(0,0,W,H)}
+    x.restore()}
+  if(x===this.ctx){const tr=(R.tl.ktext||[]).find(q=>t>=q.from&&t<q.to&&(q.seg?q.seg===seg:seg.tag==="flick"));if(tr&&this.kJobs)this.kJobs.push({tr,seg,t})}};
+function klPop(t){if(t<0)return null;const p=Math.min(1,t/(5/FPS));const s=1+0.22*(1-(1-(1-p)**3))-0.03*Math.sin(Math.min(1,t/(8/FPS))*Math.PI);return {s,a:Math.min(1,t/(2.5/FPS))}}
+Engine.prototype.klText=function(x,job){ // Wörter mit Auftakt, Akzentzeile mit Verlauf, Handschrift klein darunter
+  const pal=klPal(),tr=job.tr,t=job.t,seg=job.seg;const inset=seg.mode==="kins";const R0=inset?RECT_INS:RECT_FULL;const maxW=R0.w*0.86;
+  const c=this.klMatte(seg,t);const fade=Math.min(1,(tr.to-t)/0.12);
+  const fit=(txt,max,big)=>{let fs=big;x.font=`400 ${fs}px Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif`;while(x.measureText(txt).width>max&&fs>60){fs-=8;x.font=`400 ${fs}px Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif`}return fs};
+  const sizes=tr.lines.map((l,i)=>fit(l.t,maxW,(inset?220:330)*(i?0.78:1)));const lh=sizes.map(s=>s*1.02);const total=lh.reduce((a,b)=>a+b,0);
+  let top;if(c){top=c.top+Math.min(c.h*0.45,lh[lh.length-1]*0.85)-total}else top=R0.y+R0.h*0.30-total/2;top=clamp(top,R0.y+40,R0.y+R0.h-total-80);
+  x.save();if(inset){roundRect(x,R0.x,R0.y,R0.w,R0.h,22);x.clip()}x.textAlign="center";x.textBaseline="top";
+  let y=top;tr.lines.forEach((l,i)=>{const p=klPop(t-l.at);if(p){x.save();const cx=R0.x+R0.w/2,cy=y+lh[i]/2;x.translate(cx,cy);x.scale(p.s,p.s);x.translate(-cx,-cy);x.globalAlpha=p.a*fade;
+      x.font=`400 ${sizes[i]}px Anton,"Bebas Neue",Impact,"Arial Narrow",sans-serif`;if(l.role==="acc"){const gr=x.createLinearGradient(0,y,0,y+sizes[i]);gr.addColorStop(0,pal.acc1);gr.addColorStop(1,pal.acc2);x.fillStyle=gr}else x.fillStyle=pal.light;
+      x.fillText(l.t,cx,y);x.restore()}y+=lh[i]});
+  x.restore();
+  // Schatten des Motivs auf die Schrift
+  if(c){x.save();x.globalCompositeOperation="source-atop";x.shadowColor="rgba(0,0,0,0.45)";x.shadowBlur=16*this.s;x.shadowOffsetX=(10+20000)*this.s;x.shadowOffsetY=14*this.s;x.drawImage(this.KM.c,-20000,0,W,H);x.restore()}
+  return {c,y}};
+Engine.prototype.klPost=function(t){ // nach dem Look: Schrift zwischen Hintergrund und Motiv
+  this.klLayers();const pal=klPal();
+  for(const job of this.kJobs){const G=this.KG;this.klClear(G);G.x.save();G.x.setTransform(1,0,0,1,0,0);G.x.drawImage(this.canvas,0,0);G.x.restore();
+    const T=this.KT;this.klClear(T);const r=this.klText(T.x,job);this.ctx.drawImage(T.c,0,0,W,H);
+    if(r.c)this.klSubject(this.ctx,G.c,1);
+    if(job.tr.script&&t>=job.tr.script.at){const p=klPop(t-job.tr.script.at);const x=this.ctx;x.save();x.globalAlpha=p.a*Math.min(1,(job.tr.to-t)/0.12);x.translate(W/2,Math.min(H-300,(r.y||1200)+70));x.rotate(-0.07);x.scale(p.s,p.s);
+      x.font='400 76px "Permanent Marker","Marker Felt","Comic Sans MS",cursive';x.textAlign="center";x.textBaseline="top";x.shadowColor="rgba(0,0,0,0.35)";x.shadowBlur=12*this.s;x.fillStyle=pal.script;x.fillText(job.tr.script.t,0,0);x.restore()}}
+  this.kJobs=null};
+function klBlobPath(x,cx,cy,r,seed){x.beginPath();const N=72;for(let i=0;i<=N;i++){const th=i/N*Math.PI*2;const w=1+0.09*Math.sin(3*th+seed)+0.05*Math.sin(5*th+2*seed)+0.03*Math.sin(9*th+0.7*seed);const rr=r*w;const X=cx+Math.cos(th)*rr,Y=cy+Math.sin(th)*rr;if(i)x.lineTo(X,Y);else x.moveTo(X,Y)}x.closePath()}
+Engine.prototype.klTransition=function(tr,p,f){
+  const x=this.ctx,A=this.A.c,B=this.B.c,k=tr.kind,pal=klPal(),tl=R.tl,sa=tl.segs[tr.i],sb=tl.segs[tr.i+1],tt=tr.at-tr.L/2+p*tr.L;
+  if(k==="kblob"){ // Hintergrund wird zur Farbfläche, das Motiv bleibt vorn; dann wächst eine Form mit dem nächsten Bild
+    x.drawImage(A,0,0,W,H);const q=ease(clamp(p/0.4));x.save();x.globalAlpha=q;x.fillStyle=klGrad(x,pal);x.fillRect(0,0,W,H);x.restore();
+    const c=this.klMatte(sa,tt)||{x:W/2,y:H*0.55};const R0=Math.hypot(Math.max(c.x,W-c.x),Math.max(c.y,H-c.y))*1.25;const seed=2+(P.seed%7);
+    const pr=clamp((p-0.3)/0.7);if(pr>0){const r=R0*ease(pr)**1.1;klBlobPath(x,c.x,c.y,r,seed);x.fillStyle=pal.ring;x.fill();const ri=R0*ease(clamp(pr-0.16))**1.1;if(ri>2){x.save();klBlobPath(x,c.x,c.y,ri,seed);x.clip();x.drawImage(B,0,0,W,H);x.restore()}}
+    const ka=1-ease(clamp((p-0.35)/0.35));if(ka>0&&this.KM)this.klSubject(x,A,ka,1+0.12*(1-ka),c)}
+  else if(k==="kswap"){x.drawImage(A,0,0,W,H);const s=this.s;K3_RECTS.forEach((Rc,j)=>{const pj=clamp((p-j*0.22)/0.34);if(pj<=0)return;const z=1+0.08*(1-ease(pj));
+      x.save();x.beginPath();x.rect(Rc.x,Rc.y,Rc.w,Rc.h);x.clip();x.globalAlpha=Math.min(1,pj*2.5);const cw=Rc.w*z,ch=Rc.h*z;x.drawImage(B,Rc.x*s,Rc.y*s,Rc.w*s,Rc.h*s,Rc.x-(cw-Rc.w)/2,Rc.y-(ch-Rc.h)/2,cw,ch);x.restore()})}
+  else if(k==="kmorph"){ // Split Frame schmilzt zum Rahmen
+    const q=ease(p),s=this.s;x.fillStyle=pal.dark;x.fillRect(0,0,W,H);x.save();x.globalAlpha=q;x.drawImage(B,0,0,W,H);x.restore();
+    const top=K3_RECTS[0],bot=K3_RECTS[2],mid=K3_RECTS[1];const dy=760*q;
+    x.drawImage(A,top.x*s,top.y*s,top.w*s,top.h*s,top.x,top.y-dy,top.w,top.h);x.drawImage(A,bot.x*s,bot.y*s,bot.w*s,bot.h*s,bot.x,bot.y+dy,bot.w,bot.h);
+    const r=["x","y","w","h"].map(key=>mid[key]*(1-q)+RECT_INS[key]*q);x.save();roundRect(x,r[0],r[1],r[2],r[3],22*q);x.clip();
+    if(p<0.5){const sc=Math.max(r[2]/mid.w,r[3]/mid.h);const cw=mid.w*sc,ch=mid.h*sc;x.drawImage(A,mid.x*s,mid.y*s,mid.w*s,mid.h*s,r[0]+(r[2]-cw)/2,r[1]+(r[3]-ch)/2,cw,ch)}
+    else{const sc=Math.max(r[2]/RECT_INS.w,r[3]/RECT_INS.h);const cw=RECT_INS.w*sc,ch=RECT_INS.h*sc;x.drawImage(B,RECT_INS.x*s,RECT_INS.y*s,RECT_INS.w*s,RECT_INS.h*s,r[0]+(r[2]-cw)/2,r[1]+(r[3]-ch)/2,cw,ch)}
+    x.restore();if(p>0.42&&p<0.58){x.fillStyle=`rgba(255,255,255,${0.35*Math.sin((p-0.42)/0.16*Math.PI)})`;x.fillRect(0,0,W,H)}}
+  else if(k==="kexpand"){ // der Rahmen wächst zum ganzen Bild
+    x.drawImage(A,0,0,W,H);const q=ease(p);const r=["x","y","w","h"].map(key=>RECT_INS[key]*(1-q)+RECT_FULL[key]*q);x.save();roundRect(x,r[0],r[1],r[2],r[3],22*(1-q));x.clip();x.drawImage(B,0,0,W,H);x.restore()}
+  else x.drawImage(p<0.5?A:B,0,0,W,H)};
 
 /* ================= Speichern ================= */
 let saveTimer=null;

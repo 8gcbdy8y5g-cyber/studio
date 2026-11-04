@@ -2,10 +2,11 @@
 // Erst Netz (neue Version kommt sofort an), ohne Netz die gespeicherte Datei. Die Daten puffert Firebase selbst.
 // v3 (31.10.2026): Logo „Horizont“, neue Icons und die Reel-Werkstatt (werkstatt.html).
 // v4 (31.10.2026): iPad/iPhone ohne dauerhaften Datenbank-Zwischenspeicher (Safari hing beim Laden).
-const CACHE = 'studio-v4';
+// v5 (04.11.2026): Schnittstil Kalyl mit Motiv-Erkennung im Browser (Modelle von jsDelivr und Google, u2netp im Ordner models).
+const CACHE = 'studio-v5';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
-const FREMD = ['https://www.gstatic.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com'];
+const FREMD = ['https://www.gstatic.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://cdn.jsdelivr.net', 'https://storage.googleapis.com'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(DATEIEN)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
