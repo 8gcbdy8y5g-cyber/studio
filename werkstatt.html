@@ -535,7 +535,7 @@ function fmtD(s){if(!s)return "ohne Termin";const d=new Date(s+"T12:00:00");retu
 
 /* ================= Zustand ================= */
 const newSeed=()=>1+Math.floor(Math.random()*9998);
-function newProject(){return {id:uid("r"),title:"",items:[],bpm:120,style:"takt",seed:newSeed(),music:null,hook:"",sub:"",ende:"",notes:"",edit:{look:"none",amts:{},warm:0,bright:0,grain:0,match:true,skin:true},wm:true,sound:true,musicName:"",
+function newProject(){return {id:uid("r"),title:"",items:[],bpm:120,style:"takt",seed:newSeed(),music:null,hook:"",sub:"",ende:"",notes:"",edit:{look:"none",amts:{},warm:0,bright:0,grain:0,match:true,skin:true},wm:false,sound:true,musicName:"",
   caption:"",tags:"",ort:"",date:"",time:"",status:"entwurf",videoAssetId:null,coverAssetId:null,coverT:null,dur:0,sizeBytes:0,renderSig:null,renderedAt:null,createdAt:new Date().toISOString(),updatedAt:null}}
 let P=newProject();
 const M={};               // Laufzeit-Medien je Item-ID
