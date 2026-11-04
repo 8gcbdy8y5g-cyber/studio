@@ -3,7 +3,8 @@
 // v3 (31.10.2026): Logo „Horizont“, neue Icons und die Reel-Werkstatt (werkstatt.html).
 // v4 (31.10.2026): iPad/iPhone ohne dauerhaften Datenbank-Zwischenspeicher (Safari hing beim Laden).
 // v5 (04.11.2026): Schnittstil Kalyl mit Motiv-Erkennung im Browser (Modelle von jsDelivr und Google, u2netp im Ordner models).
-const CACHE = 'studio-v5';
+// v6 (04.11.2026): Pro-Schnitt in der Werkstatt (Knopf PRO).
+const CACHE = 'studio-v6';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
 const FREMD = ['https://www.gstatic.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://cdn.jsdelivr.net', 'https://storage.googleapis.com'];
