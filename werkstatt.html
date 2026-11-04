@@ -591,15 +591,16 @@ const STYLES={
   dump:{name:"Fotostapel",line:"Startet mit einem kurzen Blick aufs Ende. Dann eine schnelle Bildfolge mit Blitzen, danach landen Fotos als Abzüge übereinander.",tags:["Schneller Einstieg","Abzüge","Blitz"]},
   film:{name:"Film",line:"Erzählt ruhig wie ein Filmstreifen: lange Einstellungen, Lichtlecks, Filmbrand und weiche Überblendungen, wahlweise mit Kinobalken.",tags:["Lichtlecks","Überblendung","Ruhig"]},
   galerie:{name:"Galerie",line:"Fotos im Passepartout wie in einem Bildband. Harte Masken-Wischer, ab und zu ein Doppelbild, Nummerierung und Titel in Serifenschrift.",tags:["Passepartout","Doppelbild","Serif"]},
+  futurist:{name:"Futurist",line:"Große Wörter im Takt hinter dem Motiv, dann ein Scrapbook: Abzüge an der Wäscheleine, aus denen das Motiv herausspringt, Beschriftung in Handschrift. Zum Schluss der Text als Schnipsel-Buchstaben.",tags:["Text hinter dem Motiv","Scrapbook","Schnipsel-Titel"]},
   geschnitten:{name:"Geschnitten",line:"Das Motiv freigestellt auf heller Fläche, in vier Streifen geschnitten, die auf jedem Beat ihre Höhe wechseln. Neue Clips fliegen Streifen für Streifen herein.",tags:["Motiv freigestellt","Streifen im Takt"]},
   gespiegelt:{name:"Gespiegelt",line:"Unten das Bild, oben sein Spiegelbild wie in einer Pfütze. Auf der Kante wechselt auf jedem Beat ein Wort. Zwischen den Clips klappt der Spiegel zu und wieder auf.",tags:["Spiegelung","Wort auf dem Beat"]},
   kalyl:{name:"Kalyl",line:"Nach kalylsfilms: Schrift hinter dem Motiv, ein Split Frame mit drei Feldern und Flicker im Rahmen auf einer Farbfläche. Die Farben kommen aus deinem Material.",tags:["Text hinter dem Motiv","Split Frame","Flicker"]},
   split:{name:"Splitscreen",line:"Startet mit einem ganzen Bild, dann teilt sich der Bildschirm und oben und unten laufen zwei Bilder oder Videos gleichzeitig. Zum Schluss wieder ein ganzes Bild.",tags:["Oben und unten","Parallel","Versetzte Wechsel"]}
 };
 const STYLE_KEYS=Object.keys(STYLES);
-const AUTO_ONLY=new Set(["split_in","pane","split_out","kblob","kswap","kmorph","kexpand","kslice","kfold"]);
-const TR_NAMES={auto:"Automatisch",split_in:"Teilung öffnet sich",pane:"Feldwechsel",split_out:"Teilung schließt sich",whip_l:"Wisch nach links",whip_r:"Wisch nach rechts",push_u:"Push nach oben",push_d:"Push nach unten",zoom:"Zoom-Durchflug",spin:"Dreh-Zoom",flash:"Warmer Blitz",flash1:"Blitzbild",glitch:"Glitch",dissolve:"Überblendung",dip:"Abblende",leak:"Lichtleck",burn:"Filmbrand",wipe_l:"Masken-Wischer seitlich",wipe_u:"Masken-Wischer von unten",object_l:"Schatten nach links",object_r:"Schatten nach rechts",object_u:"Schatten nach oben",cut:"Harter Schnitt",kblob:"Farbform",kswap:"Felder wechseln",kmorph:"Split wird Rahmen",kexpand:"Rahmen wird Bild",kslice:"Streifen",kfold:"Spiegel klappt"};
-const TR_LEN={split_in:13,pane:9,split_out:13,whip_l:9,whip_r:9,push_u:9,push_d:9,zoom:10,spin:10,flash:10,flash1:2,glitch:6,dissolve:15,dip:15,leak:21,burn:18,wipe_l:14,wipe_u:14,object_l:12,object_r:12,object_u:12,cut:0,kblob:14,kswap:8,kmorph:10,kexpand:10,kslice:12,kfold:12};
+const AUTO_ONLY=new Set(["split_in","pane","split_out","kblob","kswap","kmorph","kexpand","kslice","kfold","kpaper"]);
+const TR_NAMES={auto:"Automatisch",split_in:"Teilung öffnet sich",pane:"Feldwechsel",split_out:"Teilung schließt sich",whip_l:"Wisch nach links",whip_r:"Wisch nach rechts",push_u:"Push nach oben",push_d:"Push nach unten",zoom:"Zoom-Durchflug",spin:"Dreh-Zoom",flash:"Warmer Blitz",flash1:"Blitzbild",glitch:"Glitch",dissolve:"Überblendung",dip:"Abblende",leak:"Lichtleck",burn:"Filmbrand",wipe_l:"Masken-Wischer seitlich",wipe_u:"Masken-Wischer von unten",object_l:"Schatten nach links",object_r:"Schatten nach rechts",object_u:"Schatten nach oben",cut:"Harter Schnitt",kblob:"Farbform",kswap:"Felder wechseln",kmorph:"Split wird Rahmen",kexpand:"Rahmen wird Bild",kslice:"Streifen",kfold:"Spiegel klappt",kpaper:"Papier schiebt sich drüber"};
+const TR_LEN={split_in:13,pane:9,split_out:13,whip_l:9,whip_r:9,push_u:9,push_d:9,zoom:10,spin:10,flash:10,flash1:2,glitch:6,dissolve:15,dip:15,leak:21,burn:18,wipe_l:14,wipe_u:14,object_l:12,object_r:12,object_u:12,cut:0,kblob:14,kswap:8,kmorph:10,kexpand:10,kslice:12,kfold:12,kpaper:12};
 function rng(seed){let a=seed>>>0;return ()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
 const pick=(r,a)=>a[Math.floor(r()*a.length)];
 function wpick(r,w,avoid){const e=Object.entries(w).filter(([k])=>k!==avoid);const tot=e.reduce((s,[,v])=>s+v,0);let x=r()*tot;for(const [k,v] of e){x-=v;if(x<=0)return k}return e[e.length-1][0]}
@@ -613,18 +614,19 @@ function lookFor(st,r){
   if(st==="nahtlos")return {filter:pick(r,["contrast(1.05) saturate(1.03)","contrast(1.04) saturate(0.95)"]),tint:tint(),grain:0.22,vig:0.7};
   if(st==="dump")return {filter:"contrast(1.12) saturate(1.15)",tint:pick(r,[null,["#ffaa5a",0.05]]),grain:0.28,vig:0,card:pick(r,["#F7F6F2","#FFFFFF","#EFEDE8"]),bg:pick(r,["blur","blur","ink"])};
   if(st==="film")return {filter:pick(r,["contrast(0.94) saturate(0.82) sepia(0.2) brightness(1.04)","contrast(0.97) saturate(0.9) sepia(0.12) brightness(1.02) hue-rotate(-6deg)","contrast(0.92) saturate(0.78) sepia(0.26) brightness(1.05)"]),tint:["#ff9650",0.08],grain:0.6,vig:1.5,weave:true,flicker:true,frame:r()<0.5?"letter":"full",stamp:r()<0.7,leak:pick(r,["amber","rose","red"])};
-  if(st==="kalyl"||st==="geschnitten"||st==="gespiegelt")return {grain:0,vig:0};
+  if(st==="kalyl"||st==="geschnitten"||st==="gespiegelt"||st==="futurist")return {grain:0,vig:0};
   if(st==="split"){const lay=pick(r,["tb","tb","tb","tb","tb60","tb40"]);return {filter:pick(r,["contrast(1.06) saturate(1.06)","contrast(1.04) saturate(1.0)"]),tint:tint(),grain:0.2,vig:0.5,lay,
     seam:pick(r,["#000000","#000000","#FFFFFF","none"]),entry:pick(r,["slide","open","open","cut"]),paneTr:pick(r,["slide","slide","cut","flash"]),stagger:r()<0.75,first:r()<0.5?0:1}}
   const bw=r()<0.2;return {bw,filter:bw?"grayscale(1) contrast(1.12)":pick(r,["contrast(1.04) saturate(0.95)","contrast(1.06) saturate(0.9) brightness(1.02)"]),mat:pick(r,[["#F2F0EB","#141414"],["#121212","#EDEBE6"],["#D8D5CE","#161616"]]),grain:0.1,vig:0,index:r()<0.75};
 }
 function cutLook(lk){const o=Object.assign({},lk);for(const k of ["filter","tint","grain","vig","weave","flicker","stamp","bw"])delete o[k];return o}
-function textFor(st,r){if(st==="kalyl")return {kind:"kalyl"};if(st==="gespiegelt")return {kind:"mirror"};if(st==="geschnitten")return {kind:"mirror"};if(st==="split")return {kind:"bold"};if(st==="dump")return {kind:"sticker",y:pick(r,[300,760]),rot:(r()-0.5)*0.12};return {kind:{takt:"bold",nahtlos:"center",film:"mono",galerie:"serif"}[st]}}
+function textFor(st,r){if(st==="kalyl")return {kind:"kalyl"};if(st==="gespiegelt")return {kind:"mirror"};if(st==="geschnitten")return {kind:"mirror"};if(st==="futurist")return {kind:"mirror"};if(st==="split")return {kind:"bold"};if(st==="dump")return {kind:"sticker",y:pick(r,[300,760]),rot:(r()-0.5)*0.12};return {kind:{takt:"bold",nahtlos:"center",film:"mono",galerie:"serif"}[st]}}
 function autoTr(st,s,nx,k,cnt,r,prev,L){
   if(st==="takt")return k===cnt-2?pick(r,["zoom","flash"]):wpick(r,{whip_l:3,whip_r:3,zoom:3,push_u:2,push_d:1,flash:2,spin:1},prev);
   if(st==="nahtlos")return {l:()=>wpick(r,{whip_l:3,object_l:2}),r:()=>wpick(r,{whip_r:3,object_r:2}),u:()=>wpick(r,{push_u:3,object_u:2}),in:()=>"zoom"}[L.dir]();
   if(st==="dump"){r();if(nx.sec==="end")return "flash";if(s.tag==="hook")return "flash1";if(s.sec==="b"&&nx.sec==="b")return wpick(r,{cut:5,flash1:2,glitch:1.5});if(s.sec==="s"&&nx.sec==="s")return "cut";return "flash1"}
   if(st==="film")return wpick(r,{dissolve:3,leak:3,burn:2,dip:1},prev);
+  if(st==="futurist"){r();return s.mode==="kfu"&&nx.mode!=="kfu"?"kpaper":"cut"}
   if(st==="geschnitten"){r();return "kslice"}if(st==="gespiegelt"){r();return "kfold"}
   if(st==="kalyl"){r();if(s.tag==="intro")return "kblob";if(s.mode==="k3"&&nx.mode==="k3")return "kswap";if(s.mode==="k3")return "kmorph";if(s.mode==="kins"&&nx.mode==="kins")return "cut";if(s.mode==="kins")return "kexpand";return "cut"}
   if(st==="split"){r();if(s.mode!=="split"&&nx.mode==="split")return "split_in";if(s.mode==="split"&&nx.mode==="split")return "pane";if(s.mode==="split")return "split_out";return pick(r,["zoom","flash"])}
@@ -685,6 +687,11 @@ function timeline(){
     else after.push(...pool);
     after.forEach(i=>S.push({it:its[i],i,beats:ub(its[i],3),mode:"full",motion:{k:"in",a:0.05},main:true}));
     if(outro>=0)S.push({it:its[outro],i:outro,beats:ub(its[outro],its[outro].kind==="video"?8:4),mode:"full",motion:{k:"in",a:0.06},main:true});
+  }else if(st==="futurist"){
+    const ph=fuPhrases();const ib=ph.length>1?6:4;S.push({it:its[0],i:0,beats:ub(its[0],ib),mode:"kfu",motion:{k:"in",a:0.03},main:true,tag:"intro"});
+    const labs=fuLabels();const rest=its.map((it,i)=>i).slice(1);const cnt=rest.length;const rots=rest.map((v,j)=>-2.5+((j*37+(P.seed|0))%5)*1.2);const pops=rest.map((v,j)=>j%2===1||j===cnt-1);
+    rest.forEach((i,j)=>S.push({it:its[i],i,beats:ub(its[i],2),mode:"kpa",motion:{k:"in",a:0},main:true,tag:"x",pi:j,cnt,label:labs[j]||"",rot:rots[j],pop:pops[j],prev:j?its[rest[j-1]]:null,prot:j?rots[j-1]:0,ppop:j?pops[j-1]:false}));
+    const ei=[...rest].reverse().find(i=>its[i].kind!=="video");const eIt=ei!=null?its[ei]:its[0];S.push({it:eIt,i:ei!=null?ei:0,beats:5,mode:"kra",motion:{k:"in",a:0},main:false,tag:"end",off:0,prev:cnt?its[rest[cnt-1]]:null,pi:cnt,prot:cnt?rots[cnt-1]:0,ppop:cnt?pops[cnt-1]:false});
   }else if(st==="geschnitten"||st==="gespiegelt"){
     const md=st==="geschnitten"?"ksl":"kmi";its.forEach((it,i)=>S.push({it,i,beats:ub(it,i===0?4:(i%2?3:4)),mode:md,motion:{k:"in",a:0.03},main:true,tag:i===0?"intro":"x"}));
   }else if(st==="kalyl"){
@@ -730,7 +737,7 @@ function timeline(){
   L.segs=S;
   // Wo welches Video zu sehen ist (für Vorschau, Export und Ton)
   const uses=[];const seenP=new Set();S.forEach(s=>{if(s.mode==="k3"){s.panes.forEach((pn,j)=>uses.push({it:pn.it,i:pn.i,start:s.start,end:s.end,lp:s.lp,ln:s.ln,ramp:0,off:pn.off||0,pane:j,mode:"k3"}));return}if(s.mode==="split"){s.panes.forEach((pn,j)=>{if(seenP.has(pn))return;seenP.add(pn);uses.push({it:pn.it,i:pn.i,start:pn.s0,end:pn.s1,lp:0.5,ln:0.5,ramp:0,pane:j})})}else uses.push(s)});
-  L.uses=uses;if(st==="kalyl")L.ktext=klTextTrack(L);return L}
+  L.uses=uses;if(st==="kalyl")L.ktext=klTextTrack(L);if(st==="futurist")L.fuPh=fuPhrases();return L}
 function srcTime(seg,t){if(seg.pc)return proSrcTime(seg,t);const it=seg.it;const s0=seg.start-seg.lp/2,s1=seg.end+seg.ln/2,span=Math.max(0.001,s1-s0);const u=clamp((t-s0)/span);const sp=(it.speed||1)*(seg.slow||1);
   const v=seg.ramp?span*sp*(u+seg.ramp*u*u*u)/(1+seg.ramp):span*sp*u;return clamp((it.inT||0)+(seg.off||0)+v,0,Math.max(0,(it.dur||0)-0.05))}
 function needSrc(seg){return ((seg.end-seg.start)+(seg.lp+seg.ln)/2)*(seg.it.speed||1)*(seg.slow||1)+(seg.off||0)}
@@ -1042,6 +1049,7 @@ const TRAITS={
   dump:["Startet mit einem kurzen Blick aufs Ende","Schnelle Bildfolge mit Blitzbildern und Glitch","Fotos landen als Abzüge übereinander","Text als Aufkleber"],
   film:["Ruhiges Tempo, Bilder bleiben länger stehen","Lichtlecks, Filmbrand und Überblendungen","Langsame Kamerafahrten über jedes Bild","Je nach Variante mit Kinobalken"],
   galerie:["Fotos im Passepartout, hell oder dunkel","Harte Masken-Wischer statt Effekte","Ab und zu ein Doppelbild, dazu Nummern","Titel in Serifenschrift"],
+  futurist:["Anfang: kleine Zeile, darunter ein großes Wort, beide knallen mit Bewegungsunschärfe auf den Beat, das Motiv steht davor","Danach schiebt sich Papier über das Bild: jeder Clip hängt als Abzug mit gerissenem Rand an der Wäscheleine, pendelt kurz aus und trägt eine Nummer wie auf dem Kontaktbogen","Bei jedem zweiten Abzug und beim letzten springt das Motiv mit weißem Sticker-Rand aus dem Rahmen","Unter dem Abzug erscheint Wort für Wort ein Stück deiner Caption in Handschrift","Schluss: „Zum Schluss“ als Schnipsel-Buchstaben aus verschiedenen Schriften, darunter dein erstes Motiv als Sticker im Takt","Farben aus deinem Material"],
   geschnitten:["Das Motiv wird freigestellt und steht groß auf einer hellen Fläche in den Farben deines Materials","Vier Streifen, jeder sitzt etwas höher oder tiefer und springt auf jedem Beat weich auf eine neue Höhe","Neue Clips fliegen Streifen für Streifen abwechselnd von oben und unten herein","Ohne erkanntes Motiv wird das ganze Bild in Streifen geschnitten"],
   gespiegelt:["Unten der Clip, oben sein Spiegelbild, leicht in der Farbe der Fläche getönt","Auf der Kante steht auf jedem Beat ein neues Wort aus „Am Anfang“, Ort und „Zum Schluss“","Zwischen den Clips klappt der Spiegel zu und mit dem neuen Bild wieder auf","Ideal für Wasser, Pfützen, nasse Straßen und Spiegelungen"],
   kalyl:["Am Anfang Schrift hinter dem Motiv, Wort für Wort auf dem Beat","Eine Farbform öffnet den Split Frame, die drei Felder wechseln versetzt","Der Split Frame wird zum Rahmen: Flicker mit heller Silhouette auf den vollen Beats","Farben, Schrift und Rahmen passen sich deinem Material an"],
@@ -1078,7 +1086,7 @@ const MOODS={
   treibend:{name:"Treibend",line:"Klarer Beat und Bass, Tempo um 110 bis 130. Für schnelle Schnitte.",fits:"Takt, Fotostapel",traits:["Deutlicher Beat, auf den die Schnitte fallen","Bass und Schlagzeug von Anfang an","Passt zu Wischern und Zoom-Kicks"]},
   warm:{name:"Warm",line:"Akustisch, gezupft, ein bisschen Nostalgie. Für Familie, Herbst und Abendlicht.",fits:"Film, Nahtlos, Takt",traits:["Gitarre oder Klavier, gezupft","Mittleres Tempo","Weich, nie hektisch"]}
 };
-const STYLE_MOOD={takt:["treibend","warm"],dump:["treibend"],nahtlos:["ruhig","warm"],film:["warm","ruhig"],galerie:["ruhig"],split:["treibend","warm"],kalyl:["treibend","warm"],geschnitten:["treibend","warm"],gespiegelt:["ruhig","warm"]};
+const STYLE_MOOD={takt:["treibend","warm"],dump:["treibend"],nahtlos:["ruhig","warm"],film:["warm","ruhig"],galerie:["ruhig"],split:["treibend","warm"],kalyl:["treibend","warm"],geschnitten:["treibend","warm"],gespiegelt:["ruhig","warm"],futurist:["treibend","warm"]};
 function musicUrl(){return P.music&&P.music.assetId?__bs(P.music.assetId):R.music?(R.musicObjUrl||(R.musicObjUrl=URL.createObjectURL(R.music))):null}
 function musicStart(){return P.music?(P.music.start||0):0}
 /* Hörprobe je Richtung: im Browser erzeugt, etwa 6 Sekunden */
@@ -1405,7 +1413,7 @@ function klFinish(list){ // zeitlich glätten, Kante straffen, Saum gegen Lichth
   return out}
 /* Welche Stellen jedes Clips brauchen eine Maske */
 function klNeeds(tl){const need=new Map();if(!tl||!KL_MASK.has(tl.style))return need;
-  for(const seg of (tl.uses||tl.segs)){if(!["kfull","kins","ksl"].includes(seg.mode))continue;const it=seg.it;if(!need.has(it.id))need.set(it.id,{it,keys:new Set()});const e=need.get(it.id);
+  for(const seg of (tl.uses||tl.segs)){if(!["kfull","kins","ksl","kfu","kpa","kra"].includes(seg.mode))continue;const it=seg.it;if(!need.has(it.id))need.set(it.id,{it,keys:new Set()});const e=need.get(it.id);
     if(it.kind!=="video"){e.keys.add(0);continue}
     const a=seg.start-seg.lp/2,b=seg.end+seg.ln/2;for(let t=a;t<=b+1e-6;t+=1/KL.fps)e.keys.add(Math.round(srcTime(seg,t)*KL.fps))}
   return need}
@@ -1420,7 +1428,7 @@ async function klEnsure(tl,onProg){
   try{
     const L=await klLibs();
     for(const [id,e] of need){if(run!==KL.run)break;const m=M[id];if(!m)continue;const have=m.kl;const keys=[...e.keys].filter(k=>!have.has(k)).sort((a,b)=>a-b);if(!keys.length)continue;const it=e.it;
-      if(it.kind!=="video"){if(!m.bmp)continue;const fc=klFrameCanvas(m.bmp,m.w,m.h,1280);const r=await klMaskOf(L,fc,null);have.set(0,r?klFinish([r])[0]:null);KL.done++;continue}
+      if(it.kind!=="video"){if(!m.bmp)continue;if(L.isn===undefined){KL.stage="Feine Freistellung wird geladen …";renderKlState();L.isn=await klIsn();KL.stage=null}const fc=klFrameCanvas(m.bmp,m.w,m.h,2048);let r;KL.hq=!!L.isn;try{r=await klMaskOf(L,fc,null)}finally{KL.hq=false}have.set(0,r?klFinish([r])[0]:null);KL.done++;KL.prog=KL.done/KL.total;renderKlState();await sleep(0);continue}
       const v=await loadVideo(m.url).catch(()=>null);if(!v)continue;const raw=[];let prev=null;
       for(const k of keys){if(run!==KL.run)break;await seek(v,clamp(k/KL.fps,0,Math.max(0,(it.dur||0)-0.05)));const fc=klFrameCanvas(v,v.videoWidth,v.videoHeight,1280);
         const r=await klMaskOf(L,fc,prev);if(r)prev=r.box;raw.push([k,r]);KL.done++;KL.prog=KL.done/KL.total;if(onProg)onProg(KL.prog);if(KL.done%4===0){renderKlState();await sleep(0)}}
@@ -1434,7 +1442,7 @@ function klMask(it,t){const m=M[it.id];if(!m||!m.kl)return null;if(it.kind!=="vi
 function renderKlState(){const el=$("klState");if(!el)return;if(!KL_ST.has(P.style)){el.hidden=true;return}el.hidden=false;
   const pal=klPal();const sw=["bg1","acc1","script","light"].map(k=>`<span title="${k}" style="display:inline-block;width:18px;height:18px;border-radius:5px;background:${pal[k]};border:1px solid var(--line,#0002);vertical-align:-4px;margin-right:4px"></span>`).join("");
   let st;if(KL.err)st="Motiv-Erkennung gerade nicht möglich (offline?). Die Schrift liegt dann vor dem Bild.";
-  else if(KL.busy)st=`Motiv wird erkannt … ${Math.round(KL.prog*100)} %`;
+  else if(KL.busy)st=KL.stage||`Motiv wird erkannt … ${Math.round(KL.prog*100)} %`;
   else{const tl=R.tl;const need=klNeeds(tl);let seen=0,hit=0;for(const [id] of need){const m=M[id];if(!m||!m.kl||!m.kl.size)continue;seen++;if([...m.kl.values()].some(x=>x))hit++}
     st=!need.size?"":seen?`Motiv erkannt in ${hit} von ${need.size} ${need.size===1?"Clip":"Clips"}`:"Motiv-Erkennung startet gleich"}
   el.innerHTML=`${sw}<span class="small muted" style="margin-left:6px">Farben aus deinem Material${st?" · "+esc(st):""}</span>`}
@@ -1506,6 +1514,7 @@ function klGrad(x,pal,rect){const r=rect||{x:0,y:0,w:W,h:H};const g=x.createLine
 Engine.prototype.klSeg=function(x,seg,t){
   const pal=klPal();const mode=seg.mode;x.globalAlpha=1;x.globalCompositeOperation="source-over";
   if(mode==="ksl"){this.gsSlice(x,seg,t);return}if(mode==="kmi"){this.gsMirror(x,seg,t);return}
+  if(mode==="kfu"){this.fuIntro(x,seg,t);return}if(mode==="kpa"){this.fuScrap(x,seg,t);return}if(mode==="kra"){this.fuEnd(x,seg,t);return}
   if(mode==="k3"){x.fillStyle=pal.dark;x.fillRect(0,0,W,H);(seg.panes||[]).forEach((pn,j)=>{const Rc=K3_RECTS[j];if(!Rc)return;const sp=Math.max(0.001,seg.end-seg.start);const e=ease(clamp((t-seg.start)/sp));
       x.save();x.beginPath();x.rect(Rc.x,Rc.y,Rc.w,Rc.h);x.clip();drawCover(x,srcOf(pn.it),Rc,1.02+0.05*e,0,klPy(pn.it),pn.it.cx);x.restore()});return}
   const g=klGeom(seg,t);const S=srcOf(seg.it);
@@ -1564,6 +1573,9 @@ Engine.prototype.klTransition=function(tr,p,f){
     x.drawImage(A,0,0,W,H);const q=ease(p);const r=["x","y","w","h"].map(key=>RECT_INS[key]*(1-q)+RECT_FULL[key]*q);x.save();roundRect(x,r[0],r[1],r[2],r[3],22*(1-q));x.clip();x.drawImage(B,0,0,W,H);x.restore()}
   else if(k==="kslice"){x.fillStyle=pal.light;x.fillRect(0,0,W,H);const sw=W/GS_N,s=this.s;for(let i=0;i<GS_N;i++){const e=ease(clamp((p-i*0.12)/0.6));const dir=i%2?1:-1;
       x.save();x.beginPath();x.rect(i*sw,0,sw,H);x.clip();x.drawImage(A,i*sw*s,0,sw*s,H*s,i*sw,dir*H*e,sw,H);x.drawImage(B,i*sw*s,0,sw*s,H*s,i*sw,-dir*H*(1-e),sw,H);x.restore()}}
+  else if(k==="kpaper"){const e=ease(p);x.drawImage(A,0,0,W,H);const top=H*(1-e)-30;const r=rng(5);x.save();x.beginPath();x.moveTo(-10,H+10);let j=0;
+    for(let xx=-10;xx<=W+10;xx+=12){j=clamp(j+(r()-0.5)*14,-18,18);x.lineTo(xx,top+j)}x.lineTo(W+10,H+10);x.closePath();
+    x.shadowColor="rgba(0,0,0,0.35)";x.shadowBlur=30*this.s;x.shadowOffsetY=-8*this.s;x.fillStyle="#EFE8DA";x.fill();x.shadowColor="transparent";x.clip();x.drawImage(B,0,0,W,H);x.restore()}
   else if(k==="kfold"){const s=this.s;x.fillStyle=pal.dark;x.fillRect(0,0,W,H);const src=p<0.5?A:B;const f=p<0.5?1-ease(p*2):ease(p*2-1);
     x.drawImage(src,0,960*s,W*s,960*s,0,960,W,960);if(f>0.01)x.drawImage(src,0,0,W*s,960*s,0,960-960*f,W,960*f);x.fillStyle=pal.dark;x.fillRect(0,952,W,16)}
   else x.drawImage(p<0.5?A:B,0,0,W,H)};
@@ -1975,9 +1987,9 @@ async function klMaskOf(L,fc,prevBox){
 async function klMaskBox(L,fc,b){
   const Wf=fc.width,Hf=fc.height;const cx=b.x+b.w/2,cy=b.y+b.h/2,side=Math.max(b.w,b.h)*1.35+40*Wf/1280;
   const x0=Math.max(0,Math.round(cx-side/2)),y0=Math.max(0,Math.round(cy-side/2)),x1=Math.min(Wf,Math.round(cx+side/2)),y1=Math.min(Hf,Math.round(cy+side/2));
-  const CW=x1-x0,CH=y1-y0;if(CW<8||CH<8)return null;const f=Math.min(1,640/Math.max(CW,CH));const cw=Math.max(8,Math.round(CW*f)),ch=Math.max(8,Math.round(CH*f));
+  const CW=x1-x0,CH=y1-y0;if(CW<8||CH<8)return null;const f=Math.min(1,(KL.hq?1024:640)/Math.max(CW,CH));const cw=Math.max(8,Math.round(CW*f)),ch=Math.max(8,Math.round(CH*f));
   const crop=mk(cw,ch);const cx2=crop.getContext("2d",{willReadFrequently:true});cx2.drawImage(fc,x0,y0,CW,CH,0,0,cw,ch);
-  const sal=L.sal?await klSal(L.sal,crop):null;const n=cw*ch;const p=new Float32Array(n);
+  const sal=(KL.hq&&L.isn)?await klSalIsn(L.isn,crop):(L.sal?await klSal(L.sal,crop):null);const n=cw*ch;const p=new Float32Array(n);
   let gate=null;if(b.kind==="pri"){const res=L.seg.segment(crop);const ms=res.confidenceMasks;const gw=ms[0].width,gh=ms[0].height;const k=new Float32Array(gw*gh);
     for(const c of KL_DL2){const a=ms[c].getAsFloat32Array();for(let i=0;i<a.length;i++)if(a[i]>k[i])k[i]=a[i]}try{res.close()}catch(e){}
     const dg=dilate({d:k,w:gw,h:gh},Math.max(1,Math.round(gw*0.009)));gate={d:klBoxF(dg.d,gw,gh,Math.max(1,Math.round(gw*0.006))),w:gw,h:gh}}
@@ -1992,7 +2004,7 @@ async function klMaskBox(L,fc,b){
   const cc=klComps(bin,cw,ch);if(cc.n>1){let big=0;for(let i=1;i<=cc.n;i++)big=Math.max(big,cc.areas[i]);for(let i=0;i<n;i++){const l=cc.lab[i];if(l&&cc.areas[l]<0.06*big)m[i]=0}}
   let cov=0;for(let i=0;i<n;i++)if(m[i]>0.5)cov++;cov=cov/(f*f)/Math.max(1,b.w*b.h);
   // ins Maskenformat (lange Seite KL.res)
-  const F=KL.res/Math.max(Wf,Hf),mw=Math.round(Wf*F),mh=Math.round(Hf*F);const a=new Uint8Array(mw*mh);const G={d:m,w:cw,h:ch};
+  const F=(KL.hq?1280:KL.res)/Math.max(Wf,Hf),mw=Math.round(Wf*F),mh=Math.round(Hf*F);const a=new Uint8Array(mw*mh);const G={d:m,w:cw,h:ch};
   const X0=Math.floor(x0*F),X1=Math.ceil(x1*F),Y0=Math.floor(y0*F),Y1=Math.ceil(y1*F);
   for(let my=Y0;my<Math.min(mh,Y1);my++)for(let mx=X0;mx<Math.min(mw,X1);mx++){const u=(mx/F-x0)/CW,v=(my/F-y0)/CH;if(u<0||u>1||v<0||v>1)continue;a[my*mw+mx]=Math.round(samp(G,u,v)*255)}
   return {a,mw,mh,cov}}
@@ -2004,7 +2016,7 @@ function klFinish(list){return list.map(e=>e?{a:e.a,mw:e.mw,mh:e.mh,box:e.box}:n
 
 
 /* ---------- Stile „Geschnitten“ und „Gespiegelt“ (04.11.2026, nach rapvilleuk „23 Content Formats“, Nr. 1 und 2) ---------- */
-const KL_MASK=new Set(["kalyl","geschnitten"]);const KL_ST=new Set(["kalyl","geschnitten","gespiegelt"]);
+const KL_MASK=new Set(["kalyl","geschnitten","futurist"]);const KL_ST=new Set(["kalyl","geschnitten","gespiegelt","futurist"]);
 const GS_N=4;
 function gsOffsets(seed,k){const r=rng((seed*131+k*977)>>>0);return Array.from({length:GS_N},(_,i)=>Math.round((r()*2-1)*(i%2?120:150)))}
 function klItemBox(it){const m=M[it.id];if(!m||!m.kl||!m.kl.size)return null;if(m._kbN===m.kl.size&&m._kb)return m._kb;const bs=[...m.kl.values()].filter(e=>e&&e.box).map(e=>e.box);if(!bs.length)return null;
@@ -2039,6 +2051,116 @@ Engine.prototype.gsMirror=function(x,seg,t){
 Engine.prototype.mirrorSrc=function(x){return x.canvas};
 
 const eout=t=>{t=clamp(t);return 1-(1-t)**3};
+
+/* ---------- Freistellung Version 3 (04.11.2026): Fotos mit ISNet ----------
+   Bruno: Maskieren noch zu schlecht. Fotos laufen jetzt durch ISNet (1024 px, deutlich feinere Kanten, Speichen, Haare, Hände),
+   der Ausschnitt um das Motiv wird bis 1024 px gerechnet, die Maske in 1280 px gespeichert. Videos bleiben bei u2netp (schnell).
+   Lädt ISNet nicht (alter Browser, zu wenig Speicher), wird automatisch wie bisher freigestellt. */
+const KL_ISN=["models/isnet.0.bin","models/isnet.1.bin"];
+async function klIsn(){if(KL.isnP)return KL.isnP;KL.isnP=(async()=>{try{if(typeof ort==="undefined")return null;
+    const bufs=await Promise.all(KL_ISN.map(u=>fetch(u).then(r=>{if(!r.ok)throw new Error("isnet "+r.status);return r.arrayBuffer()})));
+    const n=bufs.reduce((a,b)=>a+b.byteLength,0);const all=new Uint8Array(n);let o=0;for(const b of bufs){all.set(new Uint8Array(b),o);o+=b.byteLength}
+    return await ort.InferenceSession.create(all,{executionProviders:["wasm"],graphOptimizationLevel:"all"})}
+  catch(e){console.warn("ISNet nicht geladen, Freistellung wie bisher",e);return null}})();return KL.isnP}
+async function klSalIsn(sess,crop){const S=1024,c=mk(S,S),x=c.getContext("2d",{willReadFrequently:true});x.drawImage(crop,0,0,S,S);const d=x.getImageData(0,0,S,S).data;
+  const N=S*S,inp=new Float32Array(3*N);for(let i=0;i<N;i++){inp[i]=d[i*4]/255-0.5;inp[N+i]=d[i*4+1]/255-0.5;inp[2*N+i]=d[i*4+2]/255-0.5}
+  const out=await sess.run({[sess.inputNames[0]]:new ort.Tensor("float32",inp,[1,3,S,S])});const o=out[sess.outputNames[0]].data;
+  let mn=1e9,mx=-1e9;for(let i=0;i<N;i++){const v=o[i];if(v<mn)mn=v;if(v>mx)mx=v}const r=new Float32Array(N);const sp=mx-mn+1e-6;for(let i=0;i<N;i++)r[i]=(o[i]-mn)/sp;return {d:r,w:S,h:S}}
+
+
+/* ---------- Stil „Futurist“ (04.11.2026, nach futurist__ „Rotoscoping“, verfeinert) ----------
+   1. Anfang: große Wörter im Takt hinter dem Motiv, kleine Zeile oben, großes Wort darunter, rein mit Bewegungsunschärfe
+   2. Scrapbook: Papier, Wäscheleine, Abzüge mit gerissenem Rand, Klammer und Klebeband; das Motiv springt aus dem Rahmen
+   3. Schluss: Text als Schnipsel-Buchstaben (Erpresserbrief), darunter das Motiv als Sticker
+   Farben aus dem Material (Palette), Texte aus Anfang, Caption, Ort und Schluss. */
+function fuPhrases(){const w=klWords(klHookText()||P.ort||"").toUpperCase().split(/\s+/).filter(Boolean).slice(0,6);if(!w.length)return [];
+  if(w.length<=2)return [{s:w.length===2?w[0]:"",b:w[w.length-1]}];
+  const h=Math.ceil(w.length/2),A=w.slice(0,h),B=w.slice(h);const ph=a=>a.length===1?{s:"",b:a[0]}:{s:a.slice(0,-1).join(" "),b:a[a.length-1]};return [ph(A),ph(B)]}
+function fuLabels(){const src=klWords(P.caption||"").replace(/\n+/g,". ");const parts=src.split(/[.!?;:]+/).map(s=>s.trim()).filter(Boolean).map(s=>s.split(/\s+/).slice(0,4).join(" "));
+  if(P.ort&&!parts.length)parts.push(P.ort);return parts}
+const FU={paper:null,torn:new Map(),chips:null,chipKey:""};
+function fuPaper(s){const k=W*s;if(FU.paper&&FU.paper.k===k)return FU.paper.c;const c=mk(Math.round(W*s),Math.round(H*s));const x=c.getContext("2d");x.scale(s,s);
+  x.fillStyle="#EFE8DA";x.fillRect(0,0,W,H);const r=rng(31);
+  for(let i=0;i<5000;i++){const v=r();x.fillStyle=v<0.5?`rgba(120,95,60,${0.03+r()*0.04})`:`rgba(255,255,255,${0.04+r()*0.06})`;x.fillRect(r()*W,r()*H,1+r()*2,1+r()*2)}
+  x.lineWidth=1;for(let i=0;i<700;i++){const px=r()*W,py=r()*H,a=r()*Math.PI,l=8+r()*30;x.strokeStyle=`rgba(110,90,60,${0.04+r()*0.05})`;x.beginPath();x.moveTo(px,py);x.lineTo(px+Math.cos(a)*l,py+Math.sin(a)*l);x.stroke()}
+  const g=x.createRadialGradient(W/2,H/2,H*0.2,W/2,H/2,H*0.75);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(1,"rgba(60,40,20,0.16)");x.fillStyle=g;x.fillRect(0,0,W,H);
+  FU.paper={k,c};return c}
+function fuTorn(seed,w,h,amp){const key=seed+"|"+w+"|"+h+"|"+amp;if(FU.torn.has(key))return FU.torn.get(key);const r=rng(seed*7919+13);const p=new Path2D();const st=6;let j=0;
+  const n=()=>{j=clamp(j+(r()-0.5)*amp*0.9,-amp,amp);return j};
+  p.moveTo(-w/2,-h/2+n());for(let x=-w/2;x<=w/2;x+=st)p.lineTo(x,-h/2+n());for(let y=-h/2;y<=h/2;y+=st)p.lineTo(w/2+n(),y);
+  for(let x=w/2;x>=-w/2;x-=st)p.lineTo(x,h/2+n());for(let y=h/2;y>=-h/2;y-=st)p.lineTo(-w/2+n(),y);p.closePath();FU.torn.set(key,p);if(FU.torn.size>60)FU.torn.delete(FU.torn.keys().next().value);return p}
+function fuLine(x,t){x.save();x.strokeStyle="rgba(70,55,40,0.85)";x.lineWidth=3;x.beginPath();x.moveTo(-10,150);x.quadraticCurveTo(W/2,232+Math.sin(t*2.2)*4,W+10,150);x.stroke();x.restore()}
+Engine.prototype.fuWord=function(x,txt,font,color,cx,cy,p,q,shadow){ // p: Auftritt 0..1, q: Abgang 0..1
+  if(!txt||p<=0||q>=1)return;const e=1-(1-p)**3;const a=Math.min(1,p*1.6)*(1-q);const sc=1+0.35*(1-e)+0.1*q;const blur=(1-e)*80+q*70;const N=blur>6?6:1;
+  x.save();x.font=font;x.textAlign="center";x.textBaseline="middle";x.fillStyle=color;if(shadow){x.shadowColor="rgba(0,0,0,0.35)";x.shadowBlur=18*this.s;x.shadowOffsetY=8*this.s}
+  for(let k=0;k<N;k++){const o=N>1?((k/(N-1))-0.5)*blur:0;x.globalAlpha=a*(N>1?1.6/N:1);x.save();x.translate(cx+(q>0?o+q*60:0),cy-50*(1-e)+(q>0?0:o));x.scale(sc,sc);x.fillText(txt,0,0);x.restore()}
+  x.restore()};
+Engine.prototype.fuIntro=function(x,seg,t){
+  const pal=klPal(),b=beatLen();const g=klGeom(seg,t);const S=srcOf(seg.it);this.klLayers();const KG=this.KG;this.klClear(KG);
+  KG.x.fillStyle=pal.dark;KG.x.fillRect(0,0,W,H);drawCover(KG.x,S,RECT_FULL,g.z,0,0,seg.it.cx);x.drawImage(KG.c,0,0,W,H);
+  const c=this.klMatte(seg,t,g);const ph=R.tl.fuPh||[];const lt=t-seg.start;const bb=b*Math.min(1,(seg.end-seg.start)/Math.max(0.01,(ph.length>1?6:3.5)*b));
+  const by=c?clamp(c.top+c.h*0.16,420,1180):760;
+  ph.forEach((P0,j)=>{const k0=j*3;const ex=j<ph.length-1?k0+2.6:99;const q=lt>ex*bb?clamp((lt-ex*bb)/(5/FPS)):0;
+    const big=P0.b;let fs=330;x.font=`400 ${fs}px Anton,Impact,"Arial Narrow",sans-serif`;while(x.measureText(big).width>W*0.92&&fs>90){fs-=10;x.font=`400 ${fs}px Anton,Impact,"Arial Narrow",sans-serif`}
+    if(P0.s){let ss=110;x.font=`400 ${ss}px Anton,Impact,sans-serif`;while(x.measureText(P0.s).width>W*0.9&&ss>50){ss-=6;x.font=`400 ${ss}px Anton,Impact,sans-serif`}
+      this.fuWord(x,P0.s,`400 ${ss}px Anton,Impact,"Arial Narrow",sans-serif`,pal.light,W/2,by-fs*0.5-ss*0.45,clamp((lt-k0*bb)/(5/FPS)),q,true)}
+    this.fuWord(x,big,`400 ${fs}px Anton,Impact,"Arial Narrow",sans-serif`,pal.acc1,W/2,by,clamp((lt-(k0+(P0.s?1:0))*bb)/(5/FPS)),q,true)});
+  if(c)this.klSubject(x,KG.c,1,1,null)};
+Engine.prototype.fuPrint=function(x,seg,it,idx,y,rot,pop,t){ // ein Abzug, y = Oberkante, pop 0..1 = Motiv springt heraus
+  const pw=880,ph=1100,bd=34,iw=pw-2*bd,ih=ph-2*bd-30;const cx=W/2,cy=y+ph/2+70;const S=srcOf(it);if(!S)return;
+  x.save();x.translate(cx,cy);x.rotate(rot*Math.PI/180);
+  const path=fuTorn(idx+1+(P.seed%5),pw,ph,9);x.save();x.shadowColor="rgba(40,25,10,0.35)";x.shadowBlur=28*this.s;x.shadowOffsetY=16*this.s;x.fillStyle="#FBF8F2";x.fill(path);x.restore();
+  const ins=pop*0.1;const Rin={x:-iw/2+iw*ins,y:-ph/2+bd+ih*ins*1.3,w:iw*(1-2*ins),h:ih*(1-ins*1.6),clip:true};const Rfull={x:-iw/2,y:-ph/2+bd,w:iw,h:ih,clip:true};
+  x.save();x.beginPath();x.rect(Rin.x,Rin.y,Rin.w,Rin.h);x.clip();drawCover(x,S,Rfull,1.02,0,klPy(it),it.cx);x.restore();
+  if(pop>0.001){const e=klMask(it);const S2=rawSrc(it);if(e&&S2){this.klLayers();const L=this.KS,T=this.KT;const m=x.getTransform();
+      this.klClear(T);T.x.save();T.x.setTransform(m);const mc={src:klMaskCanvas(e),sw:S2.sw,sh:S2.sh};const o=10*pop;
+      for(let k=0;k<12;k++){const a=k/12*Math.PI*2;T.x.save();T.x.translate(Math.cos(a)*o,Math.sin(a)*o);drawCover(T.x,mc,Rfull,1.02,0,klPy(it),it.cx);T.x.restore()}T.x.restore();
+      this.klClear(L);L.x.save();L.x.setTransform(m);drawCover(L.x,S,Rfull,1.02,0,klPy(it),it.cx);L.x.globalCompositeOperation="destination-in";drawCover(L.x,mc,Rfull,1.02,0,klPy(it),it.cx);L.x.restore();
+      x.save();x.setTransform(1,0,0,1,0,0);x.shadowColor=`rgba(0,0,0,${0.35*pop})`;x.shadowBlur=22*this.s;x.shadowOffsetY=14*this.s;x.drawImage(T.c,0,0);x.shadowColor="transparent";x.drawImage(L.c,0,0);x.restore()}}
+  // Klammer und Klebeband
+  x.fillStyle="#C9A06B";x.fillRect(-23,-ph/2-62,46,110);x.fillStyle="rgba(0,0,0,0.12)";x.fillRect(-23,-ph/2-62,46,8);
+  x.fillStyle="rgba(255,232,140,0.55)";[[-300,24],[300,-22]].forEach(([dx,a])=>{x.save();x.translate(dx,-ph/2+40);x.rotate(a*Math.PI/180);x.fillRect(-85,-28,170,56);x.restore()});
+  x.restore()};
+Engine.prototype.fuScrap=function(x,seg,t){
+  const pal=klPal(),b=beatLen();x.drawImage(fuPaper(this.s),0,0,W,H);fuLine(x,t);const dt=t-seg.start;const n=seg.cnt||1;
+  if(seg.prev&&dt<0.25){const q=ease(clamp(dt/0.2));this.fuPrint(x,seg,seg.prev,seg.pi-1,250-1350*q,seg.prot||0,seg.ppop&&klMask(seg.prev)?1:0,t)}
+  const drop=ease(clamp(dt/0.28));const y=250-1100*(1-drop);const rot=(seg.rot||0)+9*Math.exp(-dt/0.4)*Math.cos(2*Math.PI*dt/0.62);
+  const pop=seg.pop&&klMask(seg.it)?ease(clamp((dt-0.45)/0.3)):0;this.fuPrint(x,seg,seg.it,seg.pi,y,rot,pop,t);
+  // Bildnummer wie auf dem Kontaktbogen
+  const pn=ease(clamp((dt-0.1)/0.25));if(pn>0){x.save();x.globalAlpha=Math.min(1,pn*1.5);x.font='400 120px Anton,Impact,sans-serif';x.textAlign="left";x.textBaseline="alphabetic";x.fillStyle=pal.acc1;
+    x.shadowColor="rgba(0,0,0,0.2)";x.shadowBlur=8*this.s;x.fillText(`${pad(seg.pi+1)}/${pad(n)}`,60,H-110+(1-pn)*80);x.restore()}
+  // Beschriftung in Handschrift, Wort für Wort
+  const lab=seg.label||"";if(lab){const ws=lab.split(/\s+/);x.save();x.font='400 78px "Permanent Marker","Marker Felt",cursive';x.textBaseline="middle";x.fillStyle=pal.dark;
+    const tot=ws.reduce((a,w)=>a+x.measureText(w+" ").width,0);let xx=W/2-Math.min(tot,W*0.9)/2;const yl=250+1100+150;
+    ws.forEach((w,j)=>{const tj=0.3+j*b/2;if(dt<tj)return;const p=ease(clamp((dt-tj)/(4/FPS)));const ww=x.measureText(w+" ").width;x.save();x.globalAlpha=Math.min(1,p*1.5);x.translate(xx+ww/2,yl);x.rotate(-0.035);x.scale(1+0.3*(1-p),1+0.3*(1-p));x.textAlign="center";x.fillText(w,0,0);x.restore();xx+=ww});x.restore()}};
+function fuChips(){const txt=(P.ende||klHookText()||"Bis bald").toUpperCase();const key=txt+"|"+P.seed+"|"+JSON.stringify(klPal());if(FU.chips&&FU.chipKey===key)return FU.chips;
+  const pal=klPal();const words=txt.split(/\s+/).filter(Boolean).slice(0,6);const lines=[];let cur="";words.forEach(w=>{if((cur+" "+w).trim().length>9&&cur){lines.push(cur);cur=w}else cur=(cur+" "+w).trim()});if(cur)lines.push(cur);
+  const fonts=['400 F Anton,Impact,sans-serif','400 F "Instrument Serif",Georgia,serif','400 F "Permanent Marker",cursive','800 F Inter,Arial,sans-serif','700 F "Courier New",monospace'];
+  const schemes=[["#FFFFFF","#111111"],["#111111","#FFFFFF"],[pal.acc1,"#111111"],["#F4EBD6","#A8321C"],["#FFE15A","#111111"],["#D5D9DE","#111111"],[pal.bg1,"#FFFFFF"]];
+  const r=rng((P.seed|0)*31+7);let idx=0;const out=lines.slice(0,3).map((ln,li)=>ln.split("").map(ch=>{const o={ch,font:fonts[Math.floor(r()*fonts.length)],sc:schemes[Math.floor(r()*schemes.length)],size:220+Math.floor(r()*70),rot:(r()-0.5)*16,i:idx++,dy:(r()-0.5)*20};return o}));
+  FU.chips={lines:out};FU.chipKey=key;return FU.chips}
+Engine.prototype.fuEnd=function(x,seg,t){
+  const b=beatLen();x.drawImage(fuPaper(this.s),0,0,W,H);fuLine(x,t);const dt=t-seg.start;
+  if(seg.prev&&dt<0.3){const q=ease(clamp(dt/0.3));this.fuPrint(x,seg,seg.prev,seg.pi-1,250-1400*q,seg.prot||0,seg.ppop&&klMask(seg.prev)?1:0,t)}
+  const ch=fuChips();const nL=ch.lines.length;const y0=nL>2?470:560;
+  ch.lines.forEach((ln,li)=>{let tw=0;const ws=ln.map(c=>{x.font=c.font.replace("F",c.size+"px");const w=(c.ch===" "?c.size*0.35:x.measureText(c.ch).width+40);tw+=w*0.86;return w});
+    const sc=Math.min(1,(W*0.9)/Math.max(1,tw));let xx=W/2-tw*sc/2;const y=y0+li*290;
+    ln.forEach((c,j)=>{const w=ws[j]*0.86*sc;const tj=0.15+(li*ln.length*0+c.i)*b/4;if(c.ch!==" "&&dt>=tj){const p=ease(clamp((dt-tj)/0.18));const jit=dt>(seg.end-seg.start)-1.2?Math.sin((dt)*40+c.i)*5:0;
+        x.save();x.translate(xx+w/2,y+c.dy+jit-60*(1-p));x.rotate((c.rot*(1+2*(1-p)))*Math.PI/180);const s2=sc*(1+0.5*(1-p));x.scale(s2,s2);x.globalAlpha=Math.min(1,p*2);
+        x.font=c.font.replace("F",c.size+"px");const mw=x.measureText(c.ch).width;const hh=c.size*0.92;const path=fuTorn(1000+c.i,mw+40,hh+30,4);
+        x.save();x.shadowColor="rgba(0,0,0,0.3)";x.shadowBlur=10*this.s;x.shadowOffsetY=6*this.s;x.fillStyle=c.sc[0];x.fill(path);x.restore();
+        x.fillStyle=c.sc[1];x.textAlign="center";x.textBaseline="middle";x.fillText(c.ch,0,c.size*0.04);x.restore()}xx+=w})});
+  // Motiv als Sticker unten
+  const tl=2*b;if(dt>=tl){const p=ease(clamp((dt-tl)/0.3));const bob=Math.sin((dt-tl)*2*Math.PI/b)*10;const e=klMask(seg.it);const S=srcOf(seg.it),S2=rawSrc(seg.it);
+    const Rb={x:W/2-330,y:H-900+(1-p)*700+bob,w:660,h:820};
+    if(e&&S&&S2&&e.box){this.klLayers();const L=this.KS,T=this.KT;const bx=e.box;const sc=Math.min(Rb.w/(bx.w*S2.sw),Rb.h/(bx.h*S2.sh));const dw=S2.sw*sc,dh=S2.sh*sc;
+      const dx=Rb.x+Rb.w/2-(bx.x+bx.w/2)*dw,dy=Rb.y+Rb.h-(bx.y+bx.h)*dh;const mc={src:klMaskCanvas(e),sw:S2.sw,sh:S2.sh};const Rr={x:dx,y:dy,w:dw,h:dh};const rot=Math.sin((dt-tl)*4)*0.05;
+      const put=(X,src,ox,oy)=>{X.save();X.translate(W/2,Rb.y+Rb.h);X.rotate(rot);X.translate(-W/2,-(Rb.y+Rb.h));X.translate(ox,oy);drawCover(X,src,Rr,1,0,0,0.5);X.restore()};
+      this.klClear(T);for(let k=0;k<12;k++){const a=k/12*Math.PI*2;put(T.x,mc,Math.cos(a)*12,Math.sin(a)*12)}
+      this.klClear(L);put(L.x,S,0,0);L.x.save();L.x.globalCompositeOperation="destination-in";put(L.x,mc,0,0);L.x.restore();
+      x.save();x.setTransform(1,0,0,1,0,0);x.shadowColor="rgba(0,0,0,0.3)";x.shadowBlur=20*this.s;x.shadowOffsetY=14*this.s;x.drawImage(T.c,0,0);x.shadowColor="transparent";x.drawImage(L.c,0,0);x.restore()}
+    else if(S){x.save();x.translate(W/2,H-520+(1-p)*700+bob);x.rotate(-0.04);x.fillStyle="#FBF8F2";x.shadowColor="rgba(0,0,0,0.3)";x.shadowBlur=20*this.s;x.fillRect(-250,-310,500,620);x.shadowColor="transparent";drawCover(x,S,{x:-226,y:-286,w:452,h:540,clip:true},1,0,0,seg.it.cx);x.restore()}}};
+
 /* ================= Speichern ================= */
 let saveTimer=null;
 function markChanged(now){P.updatedAt=new Date().toISOString();R.dirty=true;if(now)return saveNow();scheduleSave()}
