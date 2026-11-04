@@ -312,6 +312,18 @@ nav.side{position:fixed;left:0;top:0;bottom:0;z-index:45;width:calc(var(--side-w
 .side .sp{flex:1}
 .mono-d{font:600 13px var(--mono);color:var(--accent);letter-spacing:.04em;font-variant-numeric:tabular-nums}
 .chip{font-size:10.5px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;border:1px solid var(--field-2);color:var(--text-2);border-radius:999px;padding:3px 9px;white-space:nowrap}
+/* Leiste oben */
+/* Oben statt links: Leiste mit Text (ab 701 px) */
+@media (min-width:701px){
+  :root{--side-w:0px;--top-h:56px}
+  body{padding-left:0!important;padding-top:calc(var(--top-h) + env(safe-area-inset-top,0px))}
+  nav.side{top:0;right:0;bottom:auto;width:auto;height:calc(var(--top-h) + env(safe-area-inset-top,0px));flex-direction:row;align-items:center;gap:2px;padding:env(safe-area-inset-top,0px) max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px));border-right:0;border-bottom:1px solid var(--line)}
+  .side .logo{width:34px;height:34px;border-radius:10px;margin:0 14px 0 0}
+  .side a.nv{width:auto;flex-direction:row;gap:8px;padding:9px 14px;border-radius:10px;font-size:14px}
+  .side a.nv svg{width:18px;height:18px}
+  .side a.nv[aria-current="page"]{background:var(--field);color:var(--text);box-shadow:inset 0 -2px 0 var(--amber)}
+  header.top{top:calc(var(--top-h) + env(safe-area-inset-top,0px));padding-top:10px}
+}
 /* Als Nächstes */
 .strip{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:14px}
 .st-i{background:none;border:0;padding:0;text-align:left;cursor:pointer;color:inherit;min-width:0;font:inherit}
@@ -360,15 +372,77 @@ nav.side{position:fixed;left:0;top:0;bottom:0;z-index:45;width:calc(var(--side-w
   .setrow{grid-template-columns:minmax(0,1fr);gap:4px}
   .rowgrid{grid-template-columns:repeat(3,minmax(0,1fr))}
 }
+/* Pult (Dunkelkammer) */
+body.vpult .wrap{max-width:1560px}
+@media (min-width:701px){body.vpult header.top{display:none}body.vpult .wrap{padding-top:20px;gap:0}body.vpult #banner:not(:empty){margin-bottom:14px}}
+.pu{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,310px);gap:16px;align-items:start}
+.pu-cen{background:#0B0A09;border:1px solid var(--line);border-radius:var(--r-card);padding:14px 16px 18px;min-width:0;container-type:inline-size;position:relative}
+.pu-cbar{display:flex;align-items:center;gap:12px;justify-content:space-between;margin-bottom:12px;color:#C2B5A8;font-size:13px}
+.pu-cbar .meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pu-tog{display:inline-flex;background:#221E1B;border-radius:10px;padding:3px;flex:none}
+.pu-tog button{border:0;background:none;color:#C2B5A8;font:600 13px var(--sans);padding:6px 14px;border-radius:8px;cursor:pointer}
+.pu-tog button[aria-pressed="true"]{background:#3A332E;color:#FFF6EC}
+.pu-stage{display:flex;gap:28px;justify-content:center;align-items:center}
+.pu-big{position:relative;display:flex;align-items:center;gap:10px;flex:1;justify-content:center;min-width:0}
+.pu-img{width:min(100%,460px,max(260px,calc((100vh - 330px)*.8)));aspect-ratio:4/5;background:#151311;border-radius:4px;overflow:hidden;position:relative;flex:none;box-shadow:0 0 0 1px #2A2420}
+.pu-img img,.pu-img video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pu-img .empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;color:#8C8075;padding:20px;font-size:14px}
+.pu-arw{border:0;background:#221E1B;color:#FFF6EC;width:40px;height:40px;border-radius:50%;font-size:22px;line-height:1;cursor:pointer;flex:none}
+.pu-arw:disabled{opacity:.3;cursor:default}
+.pu-phone{width:min(300px,max(230px,calc((100vh - 330px)*.68)));flex:none;background:#000;border:1px solid #2F2A27;border-radius:30px;padding:16px 10px 12px;color:#FFF6EC}
+.pu-phone .prof{margin:0 6px 12px}.pu-phone .prof .av{width:34px;height:34px;box-shadow:0 0 0 2px #000,0 0 0 3.5px var(--amber)}.pu-phone .prof b{font-size:14px}
+.pu-phone .counter{color:#8C8075}
+.pu-phone .feedgrid{gap:2px;border-radius:4px}
+.pu-phone .tile{background:#1A1715}
+.pu-phone .tile.plan{box-shadow:inset 0 0 0 2px var(--amber)}
+.pu-phone .tile .badge{font-size:9px;padding:2px 5px;background:var(--amber);color:#1E1B19}
+.pu-phone .tile .badge.pv{background:#FFF6EC}
+.pu-phone .tile.on{outline:3px solid #FFF6EC}
+.pu-hint{color:#8C8075;font-size:12px;text-align:center;margin:10px 0 0}
+.pu-cen[data-mode="bild"] .pu-phone,.pu-cen[data-mode="feed"] .pu-big{display:none}
+@container (min-width:820px){.pu-cen .pu-tog{display:none}.pu-cen[data-mode] .pu-phone,.pu-cen[data-mode] .pu-big{display:flex}.pu-cen[data-mode] .pu-phone{display:block}}
+.pu-ins{display:flex;flex-direction:column;gap:14px;padding:18px}
+.pu-mhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.pu-mhead button{border:0;background:var(--field);color:var(--text);width:30px;height:30px;border-radius:8px;cursor:pointer;font-size:16px}
+.pu-cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:3px}
+.pu-cal .wd{font-size:10.5px;font-weight:700;color:var(--text-3);text-align:center;padding:2px 0}
+.pu-cal button{border:0;background:var(--field);color:var(--text-2);border-radius:6px;height:36px;font:600 12px var(--sans);position:relative;cursor:pointer;padding:0}
+.pu-cal button.out{opacity:.35}
+.pu-cal button.past{opacity:.55}
+.pu-cal button.has{background:var(--peach);color:var(--text)}
+.pu-cal button.has i{position:absolute;left:50%;bottom:4px;width:6px;height:6px;margin-left:-3px;border-radius:50%}
+.pu-cal button.fr::after{content:"";position:absolute;left:50%;bottom:4px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;box-shadow:inset 0 0 0 1.5px var(--text-3)}
+.pu-cal button.today{box-shadow:inset 0 0 0 1px var(--text-3)}
+.pu-cal button.sel{box-shadow:inset 0 0 0 2px var(--amber);color:var(--text)}
+.pu-cal button.tgt{background:var(--accent-fill);box-shadow:inset 0 0 0 2px var(--amber)}
+.pu-leg{display:flex;gap:12px;font-size:11px;color:var(--text-3);margin-top:8px;flex-wrap:wrap}
+.pu-leg span{display:inline-flex;align-items:center;gap:5px}
+.pu-leg i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.pu-f{display:flex;flex-direction:column;gap:4px}
+.pu-f .v{background:var(--field);border-radius:10px;padding:9px 11px;font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere}
+.pu-f .v.cap{max-height:190px;overflow:auto}
+.pu-acts{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:8px}
+.pu-acts .btn{white-space:nowrap;padding-left:10px;padding-right:10px}
+.pu-acts .btn{justify-content:center}
+.pu-acts .wide{grid-column:1/-1}
+.pu-film{margin-top:16px;padding:14px 16px 16px}
+.pu-fhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.pu-fhead .fchips{margin:0}
+.pu-strip{display:flex;gap:8px;overflow-x:auto;padding:3px 3px 8px;scroll-snap-type:x proximity;-webkit-overflow-scrolling:touch}
+.pu-strip .tile{flex:none;width:104px;scroll-snap-align:start;border-radius:6px}
+.pu-strip .tile .badge.pl{background:var(--amber);color:#1E1B19;top:auto;bottom:6px}
+.pu-strip .tile.add{display:grid;place-items:center;font-size:28px;color:var(--text-3);background:var(--field);border:1.5px dashed var(--field-2)}
+@media (max-width:1000px){.pu{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:700px){.pu-cen{padding:12px 10px 14px}.pu-img{width:100%}.pu-arw{position:absolute;z-index:2;top:50%;margin-top:-18px;width:36px;height:36px;font-size:18px;background:rgba(0,0,0,.45)}#puPrev{left:8px}#puNext{right:8px}.pu-arw:disabled{display:none}.pu-cbar .meta{font-size:12px}.pu-phone{width:min(100%,320px)}.pu-strip .tile{width:84px}}
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;min-height:100dvh}html{overscroll-behavior-y:none}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 <nav class="side" aria-label="Bereiche">
-  <a href="#posten" id="home" class="logo" title="Studio Sommer_gram, zur Startseite" aria-label="Studio Sommer_gram, zur Startseite"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="lgAs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A62"/><stop offset="1" stop-color="#D9612E"/></linearGradient><clipPath id="lgAc"><rect width="200" height="114"/></clipPath></defs><rect width="200" height="200" fill="#1E1B19"/><circle cx="100" cy="114" r="40" fill="url(#lgAs)" clip-path="url(#lgAc)"/><rect x="44" y="110" width="112" height="9" rx="4.5" fill="#FFF6EC"/><rect x="74" y="131" width="52" height="6" rx="3" fill="#E9875A" opacity=".75"/><rect x="88" y="146" width="24" height="6" rx="3" fill="#E9875A" opacity=".45"/></svg></a>
+  <a href="#pult" id="home" class="logo" title="Studio Sommer_gram, zur Startseite" aria-label="Studio Sommer_gram, zur Startseite"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="lgAs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A62"/><stop offset="1" stop-color="#D9612E"/></linearGradient><clipPath id="lgAc"><rect width="200" height="114"/></clipPath></defs><rect width="200" height="200" fill="#1E1B19"/><circle cx="100" cy="114" r="40" fill="url(#lgAs)" clip-path="url(#lgAc)"/><rect x="44" y="110" width="112" height="9" rx="4.5" fill="#FFF6EC"/><rect x="74" y="131" width="52" height="6" rx="3" fill="#E9875A" opacity=".75"/><rect x="88" y="146" width="24" height="6" rx="3" fill="#E9875A" opacity=".45"/></svg></a>
+  <a class="nv" href="#pult" data-v="pult"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M3 19.5h3M8.5 19.5h3M14 19.5h3M19.5 19.5H21"/><path d="M8 12l2.5-3 2 2.2L14 9.5l2 2.5"/></svg>Pult</a>
   <a class="nv" href="#posten" data-v="posten"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><circle cx="12" cy="11" r="3.2"/><path d="M8 17.5h8"/></svg>Posten</a>
   <a class="nv" href="#plan" data-v="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Plan</a>
-  <a class="nv" href="#raster" data-v="raster"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3" width="7" height="8" rx="1"/><rect x="13.5" y="3" width="7" height="8" rx="1"/><rect x="3.5" y="14" width="7" height="8" rx="1"/><rect x="13.5" y="14" width="7" height="8" rx="1"/></svg>Raster</a>
   <a class="nv" href="werkstatt.html" data-v="reels"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M10 9.2v5.6l4.6-2.8z"/><path d="M5 6.5h2M5 17.5h2M17 6.5h2M17 17.5h2"/></svg>Reels</a>
   <a class="nv" href="#analytics" data-v="analytics"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M11 20V5M17 20v-6M3 20.5h18"/></svg>Zahlen</a>
   <span class="sp"></span>
@@ -421,7 +495,7 @@ function er(st){if(!st||!st.views)return null;const parts=["likes","comments","s
 function tzOffset(dateStr,timeStr){const d=new Date(dateStr+"T"+timeStr+":00");const m=-d.getTimezoneOffset();const s=m>=0?"+":"-";return s+pad(Math.floor(Math.abs(m)/60))+":"+pad(Math.abs(m)%60)}
 
 /* ---------- Zustand ---------- */
-const S={view:"posten",posts:[],insights:[],pool:[],poolSel:null,planSel:null,poolBusy:0,loaded:false,mode:"lokal",
+const S={view:"pult",posts:[],insights:[],pool:[],poolSel:null,planSel:null,poolBusy:0,loaded:false,mode:"lokal",
   draft:null,cur:0,blobs:{},suggest:null,suggesting:false,confirm:false,sending:false,
   weekStart:null,chartMetric:"followers",mc:{state:"checking",brandId:BRAND_FALLBACK,tz:"Europe/Berlin",msg:""},live:null,media:[],aTab:"ueberblick",aPer:"d30",mSort:"neu",calc:{post:"",views:"",likes:"",comments:"",shares:"",saves:""}};
 function monday(d){const x=new Date(d);const k=(x.getDay()+6)%7;x.setDate(x.getDate()-k);x.setHours(12,0,0,0);return x}
@@ -440,16 +514,16 @@ async function deletePost(id){if(db){await db.collection("posts").doc(id).delete
 async function saveInsight(i){if(db){await db.collection("insights").doc(i.date).set(i)}else{S.insights=S.insights.filter(x=>x.date!==i.date);S.insights.push(i);lsSave();render()}}
 
 /* ---------- Navigation ---------- */
-function route(){let h=location.hash.slice(1);const mm=decodeURIComponent(h).match(/^analytics(?:\/m\/|-)(\d+)$/);if(mm){S.pendingMO=mm[1];h="analytics"}if(h==="zahlen")h="analytics";const prev=S.view;S.view=VIEWS.includes(h)?h:"posten";
+function route(){let h=location.hash.slice(1);const mm=decodeURIComponent(h).match(/^analytics(?:\/m\/|-)(\d+)$/);if(mm){S.pendingMO=mm[1];h="analytics"}if(h==="zahlen")h="analytics";const prev=S.view;S.view=VIEWS.includes(h)?h:"pult";document.body.classList.toggle("vpult",S.view==="pult");
   document.querySelectorAll("nav.side a[data-v]").forEach(a=>{if(a.dataset.v===S.view)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
   document.getElementById("ptitle").textContent=TITLES[S.view];render();if(prev!==S.view)scrollTo({top:0})}
-const VIEWS=["posten","plan","raster","analytics","einstellungen"];
-const TITLES={posten:"Posten",plan:"Plan",raster:"Raster",analytics:"Zahlen",einstellungen:"Einstellungen"};
+const VIEWS=["pult","posten","plan","raster","analytics","einstellungen"];
+const TITLES={pult:"Pult",posten:"Posten",plan:"Plan",raster:"Raster",analytics:"Zahlen",einstellungen:"Einstellungen"};
 addEventListener("hashchange",route);
 document.getElementById("home").addEventListener("click",e=>{e.preventDefault();S.planSel=null;S.poolSel=null;S.confirm=false;S.suggest=null;S.weekStart=monday(new Date());
-  if(location.hash==="#posten")render();else location.hash="posten";scrollTo({top:0,behavior:"smooth"})});
+  if(location.hash==="#pult")render();else location.hash="pult";scrollTo({top:0,behavior:"smooth"})});
 const V=document.getElementById("view");
-function render(){renderConn();renderBanner();({posten:vPosten,plan:vPlan,raster:vRaster,analytics:vAnalytics,einstellungen:vSettings})[S.view]();if(S.pendingMO&&S.view==="analytics"&&S.loaded){const m=S.media.find(x=>x.id===S.pendingMO);if(m){const id=S.pendingMO;S.pendingMO=null;setTimeout(()=>openMO(id),60)}}}
+function render(){renderConn();renderBanner();({pult:vPult,posten:vPosten,plan:vPlan,raster:vRaster,analytics:vAnalytics,einstellungen:vSettings})[S.view]();if(S.pendingMO&&S.view==="analytics"&&S.loaded){const m=S.media.find(x=>x.id===S.pendingMO);if(m){const id=S.pendingMO;S.pendingMO=null;setTimeout(()=>openMO(id),60)}}}
 function renderBanner(){const b=document.getElementById("banner");
   if(!S.loaded&&db){b.innerHTML=`<div class="notice">Lade deine Posts …</div>`;return}
   b.innerHTML=S.mode==="lokal"&&S.loaded?`<div class="notice">Gerade ohne Sync: Änderungen bleiben nur in diesem Browser.</div>`:""}
@@ -457,6 +531,113 @@ function mcInfo(){const map={checking:["var(--muted)","Metricool wird geprüft �
 function renderConn(){const c=document.getElementById("conn");const m=S.mc;const L=latestIns();
   if(L&&L.checkedAt){const age=(Date.now()-new Date(L.checkedAt).getTime())/36e5;c.innerHTML=`<span class="dot" style="background:${age<30?"var(--ok)":"var(--warn)"}"></span><span>Instagram-Zahlen: ${standTxt(L)}</span>`;c.title="Kommt jeden Morgen direkt aus dem Professional-Dashboard";return}
   const x=mcInfo();c.innerHTML=`<span class="dot" style="background:${x[0]}"></span><span>${x[1]}</span>`;c.title=m.msg||""}
+
+/* ---------- 0 Pult (Dunkelkammer): großes Bild, Filmstreifen, Kalender, Feed-Vorschau ---------- */
+const PU_ALL="Alles",PU_PLAN="Eingeplant";
+const PU_ACTIVE=["geplant","freigegeben","instagram","metricool"];
+function puPlanned(){const today=iso(new Date());return S.posts.filter(p=>p.date&&p.date>=today&&PU_ACTIVE.includes(p.status)).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")))}
+function puFirstImg(p){return p&&p.images?p.images.find(x=>!(x.type||"").startsWith("video"))||p.images[0]||null:null}
+function puFilters(){const fl=folders().filter(f=>f!==DRAFTS);const out=[PU_ALL];if(puPlanned().length)out.push(PU_PLAN);out.push(...fl);if(upcoming().drafts.length)out.push(DRAFTS);return out}
+function puFilter(){const fs=puFilters();if(!S.puF){try{S.puF=localStorage.getItem("sg-pu-f")||""}catch(e){}}if(!fs.includes(S.puF))S.puF=PU_ALL;return S.puF}
+function puPostItem(p){return {k:"p:"+p.id,im:puFirstImg(p),post:p}}
+function puItems(){const f=puFilter();const u=upcoming();
+  const plan=puPlanned().map(puPostItem);const drafts=u.drafts.map(puPostItem);
+  const pool=fo=>S.pool.filter(x=>!fo||poolFolder(x)===fo).map((x,i)=>({k:"g:"+x.id,im:x.img,pool:x,i})).sort((a,b)=>(gRank(a.k)-gRank(b.k))||((b.pool.addedAt||"").localeCompare(a.pool.addedAt||""))||(a.i-b.i));
+  if(f===PU_PLAN)return plan;if(f===DRAFTS)return drafts;if(f===PU_ALL)return [...plan,...drafts,...pool(null)];return pool(f)}
+function puFind(k){if(!k)return null;const t=k[0],id=k.slice(2);
+  if(t==="p"){const p=S.posts.find(x=>x.id===id);return p?puPostItem(p):null}
+  const x=S.pool.find(y=>y.id===id);return x?{k,im:x.img,pool:x}:null}
+function puSel(){const items=puItems();let it=puFind(S.pu);if(!it){it=items[0]||null;S.pu=it?it.k:null}return it}
+function puMonth(){if(!S.puM){const d=new Date();S.puM=new Date(d.getFullYear(),d.getMonth(),1,12)}return S.puM}
+function puCopy(p){const t=(p.caption||"").trim()+((p.tags||"").trim()?"\n\n"+p.tags.trim():"");if(!t){toast("Noch keine Caption");return}
+  const fail=()=>{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand("copy");toast("Caption kopiert")}catch(e){toast("Kopieren ging nicht")}ta.remove()};
+  try{navigator.clipboard.writeText(t).then(()=>toast("Caption kopiert"),fail)}catch(e){fail()}}
+function puFeed(sel){const fut=puPlanned().filter(p=>p.format!=="STORY").reverse();const pub=S.posts.filter(p=>p.status==="veroeffentlicht"&&p.format!=="STORY").sort((a,b)=>(b.date||"0").localeCompare(a.date||"0"));
+  const out=[];if(sel&&sel.pool)out.push({k:sel.k,im:sel.im,pv:true});
+  if(sel&&sel.post&&sel.post.status==="entwurf"&&sel.post.format!=="STORY")out.push({k:sel.k,im:sel.im,pv:true});
+  fut.forEach(p=>out.push({k:"p:"+p.id,im:puFirstImg(p),plan:true,post:p}));pub.forEach(p=>out.push({k:"p:"+p.id,im:puFirstImg(p),post:p}));return out.slice(0,9)}
+function puCal(sel){const m=puMonth();const y=m.getFullYear(),mo=m.getMonth();const first=new Date(y,mo,1,12);const start=new Date(first);start.setDate(1-((first.getDay()+6)%7));
+  const today=iso(new Date());const selDate=sel&&sel.post&&sel.post.date;const byDay={};S.posts.filter(p=>p.date&&p.status!=="entwurf").forEach(p=>{(byDay[p.date]=byDay[p.date]||[]).push(p)});
+  let h=["Mo","Di","Mi","Do","Fr","Sa","So"].map(w=>`<span class="wd">${w}</span>`).join("");
+  for(let i=0;i<42;i++){const d=new Date(start);d.setDate(start.getDate()+i);if(i===35&&d.getMonth()!==mo)break;const ds=iso(d);const ps=byDay[ds]||[];
+    const cls=[d.getMonth()!==mo?"out":"",ds<today?"past":"",ps.length?"has":"",!ps.length&&ds>=today&&SLOTS[d.getDay()]?"fr":"",ds===today?"today":"",ds===selDate?"sel":"",ds===S.puDay?"tgt":""].filter(Boolean).join(" ");
+    const lab=fmtD(ds)+(ps.length?", "+ps.length+" Post"+(ps.length>1?"s":""):SLOTS[d.getDay()]&&ds>=today?", freier Rhythmus-Termin":"");
+    h+=`<button class="${cls}" data-pday="${ds}" aria-label="${esc(lab)}">${d.getDate()}${ps.length?`<i style="background:${(STATUS[ps[0].status]||STATUS.geplant)[1]}"></i>`:""}</button>`}
+  return h}
+function puInspector(sel){const MON=["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];const m=puMonth();
+  let h=`<div><div class="pu-mhead"><span class="lbl">${MON[m.getMonth()]} ${m.getFullYear()}</span><span class="row" style="gap:6px"><button data-pm="-1" aria-label="Monat zurück">‹</button><button data-pm="1" aria-label="Monat vor">›</button></span></div>
+    <div class="pu-cal">${puCal(sel)}</div>
+    <div class="pu-leg"><span><i style="background:var(--info)"></i>geplant</span><span><i style="background:var(--ok)"></i>in Instagram</span><span><i style="box-shadow:inset 0 0 0 1.5px var(--text-3)"></i>freier Termin</span></div></div>`;
+  const tgt=S.puDay,tgtT=tgt?SLOTS[parse(tgt).getDay()]||"19:00":"";
+  if(!sel){return h+`<p class="small muted">Noch kein Material. Unten im Filmstreifen Fotos hinzufügen.</p>`}
+  if(sel.post){const p=sel.post;const mv=calMovable(p)&&tgt&&tgt!==p.date;
+    h+=`<div class="pu-f"><span class="lbl">${p.date?esc((fmtD(p.date)+(p.time?" · "+p.time:"")).toUpperCase()):"OHNE TERMIN"}</span><div>${statusHTML(p.status)}</div></div>
+      <div class="pu-f"><span class="lbl">Format${p.ort?" · Ort":""}</span><div class="v">${esc(FORMATS[p.format]||"Foto")}${p.format==="REEL"||p.format==="STORY"?" · 9:16":" · 4:5"}${p.ort?" · "+esc(p.ort):""}</div></div>
+      <div class="pu-f"><span class="lbl">Caption</span><div class="v cap">${p.caption?esc(p.caption)+(p.tags?"\n\n"+esc(p.tags):""):'<span class="muted">Noch keine Caption</span>'}</div></div>
+      <div class="pu-acts"><button class="btn sm" id="puCopy" ${p.caption||p.tags?"":"disabled"}>Caption kopieren</button><button class="btn ghost sm" id="puEdit">Bearbeiten</button>
+      ${mv?`<button class="btn soft sm wide" id="puMove">Auf ${esc(fmtD(tgt))} verschieben</button>`:""}</div>
+      ${!mv&&calMovable(p)?`<p class="small muted" style="margin:0">Zum Verschieben im Kalender auf einen anderen Tag tippen.</p>`:""}`}
+  else{const im=sel.im||{};const r=im.ratio;const ok=r?Math.abs(r-0.8)<0.02:null;
+    h+=`<div class="pu-f"><span class="lbl">Noch ohne Termin</span><div class="v">${esc(poolFolder(sel.pool))}${r?` · ${ok?"4:5 passt":"nicht 4:5, wird im Post zugeschnitten"}`:""}</div></div>
+      <div class="pu-f"><span class="lbl">Tag</span><div class="v">${tgt?esc(fmtD(tgt))+" · "+tgtT:'<span class="muted">Im Kalender oben einen Tag antippen</span>'}</div></div>
+      <div class="pu-acts"><button class="btn sm wide" id="puNew">${tgt?"Post für "+esc(fmtD(tgt))+" anlegen":"Post daraus machen"}</button>
+      <button class="btn ghost sm" id="puAdd">Zum aktuellen Post</button><button class="btn ghost sm" id="puDel">Entfernen</button></div>`}
+  return h}
+function vPult(){const items=puItems();const sel=puSel();const idx=sel?items.findIndex(x=>x.k===sel.k):-1;const f=puFilter();
+  const mode=S.puMode||(()=>{try{return localStorage.getItem("sg-pu-mode")||"bild"}catch(e){return "bild"}})();
+  const im=sel&&sel.im;const isVid=im&&(im.type||"").startsWith("video");
+  const p=sel&&sel.post;const where=p?(p.title||p.ort||FORMATS[p.format]||"Post"):sel?poolFolder(sel.pool):"";
+  const meta=sel?`${idx>=0?`Bild ${idx+1} von ${items.length} · `:""}${esc(where)}${p&&p.date?" · "+esc(fmtD(p.date)):""}`:"Noch kein Material";
+  const feed=puFeed(sel);
+  const cnt=x=>x===PU_ALL?puPlanned().length+upcoming().drafts.length+S.pool.length:x===PU_PLAN?puPlanned().length:x===DRAFTS?upcoming().drafts.length:S.pool.filter(y=>poolFolder(y)===x).length;
+  V.innerHTML=`<div class="pu">
+  <section class="pu-cen" data-mode="${mode}">
+    <div class="pu-cbar"><span class="meta">${meta}</span><span class="pu-tog" role="group" aria-label="Ansicht"><button data-pmode="bild" aria-pressed="${mode==="bild"}">Bild</button><button data-pmode="feed" aria-pressed="${mode==="feed"}">Feed</button></span></div>
+    <div class="pu-stage">
+      <div class="pu-big"><button class="pu-arw" id="puPrev" aria-label="Vorheriges Bild" ${idx>0?"":"disabled"}>‹</button>
+        <div class="pu-img">${im?(isVid?`<video src="${esc(imgSrc(im))}" muted playsinline loop autoplay></video>`:`<img src="${esc(imgSrc(im))}" alt="${esc(where)}">`):`<div class="empty">${p?esc(FORMATS[p.format]||"Post")+(p.title?" · "+esc(p.title):"")+"<br>ohne Bild":"Unten im Filmstreifen ein Foto wählen oder hinzufügen"}</div>`}</div>
+        <button class="pu-arw" id="puNext" aria-label="Nächstes Bild" ${idx>=0&&idx<items.length-1?"":"disabled"}>›</button></div>
+      <div class="pu-phone" aria-label="So sieht dein Feed aus">
+        <div class="prof"><span class="av" aria-hidden="true"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="lgPs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A62"/><stop offset="1" stop-color="#D9612E"/></linearGradient><clipPath id="lgPc"><rect width="200" height="114"/></clipPath></defs><rect width="200" height="200" fill="#1E1B19"/><circle cx="100" cy="114" r="40" fill="url(#lgPs)" clip-path="url(#lgPc)"/><rect x="44" y="110" width="112" height="9" rx="4.5" fill="#FFF6EC"/></svg></span><div><b>sommer_gram</b><div class="counter">${(()=>{const L=[...S.insights].filter(i=>i.followers!=null).sort((a,b)=>a.date.localeCompare(b.date)).pop();return L?nf(L.followers)+" FOLLOWER":"DEIN FEED"})()}</div></div></div>
+        <div class="feedgrid">${feed.map(x=>`<button class="tile${x.plan?" plan":""}${sel&&x.k===sel.k?" on":""}" data-pk="${x.k}" aria-label="${esc(x.post?(x.post.title||x.post.ort||"Post")+(x.post.date?", "+fmtD(x.post.date):""):"Vorschau")}">${x.im&&!(x.im.type||"").startsWith("video")?`<img src="${esc(imgSrc(x.im))}" alt="" loading="lazy">`:""}${x.pv?`<span class="badge pv">Vorschau</span>`:x.plan?`<span class="badge">${esc(fmtD(x.post.date).replace(/^\w+, /,"").replace(/\.$/,""))}</span>`:""}${x.im?"":`<span class="t">${esc(x.post?(x.post.title||FORMATS[x.post.format]||""):"")}</span>`}</button>`).join("")||`<p class="small" style="color:#8C8075;grid-column:1/-1;padding:20px;text-align:center">Noch nichts geplant oder veröffentlicht</p>`}</div>
+        <p class="pu-hint">Orange: kommt noch · hell: deine Auswahl</p>
+      </div>
+    </div>
+  </section>
+  <section class="card pu-ins">${puInspector(sel)}</section>
+  </div>
+  <section class="card pu-film"><div class="pu-fhead"><span class="lbl">Filmstreifen</span><div class="fchips" role="group" aria-label="Filter">${puFilters().map(x=>`<button class="pill sm" data-pf="${esc(x)}" aria-pressed="${x===f}">${esc(x)} <span class="muted">${cnt(x)}</span></button>`).join("")}</div>${S.poolBusy?`<span class="small muted">${S.poolBusy} werden hochgeladen …</span>`:""}</div>
+    <div class="pu-strip" id="puStrip">${items.map(x=>`<button class="tile${sel&&x.k===sel.k?" on":""}" data-pk="${x.k}" aria-label="${esc(x.post?(x.post.title||x.post.ort||"Post"):"Foto aus "+poolFolder(x.pool))}">${x.im&&!(x.im.type||"").startsWith("video")?`<img src="${esc(imgSrc(x.im))}" alt="" loading="lazy" draggable="false">`:""}${x.post?`<span class="badge pl">${x.post.status==="entwurf"?"Entwurf":esc(fmtD(x.post.date))}</span>`:""}${x.im?"":`<span class="t">${esc(x.post?(x.post.title||FORMATS[x.post.format]):"")}</span>`}</button>`).join("")}${db&&assets?`<button class="tile add" id="puPool" aria-label="Fotos hinzufügen${f!==PU_ALL&&f!==PU_PLAN&&f!==DRAFTS?" in "+esc(f):""}">+</button>`:""}</div>
+  </section>`;
+  bindPult(items,idx,sel)}
+function puStripTo(t,smooth){const st=t&&t.parentElement;if(!st)return;const l=t.offsetLeft-st.offsetLeft,w=t.offsetWidth;if(l<st.scrollLeft||l+w>st.scrollLeft+st.clientWidth)st.scrollTo({left:Math.max(0,l-(st.clientWidth-w)/2),behavior:smooth?"smooth":"auto"})}
+function puGo(k){const st=document.getElementById("puStrip");const sl=st?st.scrollLeft:0;S.pu=k;S.puDay=null;render();const s2=document.getElementById("puStrip");if(s2){s2.scrollLeft=sl;puStripTo(s2.querySelector(`[data-pk="${k}"]`),true)}}
+function bindPult(items,idx,sel){const g=id=>document.getElementById(id);
+  if(g("puPrev"))g("puPrev").onclick=()=>{if(idx>0)puGo(items[idx-1].k)};
+  if(g("puNext"))g("puNext").onclick=()=>{if(idx<items.length-1)puGo(items[idx+1].k)};
+  V.querySelectorAll("[data-pk]").forEach(b=>b.onclick=()=>puGo(b.dataset.pk));
+  V.querySelectorAll("[data-pf]").forEach(b=>b.onclick=()=>{S.puF=b.dataset.pf;try{localStorage.setItem("sg-pu-f",S.puF)}catch(e){}const fo=S.puF;if(fo!==PU_ALL&&fo!==PU_PLAN&&fo!==DRAFTS)S.poolFolder=fo;S.pu=null;S.puDay=null;render()});
+  V.querySelectorAll("[data-pmode]").forEach(b=>b.onclick=()=>{S.puMode=b.dataset.pmode;try{localStorage.setItem("sg-pu-mode",S.puMode)}catch(e){}render()});
+  V.querySelectorAll("[data-pm]").forEach(b=>b.onclick=()=>{const m=puMonth();S.puM=new Date(m.getFullYear(),m.getMonth()+(+b.dataset.pm),1,12);render()});
+  V.querySelectorAll("[data-pday]").forEach(b=>b.onclick=()=>{const ds=b.dataset.pday;const ps=S.posts.filter(p=>p.date===ds&&p.status!=="entwurf").sort((a,b)=>(a.time||"").localeCompare(b.time||""));
+    const cur=sel&&sel.post;if(cur&&calMovable(cur)&&ds!==cur.date&&!ps.length){S.puDay=S.puDay===ds?null:ds;render();return}
+    if(ps.length&&!(sel&&sel.pool)){const i=ps.findIndex(p=>sel&&sel.k==="p:"+p.id);S.pu="p:"+ps[(i+1)%ps.length].id;S.puDay=null;render();return}
+    if(sel&&sel.pool){if(ps.length&&S.puDay===ds){S.pu="p:"+ps[0].id;S.puDay=null}else S.puDay=S.puDay===ds?null:ds;render();return}
+    S.puDay=S.puDay===ds?null:ds;render()});
+  if(g("puCopy"))g("puCopy").onclick=()=>puCopy(sel.post);
+  if(g("puEdit"))g("puEdit").onclick=()=>editPost(sel.post.id);
+  if(g("puMove"))g("puMove").onclick=async()=>{const ds=S.puDay;S.puDay=null;await movePost(sel.post.id,ds);render()};
+  const fromPool=()=>{const x=sel&&sel.pool;return x?{id:x.img.id,url:null,type:x.img.type||"image/jpeg",ratio:x.img.ratio||null,poolId:x.id}:null};
+  if(g("puNew"))g("puNew").onclick=()=>{const im=fromPool();if(!im)return;const ds=S.puDay;S.draft=newDraft(ds||"",ds?SLOTS[parse(ds).getDay()]||"19:00":"");S.draft.images=[im];S.cur=0;S.suggest=null;S.confirm=false;S.puDay=null;location.hash="posten"};
+  if(g("puAdd"))g("puAdd").onclick=()=>{const im=fromPool();if(!im)return;if(!S.draft.images.some(i=>i.id===im.id))S.draft.images.push(im);if(S.draft.images.length>1&&S.draft.format==="POST")S.draft.format="KARUSSELL";S.cur=S.draft.images.length-1;toast("Zum aktuellen Post hinzugefügt")};
+  if(g("puDel"))g("puDel").onclick=async()=>{const id=sel.pool.id;const n=items[idx+1]||items[idx-1];S.pu=n?n.k:null;try{if(db)await db.collection("pool").doc(id).delete();toast("Aus dem Material entfernt")}catch(e){toast("Entfernen hat nicht geklappt")}render()};
+  if(g("puPool"))g("puPool").onclick=()=>poolIn.click();
+  const st=g("puStrip");const on=st&&st.querySelector(".tile.on");if(on&&!S.puScrolled){S.puScrolled=true;puStripTo(on,false)}
+  const pi=V.querySelector(".pu-img");if(pi){let x0=null,y0=0;pi.addEventListener("touchstart",e=>{const t=e.touches[0];x0=t.clientX;y0=t.clientY},{passive:true});
+    pi.addEventListener("touchend",e=>{if(x0==null)return;const t=e.changedTouches[0];const dx=t.clientX-x0,dy=t.clientY-y0;x0=null;if(Math.abs(dx)>50&&Math.abs(dx)>Math.abs(dy)*1.5){const j=idx+(dx<0?1:-1);if(j>=0&&j<items.length)puGo(items[j].k)}},{passive:true})}
+}
+document.addEventListener("keydown",e=>{if(S.view!=="pult"||e.metaKey||e.ctrlKey||e.altKey)return;const t=e.target;if(t&&(t.tagName==="INPUT"||t.tagName==="TEXTAREA"||t.isContentEditable))return;if((lbEl&&!lbEl.hidden)||(moEl&&!moEl.hidden))return;
+  if(e.key==="ArrowLeft"||e.key==="ArrowRight"){const items=puItems();const i=items.findIndex(x=>x.k===S.pu);const j=i+(e.key==="ArrowRight"?1:-1);if(j>=0&&j<items.length){e.preventDefault();puGo(items[j].k)}}});
 
 /* ---------- 1 Posten ---------- */
 function checks(d){const all=(d.caption+" "+d.tags);const n=countTags(all);const isV=d.format==="REEL"||d.format==="STORY";
