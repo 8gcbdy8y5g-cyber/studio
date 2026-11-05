@@ -602,6 +602,7 @@ const STYLES={
   film:{name:"Film",line:"Erzählt ruhig wie ein Filmstreifen: lange Einstellungen, Lichtlecks, Filmbrand und weiche Überblendungen, wahlweise mit Kinobalken.",tags:["Lichtlecks","Überblendung","Ruhig"]},
   galerie:{name:"Galerie",line:"Fotos im Passepartout wie in einem Bildband. Harte Masken-Wischer, ab und zu ein Doppelbild, Nummerierung und Titel in Serifenschrift.",tags:["Passepartout","Doppelbild","Serif"]},
   recap:{name:"Recap",line:"Für den Monatsrückblick: weiße Fläche, groß die Schrift, auf jedem Sechzehntel landet ein Bild, bis eine dichte Collage steht. Dann verschwinden die Bilder wieder, bis nur die Schrift bleibt.",tags:["Monatsrückblick","Collage im Takt"]},
+  ortstitel:{name:"Ortstitel",line:"Für Reisen: erst ein Bild, dann schieben sich im Halbtakt schmale Streifen mit weiteren Bildern hinein. Ein ruhiges Weitwinkelbild fällt wie ein Vorhang darüber, der Ort tippt sich groß ein, darunter flackern die anderen Bilder. Danach schnelle harte Schnitte.",tags:["Reise-Recap","Ort als Titel","Streifen"]},
   futurist:{name:"Futurist",line:"Große Wörter im Takt hinter dem Motiv, dann ein Scrapbook: Abzüge an der Wäscheleine, aus denen das Motiv herausspringt, Beschriftung in Handschrift. Zum Schluss der Text als Schnipsel-Buchstaben.",tags:["Text hinter dem Motiv","Scrapbook","Schnipsel-Titel"]},
   geschnitten:{name:"Geschnitten",line:"Das Motiv freigestellt auf heller Fläche, in vier Streifen geschnitten, die auf jedem Beat ihre Höhe wechseln. Neue Clips fliegen Streifen für Streifen herein.",tags:["Motiv freigestellt","Streifen im Takt"]},
   gespiegelt:{name:"Gespiegelt",line:"Unten das Bild, oben sein Spiegelbild wie in einer Pfütze. Auf der Kante wechselt auf jedem Beat ein Wort. Zwischen den Clips klappt der Spiegel zu und wieder auf.",tags:["Spiegelung","Wort auf dem Beat"]},
@@ -625,18 +626,19 @@ function lookFor(st,r){
   if(st==="nahtlos")return {filter:pick(r,["contrast(1.05) saturate(1.03)","contrast(1.04) saturate(0.95)"]),tint:tint(),grain:0.22,vig:0.7};
   if(st==="dump")return {filter:"contrast(1.12) saturate(1.15)",tint:pick(r,[null,["#ffaa5a",0.05]]),grain:0.28,vig:0,card:pick(r,["#F7F6F2","#FFFFFF","#EFEDE8"]),bg:pick(r,["blur","blur","ink"])};
   if(st==="film")return {filter:pick(r,["contrast(0.94) saturate(0.82) sepia(0.2) brightness(1.04)","contrast(0.97) saturate(0.9) sepia(0.12) brightness(1.02) hue-rotate(-6deg)","contrast(0.92) saturate(0.78) sepia(0.26) brightness(1.05)"]),tint:["#ff9650",0.08],grain:0.6,vig:1.5,weave:true,flicker:true,frame:r()<0.5?"letter":"full",stamp:r()<0.7,leak:pick(r,["amber","rose","red"])};
-  if(st==="kalyl"||st==="geschnitten"||st==="gespiegelt"||st==="futurist"||st==="recap")return {grain:0,vig:0};
+  if(st==="kalyl"||st==="geschnitten"||st==="gespiegelt"||st==="futurist"||st==="recap"||st==="ortstitel")return {grain:0,vig:0};
   if(st==="split"){const lay=pick(r,["tb","tb","tb","tb","tb60","tb40"]);return {filter:pick(r,["contrast(1.06) saturate(1.06)","contrast(1.04) saturate(1.0)"]),tint:tint(),grain:0.2,vig:0.5,lay,
     seam:pick(r,["#000000","#000000","#FFFFFF","none"]),entry:pick(r,["slide","open","open","cut"]),paneTr:pick(r,["slide","slide","cut","flash"]),stagger:r()<0.75,first:r()<0.5?0:1}}
   const bw=r()<0.2;return {bw,filter:bw?"grayscale(1) contrast(1.12)":pick(r,["contrast(1.04) saturate(0.95)","contrast(1.06) saturate(0.9) brightness(1.02)"]),mat:pick(r,[["#F2F0EB","#141414"],["#121212","#EDEBE6"],["#D8D5CE","#161616"]]),grain:0.1,vig:0,index:r()<0.75};
 }
 function cutLook(lk){const o=Object.assign({},lk);for(const k of ["filter","tint","grain","vig","weave","flicker","stamp","bw"])delete o[k];return o}
-function textFor(st,r){if(st==="kalyl")return {kind:"kalyl"};if(st==="gespiegelt")return {kind:"mirror"};if(st==="geschnitten")return {kind:"mirror"};if(st==="futurist")return {kind:"mirror"};if(st==="recap")return {kind:"mirror"};if(st==="split")return {kind:"bold"};if(st==="dump")return {kind:"sticker",y:pick(r,[300,760]),rot:(r()-0.5)*0.12};return {kind:{takt:"bold",nahtlos:"center",film:"mono",galerie:"serif"}[st]}}
+function textFor(st,r){if(st==="kalyl")return {kind:"kalyl"};if(st==="gespiegelt")return {kind:"mirror"};if(st==="geschnitten")return {kind:"mirror"};if(st==="futurist")return {kind:"mirror"};if(st==="recap")return {kind:"mirror"};if(st==="ortstitel")return {kind:"mirror"};if(st==="split")return {kind:"bold"};if(st==="dump")return {kind:"sticker",y:pick(r,[300,760]),rot:(r()-0.5)*0.12};return {kind:{takt:"bold",nahtlos:"center",film:"mono",galerie:"serif"}[st]}}
 function autoTr(st,s,nx,k,cnt,r,prev,L){
   if(st==="takt")return k===cnt-2?pick(r,["zoom","flash"]):wpick(r,{whip_l:3,whip_r:3,zoom:3,push_u:2,push_d:1,flash:2,spin:1},prev);
   if(st==="nahtlos")return {l:()=>wpick(r,{whip_l:3,object_l:2}),r:()=>wpick(r,{whip_r:3,object_r:2}),u:()=>wpick(r,{push_u:3,object_u:2}),in:()=>"zoom"}[L.dir]();
   if(st==="dump"){r();if(nx.sec==="end")return "flash";if(s.tag==="hook")return "flash1";if(s.sec==="b"&&nx.sec==="b")return wpick(r,{cut:5,flash1:2,glitch:1.5});if(s.sec==="s"&&nx.sec==="s")return "cut";return "flash1"}
   if(st==="film")return wpick(r,{dissolve:3,leak:3,burn:2,dip:1},prev);
+  if(st==="ortstitel"){r();return "cut"}
   if(st==="futurist"){r();return s.mode==="kfu"&&nx.mode!=="kfu"?"kpaper":"cut"}
   if(st==="geschnitten"){r();return "kslice"}if(st==="gespiegelt"){r();return "kfold"}
   if(st==="kalyl"){r();if(s.tag==="intro")return "kblob";if(s.mode==="k3"&&nx.mode==="k3")return "kswap";if(s.mode==="k3")return "kmorph";if(s.mode==="kins"&&nx.mode==="kins")return "cut";if(s.mode==="kins")return "kexpand";return "cut"}
@@ -700,6 +702,11 @@ function timeline(){
     if(outro>=0)S.push({it:its[outro],i:outro,beats:ub(its[outro],its[outro].kind==="video"?8:4),mode:"full",motion:{k:"in",a:0.06},main:true});
   }else if(st==="recap"){
     const T=rcCount(n);const fi=its.findIndex(it=>it.kind!=="video");const k0=fi<0?0:fi;rcAnalyze();const pl=rcPlan(T,b);L.rcPlan=pl;S.push({it:its[k0],i:k0,beats:pl?pl.end/b:1+T/4+3+T/4+4,mode:"krc",motion:{k:"in",a:0},main:true,tag:"recap"});
+  }else if(st==="ortstitel"){
+    const pl=loPlan(its,b);const rest=its.map((it,i)=>i).filter(i=>i!==0&&i!==pl.hero);
+    S.push({it:its[0],i:0,beats:1+0.5*(LO.cols-1)+1.5,mode:"klo",motion:{k:"in",a:0},main:true,tag:"intro",strips:pl.strips.map(i=>its[i]),hero:its[pl.hero]});
+    S.push({it:its[pl.hero],i:pl.hero,beats:pl.tb,mode:"klo",motion:{k:"in",a:0},main:pl.hero!==0,tag:"title",flick:(pl.others.length?pl.others:[0]).map(i=>its[i])});
+    rest.forEach((i,j)=>{const it=its[i];const last=j===rest.length-1;S.push({it,i,beats:ub(it,last?(it.kind==="video"?6:4):(j%3===2?2:1.5)),mode:"full",motion:{k:"in",a:0.04},main:true})});
   }else if(st==="futurist"){
     const ph=fuPhrases();const ib=ph.length>1?6:4;S.push({it:its[0],i:0,beats:ub(its[0],ib),mode:"kfu",motion:{k:"in",a:0.03},main:true,tag:"intro"});
     const labs=fuLabels();const rest=its.map((it,i)=>i).slice(1);const cnt=rest.length;const rots=rest.map((v,j)=>-2.5+((j*37+(P.seed|0))%5)*1.2);const pops=rest.map((v,j)=>j%2===1||j===cnt-1);
@@ -741,7 +748,7 @@ function timeline(){
       if(!user&&st!=="kalyl"&&!KL_ST.has(st)&&((s.end-s.start)<0.45||(nx.end-nx.start)<0.45)&&TR_LEN[kind]>6)kind="cut";
       const Ls=TR_LEN[kind]/FPS;L.trs.push({i:k,at:s.end,kind,L:Ls});s.ln=Ls;nx.lp=Ls;prev=kind}};
   for(let pass=0;pass<5;pass++){timeAndTr();let ch=false;
-    S.forEach(s=>{if(s.mode==="split"||s.mode==="k3"||s.mode==="krc"||s.it.kind!=="video"||!s.it.dur)return;const sp=s.it.speed||1;const have=Math.max(0.05,(s.it.dur-0.05)/sp-(s.off||0));const ov=(s.lp+s.ln)/2;
+    S.forEach(s=>{if(s.mode==="split"||s.mode==="k3"||s.mode==="krc"||s.mode==="klo"||s.it.kind!=="video"||!s.it.dur)return;const sp=s.it.speed||1;const have=Math.max(0.05,(s.it.dur-0.05)/sp-(s.off||0));const ov=(s.lp+s.ln)/2;
       const slow=s.slow||1;if(((s.end-s.start)+ov)*(1/slow)>have+1e-6){const raw=Math.floor((have-ov)/b*4)/4;
         if(raw>=0.25){if(raw<s.beats){s.beats=raw;s.capped=true;ch=true}}
         else{if(s.beats!==0.25){s.beats=0.25;s.capped=true;ch=true}const sl=Math.min(1,have/(0.25*b+ov));if(Math.abs(sl-slow)>1e-4){s.slow=sl;ch=true}}}});
@@ -1063,6 +1070,7 @@ const TRAITS={
   film:["Ruhiges Tempo, Bilder bleiben länger stehen","Lichtlecks, Filmbrand und Überblendungen","Langsame Kamerafahrten über jedes Bild","Je nach Variante mit Kinobalken"],
   galerie:["Fotos im Passepartout, hell oder dunkel","Harte Masken-Wischer statt Effekte","Ab und zu ein Doppelbild, dazu Nummern","Titel in Serifenschrift"],
   recap:["Weiße Fläche, in der Mitte groß und gestapelt die Schrift in einer Farbe aus deinem Material","Ohne Anfangstext steht dort automatisch Monat und Jahr, genommen aus den Aufnahmedaten der Fotos","Mit Musik landet jedes Bild auf einem echten Schlag des Songs (Bass und Höhen), auf lauten Schlägen etwas größer, ohne Musik auf jedem Sechzehntel. Die Collage wächst von oben nach unten, die Schrift bleibt immer obenauf","Drei Schläge steht die ganze Collage, dann verschwinden die Bilder in derselben Reihenfolge wieder","Zum Schluss nur die Schrift und klein darunter, wie viele Fotos und Clips es waren","Bei wenigen Bildern kommen manche zweimal vor, bei mehr als 40 nimmt die Werkstatt die ersten 40"],
+  ortstitel:["Anfang: das erste Bild, dann kommen von links nach rechts vier schmale Streifen mit weiteren Bildern dazu, jeder auf einem halben Schlag","Ein ruhiges Bild mit viel Himmel fällt von oben wie ein Vorhang über die Streifen. Welches das ist, sucht die Werkstatt selbst aus","Darauf tippt sich der Ort aus „Ort“ groß und gelb ein, kurz mit Buchstabensalat. Darüber der Monat aus den Aufnahmedaten (oder die Unterzeile), darunter RECAP","Dann flackert die untere Bildhälfte im Halbtakt durch die anderen Bilder, der Titel bleibt stehen. Danach harte Schnitte auf dem Beat"],
   futurist:["Anfang: kleine Zeile, darunter ein großes Wort, beide knallen mit Bewegungsunschärfe auf den Beat, das Motiv steht davor","Danach schiebt sich Papier über das Bild: jeder Clip hängt als Abzug mit gerissenem Rand an der Wäscheleine, pendelt kurz aus und trägt eine Nummer wie auf dem Kontaktbogen","Bei jedem zweiten Abzug und beim letzten springt das Motiv mit weißem Sticker-Rand aus dem Rahmen","Unter dem Abzug erscheint Wort für Wort ein Stück deiner Caption in Handschrift","Schluss: „Zum Schluss“ als Schnipsel-Buchstaben aus verschiedenen Schriften, darunter dein erstes Motiv als Sticker im Takt","Farben aus deinem Material"],
   geschnitten:["Das Motiv wird freigestellt und steht groß auf einer hellen Fläche in den Farben deines Materials","Vier Streifen, jeder sitzt etwas höher oder tiefer und springt auf jedem Beat weich auf eine neue Höhe","Neue Clips fliegen Streifen für Streifen abwechselnd von oben und unten herein","Ohne erkanntes Motiv wird das ganze Bild in Streifen geschnitten"],
   gespiegelt:["Unten der Clip, oben sein Spiegelbild, leicht in der Farbe der Fläche getönt","Auf der Kante steht auf jedem Beat ein neues Wort aus „Am Anfang“, Ort und „Zum Schluss“","Zwischen den Clips klappt der Spiegel zu und mit dem neuen Bild wieder auf","Ideal für Wasser, Pfützen, nasse Straßen und Spiegelungen"],
@@ -1100,7 +1108,7 @@ const MOODS={
   treibend:{name:"Treibend",line:"Klarer Beat und Bass, Tempo um 110 bis 130. Für schnelle Schnitte.",fits:"Takt, Fotostapel",traits:["Deutlicher Beat, auf den die Schnitte fallen","Bass und Schlagzeug von Anfang an","Passt zu Wischern und Zoom-Kicks"]},
   warm:{name:"Warm",line:"Akustisch, gezupft, ein bisschen Nostalgie. Für Familie, Herbst und Abendlicht.",fits:"Film, Nahtlos, Takt",traits:["Gitarre oder Klavier, gezupft","Mittleres Tempo","Weich, nie hektisch"]}
 };
-const STYLE_MOOD={takt:["treibend","warm"],dump:["treibend"],nahtlos:["ruhig","warm"],film:["warm","ruhig"],galerie:["ruhig"],split:["treibend","warm"],kalyl:["treibend","warm"],geschnitten:["treibend","warm"],gespiegelt:["ruhig","warm"],futurist:["treibend","warm"],recap:["treibend"]};
+const STYLE_MOOD={takt:["treibend","warm"],dump:["treibend"],nahtlos:["ruhig","warm"],film:["warm","ruhig"],galerie:["ruhig"],split:["treibend","warm"],kalyl:["treibend","warm"],geschnitten:["treibend","warm"],gespiegelt:["ruhig","warm"],futurist:["treibend","warm"],ortstitel:["treibend","warm"],recap:["treibend"]};
 function musicUrl(){return P.music&&P.music.assetId?__bs(P.music.assetId):R.music?(R.musicObjUrl||(R.musicObjUrl=URL.createObjectURL(R.music))):null}
 function musicStart(){return P.music?(P.music.start||0):0}
 /* Hörprobe je Richtung: im Browser erzeugt, etwa 6 Sekunden */
@@ -1534,7 +1542,7 @@ function klGrad(x,pal,rect){const r=rect||{x:0,y:0,w:W,h:H};const g=x.createLine
 Engine.prototype.klSeg=function(x,seg,t){
   const pal=klPal();const mode=seg.mode;x.globalAlpha=1;x.globalCompositeOperation="source-over";
   if(mode==="ksl"){this.gsSlice(x,seg,t);return}if(mode==="kmi"){this.gsMirror(x,seg,t);return}
-  if(mode==="krc"){this.rcDraw(x,seg,t);return}if(mode==="kfu"){this.fuIntro(x,seg,t);return}if(mode==="kpa"){this.fuScrap(x,seg,t);return}if(mode==="kra"){this.fuEnd(x,seg,t);return}
+  if(mode==="krc"){this.rcDraw(x,seg,t);return}if(mode==="klo"){this.loDraw(x,seg,t);return}if(mode==="kfu"){this.fuIntro(x,seg,t);return}if(mode==="kpa"){this.fuScrap(x,seg,t);return}if(mode==="kra"){this.fuEnd(x,seg,t);return}
   if(mode==="k3"){x.fillStyle=pal.dark;x.fillRect(0,0,W,H);(seg.panes||[]).forEach((pn,j)=>{const Rc=K3_RECTS[j];if(!Rc)return;const sp=Math.max(0.001,seg.end-seg.start);const e=ease(clamp((t-seg.start)/sp));
       x.save();x.beginPath();x.rect(Rc.x,Rc.y,Rc.w,Rc.h);x.clip();drawCover(x,srcOf(pn.it),Rc,1.02+0.05*e,0,klPy(pn.it),pn.it.cx);x.restore()});return}
   const g=klGeom(seg,t);const S=srcOf(seg.it);
@@ -2478,6 +2486,49 @@ function fastShadow(dst,src,alpha,offY,ds){ds=ds||10;const w=Math.max(8,Math.rou
   if(!FS.c||FS.c.width!==w||FS.c.height!==h){FS.c=mk(w,h);FS.x=FS.c.getContext("2d")}const x=FS.x;x.globalCompositeOperation="source-over";x.clearRect(0,0,w,h);x.drawImage(src,0,0,w,h);
   x.globalCompositeOperation="source-in";x.fillStyle=`rgba(0,0,0,${alpha})`;x.fillRect(0,0,w,h);x.globalCompositeOperation="source-over";
   dst.save();dst.setTransform(1,0,0,1,0,0);dst.imageSmoothingEnabled=true;dst.imageSmoothingQuality="high";dst.drawImage(FS.c,0,offY,src.width,src.height);dst.restore()}
+
+/* ---------- Stil „Ortstitel“ (05.11.2026) ----------
+   Nach einem Reise-Recap-Template (justcreate_1): erstes Bild, dann schieben sich Streifen mit anderen Bildern
+   im Halbtakt hinein, ein ruhiges Weitwinkelbild fällt wie ein Vorhang von oben darüber, der Ort tippt sich
+   groß und gelb Buchstabe für Buchstabe ein (mit kurzem Buchstabensalat), darunter flackert die untere Bildhälfte
+   durch die anderen Bilder, danach schnelle harte Schnitte. */
+const LO={cols:5,still:new Map()};
+function loStill(it){const m=M[it.id];if(!m)return null;if(it.kind!=="video")return m.bmp?{src:m.bmp,sw:m.w,sh:m.h}:null;
+  let s=LO.still.get(it.id);if(s)return s;const v=m.v0||m.video;if(!v||v.readyState<2)return null;const f=Math.min(1,900/Math.max(v.videoWidth,v.videoHeight));
+  const c=mk(Math.round(v.videoWidth*f),Math.round(v.videoHeight*f));c.getContext("2d").drawImage(v,0,0,c.width,c.height);s={src:c,sw:c.width,sh:c.height};LO.still.set(it.id,s);return s}
+// ruhiger Himmel oben = gutes Titelbild
+function loSky(it){if(it._sky!=null)return it._sky;const m=M[it.id];if(!m||!m.bmp||it.kind==="video")return -1;const c=mk(18,32),x=c.getContext("2d",{willReadFrequently:true});drawCover(x,{src:m.bmp,sw:m.w,sh:m.h},{x:0,y:0,w:18,h:32},1,0,0,0.5);
+  const d=x.getImageData(0,0,18,13).data;let s=0,s2=0,n=0;for(let i=0;i<d.length;i+=4){const l=(d[i]*0.3+d[i+1]*0.59+d[i+2]*0.11)/255;s+=l;s2+=l*l;n++}const mu=s/n,sd=Math.sqrt(Math.max(0,s2/n-mu*mu));
+  it._sky=mu*0.6-sd*2.2+(m.w>m.h?0.15:0);return it._sky}
+function loTitle(){return String(P.ort||klHookText()||"Unterwegs").toUpperCase().slice(0,16)}
+function loLines(){const [mo,yr]=rcMonth();return {top:(P.sub||`${mo} ${yr}`).toUpperCase(),bot:"RECAP"}}
+function loPlan(its,b){const n=its.length;const idx=its.map((it,i)=>i);
+  let hero=-1,best=-1e9;idx.slice(1).forEach(i=>{const s=loSky(its[i]);if(s>best){best=s;hero=i}});if(hero<0)hero=n>1?n-1:0;
+  const others=idx.filter(i=>i!==0&&i!==hero);const strips=[];for(let j=0;j<LO.cols-1;j++){const pool=others.length?others:idx;strips.push(pool[j%pool.length])}
+  const typeT=0.3+loTitle().length*0.085+0.5;const flick=Math.max(4,Math.min(6,others.length||4));const tb=Math.ceil(typeT/b*2)/2+flick*0.5+0.5;
+  return {hero,strips,others,flick,tb}}
+Engine.prototype.loDraw=function(x,seg,t){x.globalAlpha=1;x.globalCompositeOperation="source-over";x.fillStyle="#000";x.fillRect(0,0,W,H);const b=beatLen();const d=Math.max(0.001,seg.end-seg.start);const k=t-seg.start;
+  if(seg.tag==="intro"){const S=srcOf(seg.it);if(S)drawCover(x,S,RECT_FULL,1+0.04*clamp(k/d),0,0,seg.it.cx);
+    const cw=W/LO.cols;(seg.strips||[]).forEach((it,j)=>{const t0=b*(1+0.5*j);if(k<t0)return;const e=ease(clamp((k-t0)/0.16));const Si=loStill(it);if(!Si)return;const rx=cw*(j+1);
+      x.save();x.beginPath();x.rect(rx,0,cw+1,H*e);x.clip();drawCover(x,Si,{x:rx,y:0,w:cw+1,h:H},1.08,0,-0.4+0.8*clamp((k-t0)/(d-t0)),it.cx);x.restore();
+      x.fillStyle="rgba(0,0,0,0.18)";x.fillRect(rx,0,2,H*e)});
+    const cur=0.42;if(k>d-cur&&seg.hero){const e=ease(clamp((k-(d-cur))/cur));const Sh=loStill(seg.hero);if(Sh){const y=-H*(1-e);x.save();x.translate(0,y);drawCover(x,Sh,RECT_FULL,1,0,0,seg.hero.cx);
+        const g=x.createLinearGradient(0,H-6,0,H+40);g.addColorStop(0,"rgba(0,0,0,0.35)");g.addColorStop(1,"rgba(0,0,0,0)");x.fillStyle=g;x.fillRect(0,H-6,W,46);x.restore()}}
+    return}
+  // Titel
+  const S=srcOf(seg.it);if(S)drawCover(x,S,RECT_FULL,1+0.035*clamp(k/d),0,0,seg.it.cx);
+  const ttl=loTitle(),L=loLines();const tk0=0.3,per=0.085;const shown=Math.floor(clamp((k-tk0)/per,0,ttl.length));const cy=H*0.47;
+  // Flicker der unteren Hälfte, Titel bleibt stehen
+  const fl0=Math.ceil((tk0+ttl.length*per+0.5)/b*2)/2*b;if(k>=fl0&&k<d-0.5*b&&seg.flick&&seg.flick.length){const q=Math.floor((k-fl0)/(0.5*b));const it=seg.flick[q%seg.flick.length];const Si=loStill(it);
+    if(Si){x.save();x.beginPath();x.rect(0,cy,W,H-cy);x.clip();drawCover(x,Si,{x:0,y:cy,w:W,h:H-cy},1.04,0,0,it.cx);x.restore()}}
+  const col=P.tcol&&P.tcol!=="auto"?P.tcol:"#FFD21F";
+  x.save();x.textAlign="center";x.textBaseline="middle";const fsz=(()=>{x.font=`800 160px Unbounded,Inter,sans-serif`;const w=x.measureText(ttl).width;return Math.max(70,Math.min(170,160*W*0.86/Math.max(1,w)))})();
+  const lt=ease(clamp((k-0.05)/0.3));if(lt>0){x.globalAlpha=lt;x.fillStyle="#FFFFFF";x.font='600 32px Inter,system-ui,sans-serif';try{x.letterSpacing="9px"}catch(e){}x.shadowColor="rgba(0,0,0,0.38)";x.shadowBlur=12;
+    x.fillText(L.top,W/2,cy-fsz*0.72);x.fillText(L.bot,W/2,cy+fsz*0.72);try{x.letterSpacing="0px"}catch(e){}x.shadowBlur=0;x.shadowColor="transparent"}
+  x.globalAlpha=1;x.font=`800 ${fsz}px Unbounded,Inter,sans-serif`;try{x.letterSpacing="-2px"}catch(e){}
+  let s=ttl.slice(0,shown);if(shown<ttl.length&&k>=tk0){const f=Math.floor(t*FPS);const AZ="ABCDEFGHIJKLMNOPRSTUVWZ";s+=AZ[Math.floor(hash(f*7.1+shown)*AZ.length)]}
+  if(s){const full=x.measureText(ttl).width;x.textAlign="left";const x0=W/2-full/2;x.fillStyle="rgba(0,0,0,0.22)";x.fillText(s,x0+3,cy+5);x.fillStyle=col;x.fillText(s,x0,cy)}
+  x.restore()};
 
 /* ================= Speichern ================= */
 let saveTimer=null;
