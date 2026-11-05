@@ -1242,9 +1242,9 @@ function syncPreview(){const tl=R.tl;if(!tl)return;const t=PRO.peek!=null?PRO.pe
   for(const seg of U){const it=seg.it,m=M[it.id];if(it.kind!=="video"||!m||!(m.v0||m.video))continue;const v=vSlot(it,seg.vslot||0);if(!v)continue;
     const vis=isVis(seg);const st=srcTime(seg,t);
     if(vis){if(done.has(v))continue;done.add(v);
-      if(seg.pc&&(seg.pc.rev||!R.playing)){if(!v.paused)v.pause();if(!v.seeking&&Math.abs(v.currentTime-st)>0.03)v.currentTime=st;continue}
+      if(seg.pc&&(seg.pc.rev||!R.playing)){if(!v.paused)v.pause();vSeek(v,st,0.03);continue}
       if(R.playing){const rate=seg.pc?Math.min(4,Math.max(0.25,seg.pc.speed||1)):(it.speed||1)*(seg.slow||1);if(Math.abs(v.playbackRate-rate)>0.01)v.playbackRate=rate;if(v.paused){if(Math.abs(v.currentTime-st)>0.06)v.currentTime=st;v.play().catch(()=>{})}else if(Math.abs(v.currentTime-st)>0.35&&!v.seeking)v.currentTime=st}
-      else{if(!v.paused)v.pause();if(!v.seeking&&Math.abs(v.currentTime-st)>0.04)v.currentTime=st}}
+      else{if(!v.paused)v.pause();vSeek(v,st,0.04)}}
     else if(!busy.has(v)){if(!v.paused)v.pause();const pre=seg.start-seg.lp/2;if(pre>t&&pre-t<0.9&&!v.seeking&&!done.has(v)){done.add(v);const s0=srcTime(seg,pre);if(Math.abs(v.currentTime-s0)>0.05)v.currentTime=s0}}}}
 function frame(now){
   if(!R.exporting&&PV){
@@ -2463,6 +2463,12 @@ function assignSlots(L){const by=new Map();for(const u of (L.uses||L.segs)){if(!
     for(const u of arr){const s0=u.start-(u.lp||0)/2;let slot=-1;
       for(let k=0;k<ends.length;k++){const p=ends[k];let cont=false;try{cont=Math.abs(srcTime(p.u,p.u.end+(p.u.ln||0)/2)-srcTime(u,s0))<0.12}catch(e){}if(cont||p.end<s0-0.8){slot=k;break}}
       if(slot<0)slot=Math.min(ends.length,2);u.vslot=slot;ends[slot]={end:u.end+(u.ln||0)/2,u}}}}
+// Wächter: hängt ein Video beim Springen (kommt bei manchen Dateien vor, besonders bei 0 s), neu laden und noch mal springen
+setInterval(()=>{if(R.exporting)return;const now=performance.now();for(const id in M){const m=M[id];for(const v of [m.v0||m.video,...(m.vs||[])]){if(!v||!v.src)continue;
+  if(v.seeking){if(!v.__sk)v.__sk=now;else if(now-v.__sk>1200){v.__sk=0;const t=v.currentTime;try{v.load();v.currentTime=Math.max(0.001,t)}catch(e){}R.needs=2}}else v.__sk=0}}},600);
+// Springen ohne Endlosschleife: Videos, deren erstes Bild nicht bei 0 s liegt, melden nach dem Sprung eine etwas andere Zeit.
+// Wer das Ziel schon angefordert hat, fordert es nicht noch einmal an.
+function vSeek(v,st,tol){if(v.seeking)return;const d=Math.abs(v.currentTime-st);if(d<=tol)return;if(v.__want!=null&&Math.abs(v.__want-st)<0.005&&d<0.09)return;v.__want=st;v.currentTime=st}
 function vSlot(it,slot){const m=M[it.id];if(!m)return null;if(!m.v0)m.v0=m.video;if(!slot||!m.url)return m.v0;m.vs=m.vs||[];
   if(!m.vs[slot]){const v=document.createElement("video");v.muted=true;v.playsInline=true;v.setAttribute("playsinline","");v.preload="auto";v.crossOrigin="anonymous";v.src=m.url;v.addEventListener("seeked",()=>{R.needs=2});m.vs[slot]=v}return m.vs[slot]}
 
