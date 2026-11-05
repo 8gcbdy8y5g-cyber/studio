@@ -11,7 +11,8 @@
 // v13 (05.11.2026): Recap legt die Bilder auf die echten Schläge der gewählten Musik.
 // v14 (05.11.2026): Schriften und Textfarbe wählbar (Werkstatt und Pro).
 // v15 (05.11.2026): Flüssige Vorschau: eigener Abspieler je Einsatz, Freistellung pausiert beim Abspielen, schnellere Schatten.
-const CACHE = 'studio-v15';
+// v16 (05.11.2026): Pro-Schnitt mit Ebenen (Bild im Bild, Polaroid, Kreis, Freisteller, Farbfläche, Verlauf) und Fehlerbehebungen
+const CACHE = 'studio-v16';
 const MODELLE = 'studio-modelle-1';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
