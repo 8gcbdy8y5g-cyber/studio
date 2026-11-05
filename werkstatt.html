@@ -18,7 +18,7 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <script>(function(){var t="light";try{t=localStorage.getItem("sg-farbe")||"light"}catch(e){}if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t)})()</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif&family=Anton&family=Permanent+Marker&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=Anton&family=Permanent+Marker&family=Big+Shoulders+Display:wght@900&family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Syne:wght@800&family=Unbounded:wght@800&family=Fraunces:opsz,wght@9..144,900&family=DM+Serif+Display&family=Space+Mono:wght@700&display=swap">
 <style>
 /* Gleicher Look wie Studio Sommer_gram im Logo-Stil „Horizont“: Creme oder Nacht, Schrift nur Inter, Hauptknöpfe im Sonnenverlauf.
    Layout: links die 9:16-Bühne (klebt am Desktop), rechts die Arbeitsschritte Material, Texte, Takt, Post, Rendern. */
@@ -211,6 +211,15 @@ select.field{padding:6px 10px;font-size:13px;width:auto;min-height:32px}
   .pill{min-height:42px}.btn{min-height:46px}.btn.sm{min-height:40px}
   .step button,.iacts button{width:38px;height:38px}
 }
+
+.tsel{display:flex;flex-direction:column;gap:12px;margin:14px 0 4px}
+.tsrow{display:flex;flex-direction:column;gap:6px}
+.tschips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 6px;align-items:center;-webkit-overflow-scrolling:touch}
+.tsf{flex:none;display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:112px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--field);color:var(--text);cursor:pointer;text-align:left}
+.tsf b{font-size:20px;line-height:1.1;white-space:nowrap}.tsf small{font-size:11px;color:var(--text-3);white-space:nowrap}
+.tsf[aria-pressed="true"]{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber);background:var(--card)}
+.tsc{flex:none;width:34px;height:34px;border-radius:50%;border:1px solid var(--line);cursor:pointer;padding:0}
+.tsc[aria-pressed="true"]{box-shadow:0 0 0 2px var(--card),0 0 0 4px var(--amber)}
 </style>
 <style>
 /* In der App: Seitenleiste wie im Studio */
@@ -345,6 +354,7 @@ nav.side{background:var(--side);border-color:var(--line)}
           <div class="cvw"><canvas id="demoCv" width="270" height="480" aria-label="Kurze Vorschau des Stils"></canvas><span id="demoSrc">Beispiel</span></div>
           <div><h3 id="stName"></h3><p id="stLine"></p><ul id="stTraits"></ul><p id="klState" hidden style="margin:10px 0 0"></p></div>
         </div>
+        <div class="tsel" id="tsel"></div>
         <div class="row"><button class="btn soft sm" id="reroll">Neue Variante</button><span class="small muted">Mischt Übergänge, Bewegungen und Rhythmus neu. Die Variante wird mit dem Reel gespeichert.</span></div>
       </section>
 
@@ -884,14 +894,14 @@ Engine.prototype.texts=function(t,tl){
   const x=this.ctx,tx=tl.text,look=tl.look;const fade=(a,b,fi,fo)=>t<a||t>=b?0:Math.min(1,(t-a)/fi,(b-t)/fo);
   const first=tl.segs.find(s=>s.tag!=="hook")||tl.segs[0];const h0=Math.min(first.start+0.2,tl.total),h1=Math.max(first.start+1.5,Math.min(first.end,first.start+2.2));
   const draw=(txt,sub,al)=>{if(al<=0||!txt)return;x.save();x.globalAlpha=al;x.textBaseline="top";
-    if(tx.kind==="bold"){x.font='600 92px Inter,-apple-system,"Helvetica Neue",Arial,sans-serif';try{x.letterSpacing="-3px"}catch(e){}const lines=wrap(x,txt,820);let y=1330-(lines.length-1)*104;x.shadowColor="rgba(0,0,0,0.5)";x.shadowBlur=18;x.shadowOffsetY=4;x.fillStyle="#fff";
+    if(tx.kind==="bold"){x.font='600 92px Inter,-apple-system,"Helvetica Neue",Arial,sans-serif';try{x.letterSpacing="-3px"}catch(e){}const lines=wrap(x,txt,820);let y=1330-(lines.length-1)*104;x.shadowColor="rgba(0,0,0,0.5)";x.shadowBlur=18;x.shadowOffsetY=4;x.fillStyle=txCol("#fff");
       for(const l of lines){x.fillText(l,70,y);y+=104}if(sub){x.font='600 40px Inter,-apple-system,"Helvetica Neue",Arial,sans-serif';x.globalAlpha=al*0.86;x.fillText(sub,74,y+14)}}
-    else if(tx.kind==="center"){x.font='600 58px Inter,-apple-system,"Helvetica Neue",Arial,sans-serif';try{x.letterSpacing="3px"}catch(e){}x.textAlign="center";x.shadowColor="rgba(0,0,0,0.55)";x.shadowBlur=22;x.fillStyle="#fff";
+    else if(tx.kind==="center"){x.font='600 58px Inter,-apple-system,"Helvetica Neue",Arial,sans-serif';try{x.letterSpacing="3px"}catch(e){}x.textAlign="center";x.shadowColor="rgba(0,0,0,0.55)";x.shadowBlur=22;x.fillStyle=txCol("#fff");
       const lines=wrap(x,txt,860);let y=880-(lines.length-1)*36;for(const l of lines){x.fillText(l,W/2,y);y+=72}if(sub){x.font='600 34px Inter,-apple-system,sans-serif';x.globalAlpha=al*0.8;x.fillText(sub.toUpperCase(),W/2,y+10)}}
     else if(tx.kind==="sticker"){x.font='700 64px Inter,-apple-system,"Helvetica Neue",Arial,sans-serif';const lines=wrap(x,txt,760);const w=Math.max(...lines.map(l=>x.measureText(l).width))+56,h=lines.length*76+30+(sub?50:0);
-      x.translate(80,tx.y);x.rotate(tx.rot);x.shadowColor="rgba(0,0,0,0.35)";x.shadowBlur=24;x.shadowOffsetY=8;x.fillStyle="#fff";roundRect(x,0,0,w,h,16);x.fill();x.shadowColor="transparent";x.fillStyle="#111";
+      x.translate(80,tx.y);x.rotate(tx.rot);x.shadowColor="rgba(0,0,0,0.35)";x.shadowBlur=24;x.shadowOffsetY=8;x.fillStyle=txCol("#fff");roundRect(x,0,0,w,h,16);x.fill();x.shadowColor="transparent";x.fillStyle="#111";
       let y=18;for(const l of lines){x.fillText(l,28,y);y+=76}if(sub){x.font='600 34px Inter,-apple-system,sans-serif';x.fillStyle="#555";x.fillText(sub,30,y+2)}}
-    else if(tx.kind==="mono"){x.font='600 50px "Courier New",ui-monospace,Menlo,monospace';x.fillStyle="#FFF3E2";x.shadowColor="rgba(0,0,0,0.6)";x.shadowBlur=12;const lines=wrap(x,txt,900);
+    else if(tx.kind==="mono"){x.font='600 50px "Courier New",ui-monospace,Menlo,monospace';x.fillStyle=txCol("#FFF3E2");x.shadowColor="rgba(0,0,0,0.6)";x.shadowBlur=12;const lines=wrap(x,txt,900);
       let y=look.frame==="letter"?110:1330-(lines.length-1)*60;for(const l of lines){x.fillText(l,70,y);y+=60}if(sub){x.font='500 34px "Courier New",ui-monospace,monospace';x.globalAlpha=al*0.8;x.fillText(sub,72,y+8)}}
     else{let fs=104;x.font=`400 ${fs}px "Instrument Serif",Georgia,"Times New Roman",serif`;while(x.measureText(txt).width>900&&fs>60){fs-=6;x.font=`400 ${fs}px "Instrument Serif",Georgia,"Times New Roman",serif`}
       x.fillStyle=look.mat[1];x.fillText(txt,88,300-fs);if(sub){x.font='500 28px ui-monospace,"SF Mono",Menlo,monospace';x.globalAlpha=al*0.7;x.textAlign="right";x.fillText(sub.toUpperCase(),990,300-34)}}
@@ -1080,7 +1090,7 @@ function renderDemo(now){const d=R.demo;if(!d||!R.demoEng||!R.demoOn)return;cons
 function renderStyles(){const box=$("styles");if(!box)return;const cur=STYLES[P.style]?P.style:"takt";
   box.innerHTML=STYLE_KEYS.map(k=>`<button class="stile" data-style="${k}" aria-pressed="${k===cur}"><b>${STYLES[k].name}</b><small>${STYLES[k].tags.join(" · ")}</small></button>`).join("");
   box.querySelectorAll("[data-style]").forEach(b=>b.onclick=()=>chooseStyle(b.dataset.style));
-  $("stName").textContent=STYLES[cur].name;$("stLine").textContent=STYLES[cur].line;$("stTraits").innerHTML=TRAITS[cur].map(t=>`<li>${esc(t)}</li>`).join("");renderKlState();$("varLbl").textContent="Variante "+P.seed}
+  $("stName").textContent=STYLES[cur].name;$("stLine").textContent=STYLES[cur].line;$("stTraits").innerHTML=TRAITS[cur].map(t=>`<li>${esc(t)}</li>`).join("");renderKlState();renderTsel();$("varLbl").textContent="Variante "+P.seed}
 function chooseStyle(k){if(P.pro&&P.pro.on){P.pro.on=false;renderProBar()}if(k===P.style&&R.demo){R.demo.t0=performance.now();return}P.style=k;afterStyleChange()}
 function afterStyleChange(){markChanged();rebuild();renderItems();renderApprove();startDemo();R.t=0;R.needs=3;updateTransport()}
 
@@ -1281,7 +1291,7 @@ async function encodeAudio(buf,mux){let err=null;const ae=new AudioEncoder({outp
 /* ================= Export ================= */
 function canon(v){if(Array.isArray(v))return v.map(canon);if(v&&typeof v==="object"){const o={};for(const k of Object.keys(v).sort())o[k]=canon(v[k]);return o}return v}
 function sigSame(old){if(!old)return false;try{return JSON.stringify(canon(JSON.parse(old)))===JSON.stringify(canon(JSON.parse(renderSig())))}catch(e){return old===renderSig()}}
-function renderSig(){const E=ED();return JSON.stringify({pro:P.pro&&P.pro.on?P.pro:undefined,st:P.style,sd:P.seed,i:P.items.map(i=>[i.id,i.beats,i.speed,i.cx,i.tr,i.inT,i.sound]),b:P.bpm,h:P.hook,s:P.sub,e:P.ende,l:P.look,ed:E.look==="none"?undefined:[E.look,edAmt(),E.warm,E.bright,E.grain,E.match,E.skin],so:P.sound,m:P.musicName,mu:P.music&&P.music.id,wm:P.wm?1:undefined})}
+function renderSig(){const E=ED();return JSON.stringify({tf:P.tfont,tc:P.tcol,pro:P.pro&&P.pro.on?P.pro:undefined,st:P.style,sd:P.seed,i:P.items.map(i=>[i.id,i.beats,i.speed,i.cx,i.tr,i.inT,i.sound]),b:P.bpm,h:P.hook,s:P.sub,e:P.ende,l:P.look,ed:E.look==="none"?undefined:[E.look,edAmt(),E.warm,E.bright,E.grain,E.match,E.skin],so:P.sound,m:P.musicName,mu:P.music&&P.music.id,wm:P.wm?1:undefined})}
 async function pickCodec(br){if(typeof VideoEncoder==="undefined")return null;
   for(const c of ["avc1.640032","avc1.640028","avc1.4d0032","avc1.4d0028","avc1.42e032","avc1.42e028"]){try{const r=await VideoEncoder.isConfigSupported({codec:c,width:W,height:H,bitrate:br,framerate:FPS,avc:{format:"avc"}});if(r.supported)return c}catch(e){}}return null}
 async function exportReel(){
@@ -1478,7 +1488,7 @@ function klRoles(cs){
   const r2=rest.filter(c=>c!==acc);const acc2=r2.length?r2.reduce((a,c)=>c.w>a.w?c:a):dom;
   return {bg1:klFromLch(0.47,0.14,bgh),bg2:klFromLch(0.30,0.11,bgh),ring:klFromLch(0.80,0.08,bgh),acc1:klFromLch(Math.max(0.72,acc.L),Math.max(0.15,acc.C),acc.h),acc2:klFromLch(Math.max(0.68,acc.L),Math.max(0.13,acc.C),acc.h+8),
     script:klFromLch(Math.max(0.75,acc2.L),Math.max(0.14,acc2.C),acc2.h),light:klFromLch(0.97,0.018,bgh),dark:klFromLch(0.17,0.02,bgh)}}
-function klPal(){return (P.kpal&&P.kpal.roles)||KL_DEF}
+function klPal(){const p=(P.kpal&&P.kpal.roles)||KL_DEF;return P.tcol&&P.tcol!=="auto"?Object.assign({},p,{acc1:P.tcol,acc2:P.tcol}):p}
 async function klPaletteUpdate(){
   if(!KL_ST.has(P.style)||!P.items.length)return;const sig=P.items.map(it=>it.id).join(",");if(P.kpal&&P.kpal.sig===sig)return;
   const c=mk(72,128),x=c.getContext("2d",{willReadFrequently:true});const all=[];
@@ -1592,11 +1602,13 @@ Engine.prototype.klTransition=function(tr,p,f){
    Ausschnitt mit Keyframes direkt in der Vorschau, Übergänge an den Fugen, Schnitte auf den Beat, Rückgängig.
    Fürs iPad: alle Ziele mindestens 44 px, keine Hover-Abhängigkeit, Gesten statt Mini-Knöpfe, Tastatur-Kürzel. */
 const PRO={open:false,pps:90,sel:null,undo:[],redo:[],drag:null,peek:null,prog:false,home:null,ptr:new Map(),inertia:null,film:{}};
-const PRO_FONTS={inter:{n:"Inter fett",f:s=>`700 ${s}px Inter,system-ui,sans-serif`},serif:{n:"Serif",f:s=>`400 ${s}px "Instrument Serif",Georgia,serif`},
-  mono:{n:"Schreibmaschine",f:s=>`500 ${s}px "Courier New",ui-monospace,monospace`},anton:{n:"Plakat",f:s=>`400 ${s}px Anton,Impact,sans-serif`,up:true},hand:{n:"Handschrift",f:s=>`400 ${s}px "Permanent Marker",cursive`}};
+const PRO_FONTS={inter:{n:"Klar",f:s=>`800 ${s}px Inter,system-ui,sans-serif`},serif:{n:"Editorial",f:s=>`italic 400 ${s}px "Instrument Serif",Georgia,serif`},
+  mono:{n:"Mono",f:s=>`700 ${s}px "Space Mono","Courier New",ui-monospace,monospace`,up:true},anton:{n:"Plakat",f:s=>`400 ${s}px Anton,Impact,sans-serif`,up:true},hand:{n:"Handschrift",f:s=>`400 ${s}px "Permanent Marker",cursive`},
+  bigsh:{n:"Hochhaus",f:s=>`900 ${s}px "Big Shoulders Display",Anton,sans-serif`,up:true},brico:{n:"Mutant",f:s=>`800 ${s}px "Bricolage Grotesque",Inter,sans-serif`},syne:{n:"Syne",f:s=>`800 ${s}px Syne,Inter,sans-serif`,up:true},
+  unb:{n:"Breit",f:s=>`800 ${s}px Unbounded,Inter,sans-serif`,up:true},fraun:{n:"Weich",f:s=>`900 ${s}px Fraunces,Georgia,serif`},dmser:{n:"Magazin",f:s=>`400 ${s}px "DM Serif Display",Georgia,serif`}};
 const PRO_ANIM={none:"Keine",fade:"Einblenden",pop:"Pop",up:"Von unten",type:"Schreibmaschine"};
 const PRO_BOX={none:"Nur Schrift",shadow:"Mit Schatten",box:"Kasten dunkel",light:"Kasten hell"};
-const PRO_COLORS=["#FFFFFF","#F7F0E8","#141210","#F29A62","#D9612E","#F6D365","#9EBC4F","#7FB3E6"];
+const PRO_COLORS=["#FFFFFF","#F4EFE6","#111111","#FF4A1C","#FFD400","#C8F169","#8EC5FF","#C9B6FF","#FF8FB8"];
 const PRO_TR=["cut","dissolve","dip","whip_l","whip_r","push_u","push_d","zoom","spin","flash","flash1","glitch","leak","burn","wipe_l","wipe_u","object_l","object_r"];
 function proItem(id){return P.items.find(i=>i.id===id)}
 function proDur(c){return Math.max(0.1,(c.out-c.in)/(c.speed||1))}
@@ -1789,7 +1801,7 @@ function proRenderTools(){const el=$("proTools");if(!el)return;const c=proSelCli
 function proRange(id,label,val,min,max,step,fmt){return `<div class="qg"><label class="ql"><span>${label}</span><span id="${id}V">${fmt?fmt(val):val}</span></label><input type="range" id="${id}" min="${min}" max="${max}" step="${step}" value="${val}"></div>`}
 function proRenderIns(){const el=$("proIns");if(!el)return;const c=proSelClip(),tx=proSelText(),s=PRO.sel;let h="";
   if(tx){h=`<h3>Text</h3><div class="qg"><textarea id="ptTxt" aria-label="Text">${esc(tx.txt)}</textarea></div>
-    <div class="qg"><label class="ql"><span>Schrift</span></label><div class="qchips">${Object.entries(PRO_FONTS).map(([k,f])=>`<button class="qchip" data-font="${k}" aria-pressed="${tx.font===k}">${f.n}</button>`).join("")}</div></div>
+    <div class="qg"><label class="ql"><span>Schrift</span></label><div class="qchips">${Object.entries(PRO_FONTS).map(([k,f])=>`<button class="qchip" data-font="${k}" aria-pressed="${tx.font===k}" style="font:${f.f(17)}">${f.n}</button>`).join("")}</div></div>
     ${proRange("ptSize","Größe",tx.size,36,260,2,v=>Math.round(v)+" px")}
     <div class="qg"><label class="ql"><span>Farbe</span></label><div class="qchips">${[...PRO_COLORS,...(P.kpal&&P.kpal.cols?P.kpal.cols.slice(0,3):[])].map(cl=>`<button class="qsw" data-col="${cl}" style="background:${cl}" aria-label="Farbe ${cl}" aria-pressed="${(tx.color||"").toUpperCase()===cl.toUpperCase()}"></button>`).join("")}</div></div>
     <div class="qg"><label class="ql"><span>Hintergrund</span></label><div class="qchips">${Object.entries(PRO_BOX).map(([k,n])=>`<button class="qchip" data-box="${k}" aria-pressed="${tx.box===k}">${n}</button>`).join("")}</div></div>
@@ -2182,7 +2194,7 @@ Engine.prototype.rcDraw=function(x,seg,t){const pal=klPal(),b=beatLen();x.fillSt
   tiles.forEach((tc,k)=>{const on=pl?pl.on[k]:t1+k*q,off=pl?pl.off[k]:t3+k*q;if(lt<on||lt>=off)return;const it=P.items[tc.i];const S=it&&srcOf(it);if(!S)return;const p=clamp((lt-on)/(2/FPS));const sc=(1.06-0.06*p)*(pl?pl.sz[k]:1);
     x.save();x.translate(tc.x+tc.w/2,tc.y+tc.h/2);x.scale(sc,sc);drawCover(x,S,{x:-tc.w/2,y:-tc.h/2,w:tc.w,h:tc.h,clip:true},1,0,klPy(it),it.cx);x.restore()});
   // Schrift immer obenauf
-  const lines=tl.rcLines||[];let col="#FFD400";try{const c=(pal.acc1||"").match(/[0-9a-f]{2}/gi).map(v=>parseInt(v,16)/255);const mx=Math.max(...c),mn=Math.min(...c);let h=0;const d=mx-mn;if(d>0.04){if(mx===c[0])h=((c[1]-c[2])/d+6)%6;else if(mx===c[1])h=(c[2]-c[0])/d+2;else h=(c[0]-c[1])/d+4;h*=60;col=`hsl(${Math.round(h)},100%,${h>40&&h<75?50:54}%)`}}catch(e){}
+  const lines=tl.rcLines||[];let col="#FFD400";if(P.tcol&&P.tcol!=="auto")col=P.tcol;else try{const c=(pal.acc1||"").match(/[0-9a-f]{2}/gi).map(v=>parseInt(v,16)/255);const mx=Math.max(...c),mn=Math.min(...c);let h=0;const d=mx-mn;if(d>0.04){if(mx===c[0])h=((c[1]-c[2])/d+6)%6;else if(mx===c[1])h=(c[2]-c[0])/d+2;else h=(c[0]-c[1])/d+4;h*=60;col=`hsl(${Math.round(h)},100%,${h>40&&h<75?50:54}%)`}}catch(e){}
   const n=lines.length;const lh=n>3?205:262;const y0=H*0.46-(n-1)*lh/2;
   x.save();x.textAlign="center";x.textBaseline="middle";x.fillStyle=col;
   lines.forEach((l,j)=>{let fs=n>3?220:300;x.font=`400 ${fs}px Anton,Impact,"Arial Narrow",sans-serif`;while(x.measureText(l).width>W*0.72&&fs>70){fs-=8;x.font=`400 ${fs}px Anton,Impact,"Arial Narrow",sans-serif`}
@@ -2218,6 +2230,48 @@ function rcPlan(T,b){ // Zeiten im Reel: Bild k kommt bei on[k], geht bei off[k]
   off.push(t3);for(let k=1;k<T;k++){const p=off[k-1];h=next(p+0.07);if(!h||h.t-p>b*1.5){off.push(p+b/4);continue}off.push(h.t)}
   const e=strongAfter(off[T-1]+1.5*b,off[T-1]+3.5*b);const end=(e?e.t:off[T-1]+2*b)+0.02;
   const ms=Math.max(...sz);return {on,off,sz:sz.map(v=>0.86+0.28*v/ms),t4:off[T-1],end}}
+
+
+/* ---------- Schriften und Textfarbe (05.11.2026) ----------
+   Bruno: Schrift zu generisch, Orange muss nicht sein. Auswahl nach den Typo-Trends 2026 (Serifen-Comeback, Mutant-Grotesk, breite Display-Schriften,
+   Mono, weiche 70er-Serifen), alle frei von Google Fonts. „Wie der Stil“ lässt alles wie gehabt. Gilt für Überschriften und große Wörter der Stile,
+   kleine Zeilen und Handschrift bleiben. Im Pro-Schnitt pro Text wählbar. */
+const TYPE={
+  anton:{n:"Plakat",fam:'Anton,Impact,"Arial Narrow",sans-serif',w:400,d:"schmal, laut"},
+  bigsh:{n:"Hochhaus",fam:'"Big Shoulders Display",Anton,sans-serif',w:900,d:"noch schmaler, sehr hoch"},
+  brico:{n:"Mutant",fam:'"Bricolage Grotesque",Inter,sans-serif',w:800,d:"Grotesk mit Ecken"},
+  syne:{n:"Syne",fam:'Syne,Inter,sans-serif',w:800,d:"Kunstbuch, eigenwillig"},
+  unb:{n:"Breit",fam:'Unbounded,Inter,sans-serif',w:800,d:"breit und rund"},
+  serif:{n:"Editorial",fam:'"Instrument Serif",Georgia,serif',w:400,it:true,d:"feine Serife, kursiv"},
+  fraun:{n:"Weich",fam:'Fraunces,Georgia,serif',w:900,d:"weiche 70er-Serife"},
+  dmser:{n:"Magazin",fam:'"DM Serif Display",Georgia,serif',w:400,d:"klassische Titel-Serife"},
+  mono:{n:"Mono",fam:'"Space Mono","Courier New",monospace',w:700,d:"Technik, Schreibmaschine"},
+  inter:{n:"Klar",fam:'Inter,system-ui,sans-serif',w:800,d:"neutral, sehr fett"},
+  hand:{n:"Handschrift",fam:'"Permanent Marker",cursive',w:400,d:"Filzstift"}};
+const TCOLS=[["#FFFFFF","Weiß"],["#F4EFE6","Creme"],["#111111","Schwarz"],["#FF4A1C","Signalrot"],["#FFD400","Gelb"],["#C8F169","Limette"],["#8EC5FF","Himmel"],["#C9B6FF","Flieder"],["#FF8FB8","Rosa"]];
+function txCol(d){return P.tcol&&P.tcol!=="auto"?P.tcol:d}
+function typeCss(k,px){const F=TYPE[k]||TYPE.anton;return `${F.it?"italic ":""}${F.w} ${Math.round(px)}px ${F.fam}`}
+const _fontDesc=Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype,"font");let TF_ON=false;const TF_K=new Map();let _tfCtx=null;
+function tfOrig(fam){if(/Anton|Bebas|Impact/i.test(fam))return "anton";if(/Instrument Serif/i.test(fam))return "serif";if(/Courier|monospace/i.test(fam))return "mono";if(/Inter|Helvetica|Arial|system-ui|apple-system/i.test(fam))return "inter";return null}
+function tfRatio(o,n,css){const key=o+"|"+n;if(TF_K.has(key))return TF_K.get(key);if(!_tfCtx)_tfCtx=document.createElement("canvas").getContext("2d");const s="SOMMER Bochum 2026";
+  _fontDesc.set.call(_tfCtx,css.o);const a=_tfCtx.measureText(s).width;_fontDesc.set.call(_tfCtx,typeCss(n,100));const b=_tfCtx.measureText(s).width;const k=clamp(a/Math.max(1,b),0.5,1.35);
+  if(document.fonts&&document.fonts.check&&document.fonts.check(typeCss(n,100)))TF_K.set(key,k);return k}
+function tfMap(v){const m=/^\s*(italic\s+)?(\d{3}|normal|bold)?\s*(\d+(?:\.\d+)?)px\s+(.+)$/.exec(v);if(!m)return v;const px=+m[3],fam=m[4];if(px<44||/Permanent Marker|Marker Felt/i.test(fam))return v;
+  const o=tfOrig(fam);if(!o)return v;const n=P.tfont;if(n===o)return v;const k=tfRatio(o,n,{o:`${m[1]||""}${m[2]||400} 100px ${fam}`});return typeCss(n,px*k)}
+if(_fontDesc&&_fontDesc.set)Object.defineProperty(CanvasRenderingContext2D.prototype,"font",{configurable:true,get(){return _fontDesc.get.call(this)},
+  set(v){if(TF_ON&&P.tfont&&P.tfont!=="auto"&&TYPE[P.tfont]&&!(P.pro&&P.pro.on))v=tfMap(v);_fontDesc.set.call(this,v)}});
+{const _r=Engine.prototype.render;Engine.prototype.render=function(...a){TF_ON=true;try{return _r.apply(this,a)}finally{TF_ON=false}}}
+function tfLoad(k){const F=TYPE[k];if(!F||!document.fonts)return Promise.resolve();return document.fonts.load(typeCss(k,100)).catch(()=>{})}
+function renderTsel(){const el=$("tsel");if(!el)return;const f=P.tfont||"auto",c=P.tcol||"auto";const pal=klPal();
+  el.innerHTML=`<div class="tsrow"><span class="lbl">Schrift</span><div class="tschips" role="group" aria-label="Schrift">
+    <button class="tsf" data-tf="auto" aria-pressed="${f==="auto"}"><b>Wie der Stil</b></button>
+    ${Object.entries(TYPE).filter(([k])=>k!=="hand").map(([k,F])=>`<button class="tsf" data-tf="${k}" aria-pressed="${f===k}" title="${esc(F.d)}"><b style="font:${typeCss(k,22)}">${esc(F.n)}</b><small>${esc(F.d)}</small></button>`).join("")}</div></div>
+    <div class="tsrow"><span class="lbl">Textfarbe</span><div class="tschips" role="group" aria-label="Textfarbe">
+    <button class="tsc auto" data-tc="auto" aria-pressed="${c==="auto"}" style="background:linear-gradient(135deg,${pal.acc1} 0 50%,${pal.light} 50%)" aria-label="Aus dem Material"></button>
+    ${TCOLS.map(([h,n])=>`<button class="tsc" data-tc="${h}" aria-pressed="${c.toUpperCase()===h}" style="background:${h}" aria-label="${n}" title="${n}"></button>`).join("")}
+    <span class="small muted">${c==="auto"?"Aus dem Material":esc((TCOLS.find(x=>x[0]===c.toUpperCase())||[,c])[1])}</span></div></div>`;
+  el.querySelectorAll("[data-tf]").forEach(b=>b.onclick=async()=>{P.tfont=b.dataset.tf;TF_K.clear();await tfLoad(P.tfont);markChanged();renderTsel();rebuild();startDemo();R.needs=3});
+  el.querySelectorAll("[data-tc]").forEach(b=>b.onclick=()=>{P.tcol=b.dataset.tc;markChanged();renderTsel();rebuild();startDemo();R.needs=3})}
 
 /* ================= Speichern ================= */
 let saveTimer=null;
