@@ -689,7 +689,7 @@ function timeline(){
     after.forEach(i=>S.push({it:its[i],i,beats:ub(its[i],3),mode:"full",motion:{k:"in",a:0.05},main:true}));
     if(outro>=0)S.push({it:its[outro],i:outro,beats:ub(its[outro],its[outro].kind==="video"?8:4),mode:"full",motion:{k:"in",a:0.06},main:true});
   }else if(st==="recap"){
-    const T=rcCount(n);const fi=its.findIndex(it=>it.kind!=="video");const k0=fi<0?0:fi;S.push({it:its[k0],i:k0,beats:1+T/4+3+T/4+4,mode:"krc",motion:{k:"in",a:0},main:true,tag:"recap"});
+    const T=rcCount(n);const fi=its.findIndex(it=>it.kind!=="video");const k0=fi<0?0:fi;rcAnalyze();const pl=rcPlan(T,b);L.rcPlan=pl;S.push({it:its[k0],i:k0,beats:pl?pl.end/b:1+T/4+3+T/4+4,mode:"krc",motion:{k:"in",a:0},main:true,tag:"recap"});
   }else if(st==="futurist"){
     const ph=fuPhrases();const ib=ph.length>1?6:4;S.push({it:its[0],i:0,beats:ub(its[0],ib),mode:"kfu",motion:{k:"in",a:0.03},main:true,tag:"intro"});
     const labs=fuLabels();const rest=its.map((it,i)=>i).slice(1);const cnt=rest.length;const rots=rest.map((v,j)=>-2.5+((j*37+(P.seed|0))%5)*1.2);const pops=rest.map((v,j)=>j%2===1||j===cnt-1);
@@ -1052,7 +1052,7 @@ const TRAITS={
   dump:["Startet mit einem kurzen Blick aufs Ende","Schnelle Bildfolge mit Blitzbildern und Glitch","Fotos landen als Abzüge übereinander","Text als Aufkleber"],
   film:["Ruhiges Tempo, Bilder bleiben länger stehen","Lichtlecks, Filmbrand und Überblendungen","Langsame Kamerafahrten über jedes Bild","Je nach Variante mit Kinobalken"],
   galerie:["Fotos im Passepartout, hell oder dunkel","Harte Masken-Wischer statt Effekte","Ab und zu ein Doppelbild, dazu Nummern","Titel in Serifenschrift"],
-  recap:["Weiße Fläche, in der Mitte groß und gestapelt die Schrift in einer Farbe aus deinem Material","Ohne Anfangstext steht dort automatisch Monat und Jahr, genommen aus den Aufnahmedaten der Fotos","Auf jedem Sechzehntel landet ein Bild, die Collage wächst von oben nach unten, die Schrift bleibt immer obenauf","Drei Schläge steht die ganze Collage, dann verschwinden die Bilder in derselben Reihenfolge wieder","Zum Schluss nur die Schrift und klein darunter, wie viele Fotos und Clips es waren","Bei wenigen Bildern kommen manche zweimal vor, bei mehr als 40 nimmt die Werkstatt die ersten 40"],
+  recap:["Weiße Fläche, in der Mitte groß und gestapelt die Schrift in einer Farbe aus deinem Material","Ohne Anfangstext steht dort automatisch Monat und Jahr, genommen aus den Aufnahmedaten der Fotos","Mit Musik landet jedes Bild auf einem echten Schlag des Songs (Bass und Höhen), auf lauten Schlägen etwas größer, ohne Musik auf jedem Sechzehntel. Die Collage wächst von oben nach unten, die Schrift bleibt immer obenauf","Drei Schläge steht die ganze Collage, dann verschwinden die Bilder in derselben Reihenfolge wieder","Zum Schluss nur die Schrift und klein darunter, wie viele Fotos und Clips es waren","Bei wenigen Bildern kommen manche zweimal vor, bei mehr als 40 nimmt die Werkstatt die ersten 40"],
   futurist:["Anfang: kleine Zeile, darunter ein großes Wort, beide knallen mit Bewegungsunschärfe auf den Beat, das Motiv steht davor","Danach schiebt sich Papier über das Bild: jeder Clip hängt als Abzug mit gerissenem Rand an der Wäscheleine, pendelt kurz aus und trägt eine Nummer wie auf dem Kontaktbogen","Bei jedem zweiten Abzug und beim letzten springt das Motiv mit weißem Sticker-Rand aus dem Rahmen","Unter dem Abzug erscheint Wort für Wort ein Stück deiner Caption in Handschrift","Schluss: „Zum Schluss“ als Schnipsel-Buchstaben aus verschiedenen Schriften, darunter dein erstes Motiv als Sticker im Takt","Farben aus deinem Material"],
   geschnitten:["Das Motiv wird freigestellt und steht groß auf einer hellen Fläche in den Farben deines Materials","Vier Streifen, jeder sitzt etwas höher oder tiefer und springt auf jedem Beat weich auf eine neue Höhe","Neue Clips fliegen Streifen für Streifen abwechselnd von oben und unten herein","Ohne erkanntes Motiv wird das ganze Bild in Streifen geschnitten"],
   gespiegelt:["Unten der Clip, oben sein Spiegelbild, leicht in der Farbe der Fläche getönt","Auf der Kante steht auf jedem Beat ein neues Wort aus „Am Anfang“, Ort und „Zum Schluss“","Zwischen den Clips klappt der Spiegel zu und mit dem neuen Bild wieder auf","Ideal für Wasser, Pfützen, nasse Straßen und Spiegelungen"],
@@ -2178,8 +2178,8 @@ function rcTiles(n,seed){const T=rcCount(n);const r=rng((seed|0)*977+41);const o
     const cy=320+(k/Math.max(1,T-1))*1200+(r()-0.5)*200;const side=k%3===0?0:(k%3===1?-1:1);const cx=W/2+side*(W*0.2)+(r()-0.5)*160;out.push({i,x:clamp(cx-w/2,60,W-60-w),y:cy-h/2,w,h})}
   return out}
 Engine.prototype.rcDraw=function(x,seg,t){const pal=klPal(),b=beatLen();x.fillStyle="#FFFFFF";x.fillRect(0,0,W,H);const tl=R.tl;const tiles=tl.rcTiles||[];const lt=t-seg.start;
-  const q=b/4;const t1=b,t2=t1+tiles.length*q,t3=t2+3*b,t4=t3+tiles.length*q;
-  tiles.forEach((tc,k)=>{const on=t1+k*q,off=t3+k*q;if(lt<on||lt>=off)return;const it=P.items[tc.i];const S=it&&srcOf(it);if(!S)return;const p=clamp((lt-on)/(2/FPS));const sc=1.05-0.05*p;
+  const q=b/4;const pl=tl.rcPlan;const t1=b,t2=t1+tiles.length*q,t3=t2+3*b,t4=pl?pl.t4:t3+tiles.length*q;
+  tiles.forEach((tc,k)=>{const on=pl?pl.on[k]:t1+k*q,off=pl?pl.off[k]:t3+k*q;if(lt<on||lt>=off)return;const it=P.items[tc.i];const S=it&&srcOf(it);if(!S)return;const p=clamp((lt-on)/(2/FPS));const sc=(1.06-0.06*p)*(pl?pl.sz[k]:1);
     x.save();x.translate(tc.x+tc.w/2,tc.y+tc.h/2);x.scale(sc,sc);drawCover(x,S,{x:-tc.w/2,y:-tc.h/2,w:tc.w,h:tc.h,clip:true},1,0,klPy(it),it.cx);x.restore()});
   // Schrift immer obenauf
   const lines=tl.rcLines||[];let col="#FFD400";try{const c=(pal.acc1||"").match(/[0-9a-f]{2}/gi).map(v=>parseInt(v,16)/255);const mx=Math.max(...c),mn=Math.min(...c);let h=0;const d=mx-mn;if(d>0.04){if(mx===c[0])h=((c[1]-c[2])/d+6)%6;else if(mx===c[1])h=(c[2]-c[0])/d+2;else h=(c[0]-c[1])/d+4;h*=60;col=`hsl(${Math.round(h)},100%,${h>40&&h<75?50:54}%)`}}catch(e){}
@@ -2191,6 +2191,33 @@ Engine.prototype.rcDraw=function(x,seg,t){const pal=klPal(),b=beatLen();x.fillSt
   if(lt>t4){const p=ease(clamp((lt-t4)/0.4));const nf=P.items.filter(i=>i.kind!=="video").length,nv=P.items.length-nf;const s=[nf?nf+(nf===1?" Foto":" Fotos"):"",nv?nv+(nv===1?" Clip":" Clips"):""].filter(Boolean).join(" · ");
     x.globalAlpha=p;x.fillStyle="#1A1A1A";x.font='600 38px Inter,Arial,sans-serif';x.fillText(s.toUpperCase(),W/2,y0+(n-1)*lh+lh*0.85+(1-p)*20)}
   x.restore()};
+
+/* Recap auf dem Sound (05.11.2026, Bruno: Bilder sollen mit dem Beat der gewählten Musik kommen und gehen):
+   Die Werkstatt hört sich den gewählten Song an (Bass und Höhen getrennt), findet die Schläge und legt jedes Bild auf einen echten Schlag. */
+const RC={key:null,hits:null,busy:false};
+async function rcAnalyze(){const key=musicKey();if(!key){RC.key=null;RC.hits=null;return}if(RC.key===key&&(RC.hits||RC.busy))return;RC.key=key;RC.hits=null;RC.busy=true;
+  try{const buf=P.music&&P.music.assetId?await decodeAudioOf("a:"+P.music.assetId,()=>__bf(P.music.assetId).then(r=>r.blob())):await decodeAudioOf(R.music);
+    if(!buf||RC.key!==key)return;RC.hits=rcOnsets(buf);RC.start=null;if(P.style==="recap"){rebuild();R.needs=3}}catch(e){console.warn("Recap: Musik nicht lesbar",e)}finally{RC.busy=false}}
+function rcOnsets(buf){const sr=buf.sampleRate,n=buf.length,ch=buf.numberOfChannels;const hop=Math.round(sr*0.01);const F=Math.floor(n/hop);
+  const a0=buf.getChannelData(0),a1=ch>1?buf.getChannelData(1):a0;const kl=1-Math.exp(-2*Math.PI*160/sr),kh=1-Math.exp(-2*Math.PI*2500/sr);let lp=0,lp2=0;
+  const eL=new Float32Array(F),eH=new Float32Array(F);
+  for(let f=0;f<F;f++){let sL=0,sH=0;for(let i=f*hop,e=i+hop;i<e;i++){const v=(a0[i]+a1[i])*0.5;lp+=kl*(v-lp);lp2+=kh*(v-lp2);const h=v-lp2;sL+=lp*lp;sH+=h*h}eL[f]=Math.log(1e-7+sL);eH[f]=Math.log(1e-7+sH)}
+  const o=new Float32Array(F);for(let f=1;f<F;f++)o[f]=Math.max(0,eL[f]-eL[f-1])*1.0+Math.max(0,eH[f]-eH[f-1])*0.7;
+  let mx=0;for(let f=0;f<F;f++)if(o[f]>mx)mx=o[f];if(mx<=0)return [];for(let f=0;f<F;f++)o[f]/=mx;
+  const out=[];const W2=40;let last=-1e9;
+  for(let f=2;f<F-2;f++){if(!(o[f]>=o[f-1]&&o[f]>=o[f+1]&&o[f]>=o[f-2]&&o[f]>=o[f+2]))continue;let s=0,c=0;for(let k=Math.max(0,f-W2);k<Math.min(F,f+W2);k++){s+=o[k];c++}const th=s/c*1.5+0.06;if(o[f]<th)continue;
+    const t=f*hop/sr;if(t-last<0.09){if(out.length&&o[f]>out[out.length-1].s){out[out.length-1]={t,s:o[f]};last=t}continue}out.push({t,s:o[f]});last=t}
+  return out}
+function rcPlan(T,b){ // Zeiten im Reel: Bild k kommt bei on[k], geht bei off[k]
+  if(!RC.hits||RC.key!==musicKey())return null;const st=musicStart();const H=RC.hits.map(h=>({t:h.t-st,s:h.s})).filter(h=>h.t>0.05);if(H.length<8)return null;
+  let i=0;const next=(from,minGap=0.07)=>{while(i<H.length&&H[i].t<from)i++;return i<H.length?H[i++]:null};
+  const on=[],off=[],sz=[];let h=next(Math.max(0.5,b*0.9));if(!h)return null;on.push(h.t);sz.push(h.s);
+  for(let k=1;k<T;k++){const p=on[k-1];h=next(p+0.07);if(!h||h.t-p>b*1.5){on.push(p+b/4);sz.push(0.5);continue}on.push(h.t);sz.push(h.s)}
+  const strongAfter=(t0,t1)=>{let best=null;for(const x of H){if(x.t<t0)continue;if(x.t>t1)break;if(!best||x.s>best.s)best=x}return best};
+  const hold=strongAfter(on[T-1]+2*b,on[T-1]+4*b);let t3=hold?hold.t:on[T-1]+3*b;i=0;
+  off.push(t3);for(let k=1;k<T;k++){const p=off[k-1];h=next(p+0.07);if(!h||h.t-p>b*1.5){off.push(p+b/4);continue}off.push(h.t)}
+  const e=strongAfter(off[T-1]+1.5*b,off[T-1]+3.5*b);const end=(e?e.t:off[T-1]+2*b)+0.02;
+  const ms=Math.max(...sz);return {on,off,sz:sz.map(v=>0.86+0.28*v/ms),t4:off[T-1],end}}
 
 /* ================= Speichern ================= */
 let saveTimer=null;
