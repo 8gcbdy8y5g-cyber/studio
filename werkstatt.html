@@ -750,7 +750,7 @@ function timeline(){
   L.segs=S;
   // Wo welches Video zu sehen ist (für Vorschau, Export und Ton)
   const uses=[];const seenP=new Set();S.forEach(s=>{if(s.mode==="k3"){s.panes.forEach((pn,j)=>uses.push({it:pn.it,i:pn.i,start:s.start,end:s.end,lp:s.lp,ln:s.ln,ramp:0,off:pn.off||0,pane:j,mode:"k3"}));return}if(s.mode==="split"){s.panes.forEach((pn,j)=>{if(seenP.has(pn))return;seenP.add(pn);uses.push({it:pn.it,i:pn.i,start:pn.s0,end:pn.s1,lp:0.5,ln:0.5,ramp:0,pane:j})})}else uses.push(s)});
-  L.uses=uses;if(st==="kalyl")L.ktext=klTextTrack(L);if(st==="futurist")L.fuPh=fuPhrases();if(st==="recap"){L.rcTiles=rcTiles(its.length,P.seed);L.rcLines=rcLines()}return L}
+  L.uses=uses;assignSlots(L);if(st==="kalyl")L.ktext=klTextTrack(L);if(st==="futurist")L.fuPh=fuPhrases();if(st==="recap"){L.rcTiles=rcTiles(its.length,P.seed);L.rcLines=rcLines()}return L}
 function srcTime(seg,t){if(seg.pc)return proSrcTime(seg,t);const it=seg.it;const s0=seg.start-seg.lp/2,s1=seg.end+seg.ln/2,span=Math.max(0.001,s1-s0);const u=clamp((t-s0)/span);const sp=(it.speed||1)*(seg.slow||1);
   const v=seg.ramp?span*sp*(u+seg.ramp*u*u*u)/(1+seg.ramp):span*sp*u;return clamp((it.inT||0)+(seg.off||0)+v,0,Math.max(0,(it.dur||0)-0.05))}
 function needSrc(seg){return ((seg.end-seg.start)+(seg.lp+seg.ln)/2)*(seg.it.speed||1)*(seg.slow||1)+(seg.off||0)}
@@ -1086,7 +1086,7 @@ function startDemo(){
   const keep=[P,R.tl];let tl;try{P=dp;tl=timeline();const bpm=clamp(120*tl.total/5.5,110,180);dp.bpm=Math.round(bpm);tl=timeline()}finally{P=keep[0];R.tl=keep[1]}
   if(!R.demoEng)R.demoEng=new Engine($("demoCv"));R.demo={P:dp,tl,t0:performance.now(),total:Math.max(1,Math.min(tl.total,7.5))};
   $("demoSrc").textContent=useOwn?"Deine Fotos":"Beispielbilder"}
-function renderDemo(now){const d=R.demo;if(!d||!R.demoEng||!R.demoOn)return;const t=Math.max(0,((now-d.t0)/1000))%d.total;const keep=[P,R.tl];try{P=d.P;R.tl=d.tl;R.demoEng.render(t)}finally{P=keep[0];R.tl=keep[1]}}
+function renderDemo(now){const d=R.demo;if(!d||!R.demoEng||!R.demoOn||R.playing)return;const t=Math.max(0,((now-d.t0)/1000))%d.total;const keep=[P,R.tl];try{P=d.P;R.tl=d.tl;R.demoEng.render(t)}finally{P=keep[0];R.tl=keep[1]}}
 function renderStyles(){const box=$("styles");if(!box)return;const cur=STYLES[P.style]?P.style:"takt";
   box.innerHTML=STYLE_KEYS.map(k=>`<button class="stile" data-style="${k}" aria-pressed="${k===cur}"><b>${STYLES[k].name}</b><small>${STYLES[k].tags.join(" · ")}</small></button>`).join("");
   box.querySelectorAll("[data-style]").forEach(b=>b.onclick=()=>chooseStyle(b.dataset.style));
@@ -1231,16 +1231,21 @@ async function uploadPhoto(it){if(!assets)return;const m=M[it.id];if(!m)return;t
 let PV=null;
 function updateEmpty(){const has=P.items.length>0;$("empty").hidden=has;$("play").disabled=!has;$("scrub").disabled=!has;$("setCover").disabled=!has;$("miniPv").hidden=!has;renderMiniSound();if(!R.exporting)renderBoxState(null)}
 function renderMiniSound(){const el=$("msnd");if(!el)return;el.textContent=P.music?`Musik: ${P.music.title}`:R.music?`Musik: ${P.musicName||"eigene Datei"}`:"Ohne Musik, nur Originalton"}
-function mirrorMini(){const c=$("mpv");if(!c||$("miniPv").hidden)return;const src=$("pv");const x=c.getContext("2d");x.drawImage(src,0,0,c.width,c.height)}
+function mirrorMini(){const c=$("mpv");if(!c||$("miniPv").hidden)return;if(R.playing&&(R.mmN=(R.mmN||0)+1)%3)return;const src=$("pv");const x=c.getContext("2d");x.drawImage(src,0,0,c.width,c.height)}
 function updateTransport(){const tot=R.tl?R.tl.total:0;$("time").textContent=`${de(R.t)} / ${de(tot)} s`;$("scrub").value=tot?Math.round(R.t/tot*1000):0;$("play").textContent=R.playing?"❚❚":"▶";$("play").setAttribute("aria-label",R.playing?"Anhalten":"Abspielen");
   $("mtime").textContent=$("time").textContent;$("mscrub").value=$("scrub").value;$("mplay").textContent=$("play").textContent;$("mplay").setAttribute("aria-label",$("play").getAttribute("aria-label"))}
-function syncPreview(){const tl=R.tl;if(!tl)return;const t=PRO.peek!=null?PRO.peek:R.t;const visIds=new Set((tl.uses||tl.segs).filter(s=>t>=s.start-s.lp/2-0.02&&t<s.end+s.ln/2+0.02).map(s=>s.it.id));
-  for(const seg of (tl.uses||tl.segs)){const it=seg.it,m=M[it.id];if(it.kind!=="video"||!m||!m.video)continue;const v=m.video;
-    const vis=t>=seg.start-seg.lp/2-0.02&&t<seg.end+seg.ln/2+0.02;const st=srcTime(seg,t);
-    if(vis&&seg.pc&&(seg.pc.rev||!R.playing)){if(!v.paused)v.pause();if(!v.seeking&&Math.abs(v.currentTime-st)>0.03)v.currentTime=st;continue}
-    if(vis){if(R.playing){v.playbackRate=seg.pc?Math.min(4,Math.max(0.25,seg.pc.speed||1)):(it.speed||1);if(v.paused){v.currentTime=st;v.play().catch(()=>{})}else if(Math.abs(v.currentTime-st)>0.3)v.currentTime=st}
+function syncPreview(){const tl=R.tl;if(!tl)return;const t=PRO.peek!=null?PRO.peek:R.t;const U=tl.uses||tl.segs;
+  const isVis=s=>t>=s.start-s.lp/2-0.02&&t<s.end+s.ln/2+0.02;const busy=new Set();const shown=new Map();
+  for(const seg of U){const it=seg.it,m=M[it.id];if(it.kind!=="video"||!m||!(m.v0||m.video))continue;if(isVis(seg)){const v=vSlot(it,seg.vslot||0);if(v){busy.add(v);if(!shown.has(it.id))shown.set(it.id,v)}}}
+  for(const [id,v] of shown){if(v.readyState>=2||!M[id].video||M[id].video.readyState<2)M[id].video=v}
+  const done=new Set();
+  for(const seg of U){const it=seg.it,m=M[it.id];if(it.kind!=="video"||!m||!(m.v0||m.video))continue;const v=vSlot(it,seg.vslot||0);if(!v)continue;
+    const vis=isVis(seg);const st=srcTime(seg,t);
+    if(vis){if(done.has(v))continue;done.add(v);
+      if(seg.pc&&(seg.pc.rev||!R.playing)){if(!v.paused)v.pause();if(!v.seeking&&Math.abs(v.currentTime-st)>0.03)v.currentTime=st;continue}
+      if(R.playing){const rate=seg.pc?Math.min(4,Math.max(0.25,seg.pc.speed||1)):(it.speed||1)*(seg.slow||1);if(Math.abs(v.playbackRate-rate)>0.01)v.playbackRate=rate;if(v.paused){if(Math.abs(v.currentTime-st)>0.06)v.currentTime=st;v.play().catch(()=>{})}else if(Math.abs(v.currentTime-st)>0.35&&!v.seeking)v.currentTime=st}
       else{if(!v.paused)v.pause();if(!v.seeking&&Math.abs(v.currentTime-st)>0.04)v.currentTime=st}}
-    else{if(!v.paused)v.pause();const pre=seg.start-seg.lp/2;if(!visIds.has(it.id)&&pre>t&&pre-t<0.6&&!v.seeking){const s0=seg.pc?proSrcTime(seg,pre):(it.inT||0);if(Math.abs(v.currentTime-s0)>0.05)v.currentTime=s0}}}}
+    else if(!busy.has(v)){if(!v.paused)v.pause();const pre=seg.start-seg.lp/2;if(pre>t&&pre-t<0.9&&!v.seeking&&!done.has(v)){done.add(v);const s0=srcTime(seg,pre);if(Math.abs(v.currentTime-s0)>0.05)v.currentTime=s0}}}}
 function frame(now){
   if(!R.exporting&&PV){
     let wrapped=false;if(R.playing){const mt=musicClockT(now);R.t=mt!=null?mt:R.tStart+(now-R.wall)/1000;const tot=R.tl?R.tl.total:0;if(R.t>=tot){R.t=0;R.tStart=0;R.wall=now;wrapped=true}if(wrapped)syncMusic(true)}
@@ -1442,9 +1447,9 @@ async function klEnsure(tl,onProg){
   try{
     const L=await klLibs();
     for(const [id,e] of need){if(run!==KL.run)break;const m=M[id];if(!m)continue;const have=m.kl;const keys=[...e.keys].filter(k=>!have.has(k)).sort((a,b)=>a-b);if(!keys.length)continue;const it=e.it;
-      if(it.kind!=="video"){if(!m.bmp)continue;if(L.isn===undefined){KL.stage="Feine Freistellung wird geladen …";renderKlState();L.isn=await klIsn();KL.stage=null}const fc=klFrameCanvas(m.bmp,m.w,m.h,2048);let r;KL.hq=!!L.isn;try{r=await klMaskOf(L,fc,null)}finally{KL.hq=false}have.set(0,r?klFinish([r])[0]:null);KL.done++;KL.prog=KL.done/KL.total;renderKlState();await sleep(0);continue}
+      if(it.kind!=="video"){if(!m.bmp)continue;if(R.playing){KL.stage="Freistellung macht Pause, solange die Vorschau läuft";renderKlState();while(R.playing&&run===KL.run)await sleep(300);KL.stage=null;renderKlState()}if(L.isn===undefined){KL.stage="Feine Freistellung wird geladen …";renderKlState();L.isn=await klIsn();KL.stage=null}const fc=klFrameCanvas(m.bmp,m.w,m.h,2048);let r;KL.hq=!!L.isn;try{r=await klMaskOf(L,fc,null)}finally{KL.hq=false}have.set(0,r?klFinish([r])[0]:null);KL.done++;KL.prog=KL.done/KL.total;renderKlState();await sleep(0);continue}
       const v=await loadVideo(m.url).catch(()=>null);if(!v)continue;const raw=[];let prev=null;
-      for(const k of keys){if(run!==KL.run)break;await seek(v,clamp(k/KL.fps,0,Math.max(0,(it.dur||0)-0.05)));const fc=klFrameCanvas(v,v.videoWidth,v.videoHeight,1280);
+      for(const k of keys){if(run!==KL.run)break;if(R.playing){KL.stage="Freistellung macht Pause, solange die Vorschau läuft";renderKlState();while(R.playing&&run===KL.run)await sleep(300);KL.stage=null;renderKlState()}await seek(v,clamp(k/KL.fps,0,Math.max(0,(it.dur||0)-0.05)));const fc=klFrameCanvas(v,v.videoWidth,v.videoHeight,1280);
         const r=await klMaskOf(L,fc,prev);if(r)prev=r.box;raw.push([k,r]);KL.done++;KL.prog=KL.done/KL.total;if(onProg)onProg(KL.prog);if(KL.done%4===0){renderKlState();await sleep(0)}}
       v.removeAttribute("src");v.load();
       const fin=klFinish(raw.map(x=>x[1]));raw.forEach(([k],j)=>have.set(k,fin[j]))}
@@ -1632,7 +1637,7 @@ function proTimeline(){
   let t=0;pr.clips.forEach(c=>{const it=proItem(c.item);if(!it)return;const d=proDur(c);const i=P.items.indexOf(it);L.segs.push({it,i,start:t,end:t+d,lp:0,ln:0,mode:"pro",pc:c,main:true});if(L.itemShot[i]==null)L.itemShot[i]=L.segs.length-1;L.itemSecs[i]=(L.itemSecs[i]||0)+d;t+=d});
   L.total=t;for(let k=0;k<L.segs.length-1;k++){const a=L.segs[k],b=L.segs[k+1];const kind=proTrOk(a.pc.tr)?a.pc.tr:"cut";if(kind==="cut"){L.trs.push({i:k,at:a.end,kind:"cut",L:0});continue}
     const Ls=Math.min(TR_LEN[kind]/FPS,(a.end-a.start)*0.9,(b.end-b.start)*0.9);L.trs.push({i:k,at:a.end,kind,L:Ls});a.ln=Ls;b.lp=Ls}
-  L.uses=L.segs;return L}
+  L.uses=L.segs;assignSlots(L);return L}
 function proSrcTime(seg,t){const c=seg.pc,it=seg.it;const loc=(t-seg.start)*(c.speed||1);const v=c.rev?c.out-loc:c.in+loc;return clamp(v,0,Math.max(0,(it.dur||0)-0.05))}
 function proXf(c,u){const k=(c.kf||[]).slice().sort((a,b)=>a.u-b.u);if(!k.length)return {x:c.x||0,y:c.y||0,s:c.s||1,r:c.r||0};
   if(u<=k[0].u)return k[0];if(u>=k[k.length-1].u)return k[k.length-1];let i=0;while(i<k.length-1&&k[i+1].u<u)i++;const a=k[i],b=k[i+1];const e=ease((u-a.u)/Math.max(1e-4,b.u-a.u));
@@ -2046,8 +2051,9 @@ Engine.prototype.gsSlice=function(x,seg,t){
   this.klLayers();const L=this.KS;this.klClear(L);drawCover(L.x,S,g.Rc,g.z,g.px,g.py,g.cx);
   const has=this.klMatte(seg,t,g);if(has){L.x.save();L.x.setTransform(1,0,0,1,0,0);L.x.globalCompositeOperation="destination-in";L.x.drawImage(this.KM.c,0,0);L.x.restore()}
   const k=Math.max(0,Math.floor((t-seg.start)/b+1e-6)),bs=seg.start+k*b;const cur=gsOffsets(P.seed+seg.i,k),prev=k?gsOffsets(P.seed+seg.i,k-1):cur;const sw=W/GS_N;
+  const T=this.KT;this.klClear(T);fastShadow(T.x,L.c,0.24,14*this.s,12);T.x.save();T.x.setTransform(1,0,0,1,0,0);T.x.drawImage(L.c,0,0);T.x.restore();
   for(let i=0;i<GS_N;i++){const e=eout(clamp((t-bs-i*1.5/FPS)/(6/FPS)));const off=prev[i]+(cur[i]-prev[i])*e;
-    x.save();x.beginPath();x.rect(i*sw,0,sw,H);x.clip();x.shadowColor="rgba(0,0,0,0.22)";x.shadowBlur=26*this.s;x.shadowOffsetY=14*this.s;x.drawImage(L.c,0,off,W,H);x.restore()}
+    const s=this.s;const y0=Math.max(0,-off),y1=Math.min(H,H-off);if(y1>y0)x.drawImage(T.c,i*sw*s,y0*s,sw*s,(y1-y0)*s,i*sw,y0+off,sw,y1-y0)}
   x.fillStyle=pal.light;for(let i=1;i<GS_N;i++)x.fillRect(i*sw-5,0,10,H);
   const txt=seg.tag==="intro"?klHookText():(seg===R.tl.segs[R.tl.segs.length-1]?P.ende:"");const lines=klLines(txt);
   lines.forEach((l,i)=>{const p=klPop(t-seg.start-0.05-i*b);if(!p)return;x.save();x.translate(W/2,250+i*165);x.scale(p.s,p.s);x.globalAlpha=p.a;let fs=150;x.font=`400 ${fs}px Anton,Impact,sans-serif`;while(x.measureText(l).width>W*0.86&&fs>60){fs-=8;x.font=`400 ${fs}px Anton,Impact,sans-serif`}
@@ -2125,14 +2131,19 @@ Engine.prototype.fuIntro=function(x,seg,t){
 Engine.prototype.fuPrint=function(x,seg,it,idx,y,rot,pop,t){ // ein Abzug, y = Oberkante, pop 0..1 = Motiv springt heraus
   const pw=880,ph=1100,bd=34,iw=pw-2*bd,ih=ph-2*bd-30;const cx=W/2,cy=y+ph/2+70;const S=srcOf(it);if(!S)return;
   x.save();x.translate(cx,cy);x.rotate(rot*Math.PI/180);
-  const path=fuTorn(idx+1+(P.seed%5),pw,ph,9);x.save();x.shadowColor="rgba(40,25,10,0.35)";x.shadowBlur=28*this.s;x.shadowOffsetY=16*this.s;x.fillStyle="#FBF8F2";x.fill(path);x.restore();
+  const path=fuTorn(idx+1+(P.seed%5),pw,ph,9);{const ck=idx+"|"+P.seed+"|"+this.s;this.fuCard=this.fuCard||new Map();let cc=this.fuCard.get(ck);const m=70;
+    if(!cc){const s=this.s;cc=mk(Math.round((pw+2*m)*s),Math.round((ph+2*m)*s));const cx3=cc.getContext("2d");cx3.setTransform(s,0,0,s,0,0);cx3.translate(pw/2+m,ph/2+m);cx3.shadowColor="rgba(40,25,10,0.35)";cx3.shadowBlur=28*s;cx3.shadowOffsetY=16*s;cx3.fillStyle="#FBF8F2";cx3.fill(path);this.fuCard.set(ck,cc);if(this.fuCard.size>12)this.fuCard.delete(this.fuCard.keys().next().value)}
+    x.drawImage(cc,-pw/2-m,-ph/2-m,pw+2*m,ph+2*m)}
   const ins=pop*0.1;const Rin={x:-iw/2+iw*ins,y:-ph/2+bd+ih*ins*1.3,w:iw*(1-2*ins),h:ih*(1-ins*1.6),clip:true};const Rfull={x:-iw/2,y:-ph/2+bd,w:iw,h:ih,clip:true};
   x.save();x.beginPath();x.rect(Rin.x,Rin.y,Rin.w,Rin.h);x.clip();drawCover(x,S,Rfull,1.02,0,klPy(it),it.cx);x.restore();
-  if(pop>0.001){const e=klMask(it);const S2=rawSrc(it);if(e&&S2){this.klLayers();const L=this.KS,T=this.KT;const m=x.getTransform();
-      this.klClear(T);T.x.save();T.x.setTransform(m);const mc={src:klMaskCanvas(e),sw:S2.sw,sh:S2.sh};const o=10*pop;
-      for(let k=0;k<12;k++){const a=k/12*Math.PI*2;T.x.save();T.x.translate(Math.cos(a)*o,Math.sin(a)*o);drawCover(T.x,mc,Rfull,1.02,0,klPy(it),it.cx);T.x.restore()}T.x.restore();
-      this.klClear(L);L.x.save();L.x.setTransform(m);drawCover(L.x,S,Rfull,1.02,0,klPy(it),it.cx);L.x.globalCompositeOperation="destination-in";drawCover(L.x,mc,Rfull,1.02,0,klPy(it),it.cx);L.x.restore();
-      x.save();x.setTransform(1,0,0,1,0,0);x.shadowColor=`rgba(0,0,0,${0.35*pop})`;x.shadowBlur=22*this.s;x.shadowOffsetY=14*this.s;x.drawImage(T.c,0,0);x.shadowColor="transparent";x.drawImage(L.c,0,0);x.restore()}}
+  if(pop>0.001){const e=klMask(it);const S2=rawSrc(it);if(e&&S2){const s=this.s,pd=16;const vt=it.kind==="video"&&S2.src.currentTime!=null?Math.round(S2.src.currentTime*30):0;const key=it.id+"|"+s+"|"+vt+"|"+(e.mw||0);
+      this.fuPC=this.fuPC||new Map();let C=this.fuPC.get(key);
+      if(!C){const cw=Math.round((iw+2*pd)*s),chh=Math.round((ih+2*pd)*s);C=mk(cw,chh);const cx2=C.getContext("2d");const T2=mk(cw,chh),tx=T2.getContext("2d");
+        const loc=X=>{X.setTransform(s,0,0,s,0,0);X.translate(pd-Rfull.x,pd-Rfull.y)};const mc={src:klMaskCanvas(e),sw:S2.sw,sh:S2.sh};
+        loc(cx2);for(let k=0;k<12;k++){const a=k/12*Math.PI*2;cx2.save();cx2.translate(Math.cos(a)*10,Math.sin(a)*10);drawCover(cx2,mc,Rfull,1.02,0,klPy(it),it.cx);cx2.restore()}
+        loc(tx);drawCover(tx,S,Rfull,1.02,0,klPy(it),it.cx);tx.globalCompositeOperation="destination-in";drawCover(tx,mc,Rfull,1.02,0,klPy(it),it.cx);
+        cx2.setTransform(1,0,0,1,0,0);cx2.drawImage(T2,0,0);this.fuPC.set(key,C);if(this.fuPC.size>8)this.fuPC.delete(this.fuPC.keys().next().value)}
+      x.save();x.globalAlpha=pop;x.shadowColor=`rgba(0,0,0,${0.35*pop})`;x.shadowBlur=22*s;x.shadowOffsetY=14*s;x.drawImage(C,Rfull.x-pd,Rfull.y-pd,iw+2*pd,ih+2*pd);x.restore()}}
   // Klammer und Klebeband
   x.fillStyle="#C9A06B";x.fillRect(-23,-ph/2-62,46,110);x.fillStyle="rgba(0,0,0,0.12)";x.fillRect(-23,-ph/2-62,46,8);
   x.fillStyle="rgba(255,232,140,0.55)";[[-300,24],[300,-22]].forEach(([dx,a])=>{x.save();x.translate(dx,-ph/2+40);x.rotate(a*Math.PI/180);x.fillRect(-85,-28,170,56);x.restore()});
@@ -2272,6 +2283,26 @@ function renderTsel(){const el=$("tsel");if(!el)return;const f=P.tfont||"auto",c
     <span class="small muted">${c==="auto"?"Aus dem Material":esc((TCOLS.find(x=>x[0]===c.toUpperCase())||[,c])[1])}</span></div></div>`;
   el.querySelectorAll("[data-tf]").forEach(b=>b.onclick=async()=>{P.tfont=b.dataset.tf;TF_K.clear();await tfLoad(P.tfont);markChanged();renderTsel();rebuild();startDemo();R.needs=3});
   el.querySelectorAll("[data-tc]").forEach(b=>b.onclick=()=>{P.tcol=b.dataset.tc;markChanged();renderTsel();rebuild();startDemo();R.needs=3})}
+
+
+/* ---------- Flüssige Vorschau (05.11.2026) ----------
+   Bruno: Bei Kalyl hakt alles, Videos laufen nicht durch. Ursache: Stile, die einen Clip mehrmals an verschiedenen Stellen zeigen (Kalyl, Fotostapel, Takt),
+   haben dasselbe Video-Element ständig vor- und zurückgespult und im selben Bild wieder angehalten. Jetzt bekommt jeder Einsatz, der nicht nahtlos
+   an den vorigen anschließt, einen eigenen Abspieler (höchstens drei je Clip), der schon vorher an die richtige Stelle springt. */
+function assignSlots(L){const by=new Map();for(const u of (L.uses||L.segs)){if(!u.it||u.it.kind!=="video")continue;if(!by.has(u.it.id))by.set(u.it.id,[]);by.get(u.it.id).push(u)}
+  for(const arr of by.values()){arr.sort((a,b)=>(a.start-(a.lp||0)/2)-(b.start-(b.lp||0)/2));const ends=[];
+    for(const u of arr){const s0=u.start-(u.lp||0)/2;let slot=-1;
+      for(let k=0;k<ends.length;k++){const p=ends[k];let cont=false;try{cont=Math.abs(srcTime(p.u,p.u.end+(p.u.ln||0)/2)-srcTime(u,s0))<0.12}catch(e){}if(cont||p.end<s0-0.8){slot=k;break}}
+      if(slot<0)slot=Math.min(ends.length,2);u.vslot=slot;ends[slot]={end:u.end+(u.ln||0)/2,u}}}}
+function vSlot(it,slot){const m=M[it.id];if(!m)return null;if(!m.v0)m.v0=m.video;if(!slot||!m.url)return m.v0;m.vs=m.vs||[];
+  if(!m.vs[slot]){const v=document.createElement("video");v.muted=true;v.playsInline=true;v.setAttribute("playsinline","");v.preload="auto";v.crossOrigin="anonymous";v.src=m.url;v.addEventListener("seeked",()=>{R.needs=2});m.vs[slot]=v}return m.vs[slot]}
+
+// Weicher Schatten ohne teures shadowBlur: Ebene klein rechnen, einfärben, groß und versetzt zurück (die Vergrößerung macht ihn weich)
+const FS={c:null,x:null};
+function fastShadow(dst,src,alpha,offY,ds){ds=ds||10;const w=Math.max(8,Math.round(src.width/ds)),h=Math.max(8,Math.round(src.height/ds));
+  if(!FS.c||FS.c.width!==w||FS.c.height!==h){FS.c=mk(w,h);FS.x=FS.c.getContext("2d")}const x=FS.x;x.globalCompositeOperation="source-over";x.clearRect(0,0,w,h);x.drawImage(src,0,0,w,h);
+  x.globalCompositeOperation="source-in";x.fillStyle=`rgba(0,0,0,${alpha})`;x.fillRect(0,0,w,h);x.globalCompositeOperation="source-over";
+  dst.save();dst.setTransform(1,0,0,1,0,0);dst.imageSmoothingEnabled=true;dst.imageSmoothingQuality="high";dst.drawImage(FS.c,0,offY,src.width,src.height);dst.restore()}
 
 /* ================= Speichern ================= */
 let saveTimer=null;
