@@ -7,7 +7,8 @@
 // v7 (04.11.2026): Freistellung Version 2, Stile Geschnitten und Gespiegelt.
 // v8 (04.11.2026): Wasserzeichen standardmäßig aus.
 // v11 (04.11.2026): Stil Futurist, Freistellung V3 mit ISNet. Modelle (models/) liegen in einem eigenen Speicher und werden nur einmal geladen.
-const CACHE = 'studio-v11';
+// v12 (05.11.2026): Stil Recap für Monatsrückblicke.
+const CACHE = 'studio-v12';
 const MODELLE = 'studio-modelle-1';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
