@@ -322,6 +322,7 @@
     drawFree();
     oneSound();
     reelDelete();
+    playFix();
     proPolish();
     show(cur, false);
   }
@@ -338,6 +339,27 @@
       tr: S('<rect x="3.5" y="6" width="10" height="12" rx="2"/><rect x="10.5" y="6" width="10" height="12" rx="2"/>'), plus: S('<path d="M12 6v12M6 12h12"/>'),
       kf: S('<path d="m12 5 7 7-7 7-7-7z"/>', 1)
     });
+  }
+
+
+  /* Play/Pause: der Knopf wurde jedes Bild neu beschrieben, dabei ging der Tipp verloren.
+     Jetzt ändert sich sein Inhalt nur beim Wechsel, und Pause greift auch, während die Musik noch lädt. */
+  function steadyPlay(btn) {
+    if (!btn || btn.dataset.gxSteady) return; btn.dataset.gxSteady = '1';
+    const draw = () => { const want = (R.playing || (R.waitMusic && !R.gxCancel)) ? 'pause' : 'play'; if (btn.dataset.st !== want) { btn.dataset.st = want; btn.innerHTML = GI_()[want]; } };
+    Object.defineProperty(btn, 'textContent', { configurable: true, get: () => '', set: draw });
+    draw();
+  }
+  function playFix() {
+    steadyPlay(document.getElementById('play'));
+    const sp = window.setPlaying, now = window.setPlayingNow;
+    if (typeof sp !== 'function' || typeof now !== 'function') return;
+    window.setPlaying = function (on) {
+      if (R.waitMusic) { R.gxCancel = on ? !R.gxCancel : true; /* während des Ladens zeigt der Knopf schon Pause: Tippen bricht ab */ try { updateTransport(); if (typeof proTimeLabel === 'function') proTimeLabel(); } catch (e) {} return; }
+      R.gxCancel = false; const r = sp.apply(this, arguments);
+      try { updateTransport(); if (typeof proTimeLabel === 'function') proTimeLabel(); } catch (e) {} return r;
+    };
+    window.setPlayingNow = function (on) { if (on && R.gxCancel) { R.gxCancel = false; try { updateTransport(); } catch (e) {} return; } return now.apply(this, arguments); };
   }
 
   /* Deine Reels: einzeln löschen, mit Rückfrage direkt am Bild */
@@ -405,7 +427,7 @@
       const ren = $$('proRender'); ren.textContent = 'Rendern'; right.append(ren);
       const tb = document.createElement('div'); tb.className = 'gx-ptb'; tb.setAttribute('role', 'group'); tb.setAttribute('aria-label', 'Wiedergabe');
       const undo = $$('proUndo'), redo = $$('proRedo'), play = $$('proPlay'), tm = $$('proTime');
-      undo.innerHTML = g.undo; redo.innerHTML = g.redo; play.classList.add('gx-play');
+      undo.innerHTML = g.undo; redo.innerHTML = g.redo; play.classList.add('gx-play'); steadyPlay(play);
       const tl = document.createElement('div'); tl.className = 'gx-ptl'; tl.append(tm);
       const tc = document.createElement('div'); tc.className = 'gx-ptc'; tc.append(play);
       const tr = document.createElement('div'); tr.className = 'gx-ptr'; tr.append(undo, redo);
@@ -416,7 +438,6 @@
     wrap('proMount', build);
     wrap('proFit', () => { const st = $$('proStage'), b = $$('proCvBox'); if (!st || !b) return; const pd = innerWidth > 700 ? 48 : 20; const w = st.clientWidth - pd, h = st.clientHeight - pd; let ch = h, cw = ch * 9 / 16; if (cw > w) { cw = w; ch = cw * 16 / 9; } b.style.width = Math.max(60, cw) + 'px'; b.style.height = Math.max(100, ch) + 'px'; });
     wrap('proTimeLabel', () => {
-      const b = $$('proPlay'); if (b && b.classList.contains('gx-play')) { const want = R.playing ? 'pause' : 'play'; if (b.dataset.st !== want) { b.dataset.st = want; b.innerHTML = GI_()[want]; } }
       const el = $$('proTime'); if (el && el.textContent.includes(' / ')) { const [a, z] = el.textContent.split(' / '); el.innerHTML = `<b>${a}</b><span>/ ${z} s</span>`; }
       const sub = $$('gxProSub'); if (sub && P.pro && P.pro.clips) { const t = `${P.pro.clips.length} Clips`; if (sub.textContent !== t) sub.textContent = t; }
     });
