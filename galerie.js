@@ -284,6 +284,8 @@
     async function autoMusic(force) {
       const mood = (typeof R !== 'undefined' && R.moodSel) || 'treibend';
       let key = ''; try { key = 'gx-auto-' + P.id; } catch (e) {}
+      const own = (typeof R !== 'undefined' && R.mlist && R.mlist.length) ? R.mlist.length : 0;
+      if (!force && own) { if (!MS.list.length || MS.mood !== mood) search(mood); return; }
       if (!force) { if (P.musicName || P.music) { if (!MS.list.length || MS.mood !== mood) search(mood); return; } try { if (localStorage.getItem(key)) { if (MS.mood !== mood) search(mood); return; } } catch (e) {} }
       if (MS.mood !== mood || !MS.list.length) await search(mood);
       for (let k = 0; k < MS.list.length; k++) { if (await take(k, true)) { try { localStorage.setItem(key, '1'); } catch (e) {} toast0('Musik ausgesucht: ' + (MS.list[MS.idx].title || 'Stück')); return; } k--; }
@@ -298,10 +300,24 @@
         `<p class="small muted gx-fnote">Freie Musik aus Wikimedia Commons über Openverse, nur Lizenzen, die kommerzielle Nutzung erlauben. Songs aus den Instagram-Charts gibt es nur in der Instagram-App.</p>`;
       const alt = box.querySelector('#gxAlt'); if (alt) alt.onclick = async () => { if (!MS.list.length) { await search((typeof R !== 'undefined' && R.moodSel) || 'treibend'); } let k = MS.idx + 1; while (k < MS.list.length && !(await take(k))) {} };
       box.querySelectorAll('[data-ft]').forEach(b => b.onclick = () => take(+b.dataset.ft));
-      box.querySelectorAll('[data-fp]').forEach(b => b.onclick = () => { const x = MS.list[+b.dataset.fp]; if (!x) return; if (MS.audio && MS.audio.dataset.k === b.dataset.fp && !MS.audio.paused) { MS.audio.pause(); b.textContent = '▶'; return; } if (MS.audio) MS.audio.pause(); box.querySelectorAll('[data-fp]').forEach(y => y.textContent = '▶'); MS.audio = new Audio(x.url); MS.audio.dataset.k = b.dataset.fp; MS.audio.play().catch(() => {}); b.textContent = '❚❚'; });
+      box.querySelectorAll('[data-fp]').forEach(b => b.onclick = () => { const x = MS.list[+b.dataset.fp]; if (!x) return; if (MS.audio && MS.audio.dataset.k === b.dataset.fp && !MS.audio.paused) { MS.audio.pause(); b.textContent = '▶'; return; } if (MS.audio) MS.audio.pause(); box.querySelectorAll('[data-fp]').forEach(y => y.textContent = '▶'); if (window.__gxStopOthers) window.__gxStopOthers(); MS.audio = window.__gxAudio = new Audio(x.url); MS.audio.dataset.k = b.dataset.fp; MS.audio.onended = () => { b.textContent = '▶'; }; MS.audio.play().catch(() => {}); b.textContent = '❚❚'; });
     }
-    document.addEventListener('click', e => { const m = e.target.closest('#moods [data-mood]'); if (m && cur === 3) setTimeout(() => { if (!(P.musicName || P.music) || P.musicName === MS.ours) autoMusic(true); else search(m.dataset.mood); }, 50); });
+    document.addEventListener('click', e => { const m = e.target.closest('#moods [data-mood]'); if (m && cur === 3) setTimeout(() => { if (P.musicName && P.musicName === MS.ours) autoMusic(true); else search(m.dataset.mood); }, 50); });
     drawFree();
+    oneSound();
     show(cur, false);
+  }
+
+  /* Immer nur ein Ton: Reel-Vorschau, Hörprobe der Richtung, Probe aus dem Ordner und freie Musik schließen sich aus */
+  function oneSound() {
+    const stopFree = () => { try { if (window.__gxAudio && !window.__gxAudio.paused) { window.__gxAudio.pause(); document.querySelectorAll('[data-fp]').forEach(y => y.textContent = '▶'); } } catch (e) {} };
+    const stopReel = () => { try { if (typeof R !== 'undefined' && R.playing && typeof setPlaying === 'function') _setPlaying(false); } catch (e) {} };
+    const stopProbe = () => { try { if (typeof R !== 'undefined' && (R.ex || R.tp) && typeof stopExample === 'function') _stopExample(); } catch (e) {} };
+    const _setPlaying = window.setPlaying, _stopExample = window.stopExample;
+    if (typeof _setPlaying === 'function') window.setPlaying = function (on) { if (on) { stopFree(); stopProbe(); } return _setPlaying.apply(this, arguments); };
+    ['playExample', 'playTrackPreview'].forEach(n => { const o = window[n]; if (typeof o === 'function') window[n] = function () { stopFree(); stopReel(); return o.apply(this, arguments); }; });
+    window.__gxStopOthers = () => { stopReel(); stopProbe(); };
+    addEventListener('pagehide', () => { stopFree(); stopReel(); stopProbe(); });
+    document.addEventListener('visibilitychange', () => { if (document.hidden) { stopFree(); stopProbe(); } });
   }
 })();

@@ -18,7 +18,8 @@
 // v20 (06.11.2026): Beschlagen ohne dunklen Rand um die Buchstaben
 // v22 (06.11.2026): Neues Design „Galerie“ (galerie.css, galerie.js): Feed, Plan, Zahlen, ruhig und fotografisch
 // v23 (06.11.2026): Reel-Studio in sechs Schritten, freie Musik automatisch passend zur Richtung
-const CACHE = 'studio-v23';
+// v24 (06.11.2026): Reel-Studio spielt immer nur einen Ton gleichzeitig
+const CACHE = 'studio-v24';
 const MODELLE = 'studio-modelle-1';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './galerie.css', './galerie.js', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
