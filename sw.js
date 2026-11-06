@@ -16,7 +16,7 @@
 // v18 (05.11.2026): Stil Ortstitel (Streifen, Vorhang, Ort tippt sich ein, Flicker unten, harte Schnitte)
 // v19 (06.11.2026): Stil Beschlagen (nasse Scheibe, Ort als Fenster, Pinsel legt frei)
 // v20 (06.11.2026): Beschlagen ohne dunklen Rand um die Buchstaben
-const CACHE = 'studio-v20';
+const CACHE = 'studio-v21';
 const MODELLE = 'studio-modelle-1';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
