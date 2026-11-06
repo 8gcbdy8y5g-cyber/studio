@@ -176,6 +176,21 @@ textarea.field{resize:vertical;min-height:130px;line-height:1.5}
 .ev.story{border-style:dashed}
 .slot{border:1.5px dashed var(--field-2);border-radius:10px;padding:7px 9px;font-size:12px;color:var(--text-3);background:transparent;cursor:pointer;text-align:left}
 .slot:hover{border-color:var(--accent);color:var(--accent)}
+.slot.best{border-color:var(--accent);color:var(--accent)}
+.dayhead .bst{font-size:10.5px;font-weight:700;color:var(--accent);display:inline}
+.month .dayhead .bst{display:none}
+/* Beste Zeiten */
+.heat{display:grid;grid-template-columns:28px repeat(18,minmax(0,1fr));gap:2px;font-size:10.5px;color:var(--text-3)}
+.heat .hc{aspect-ratio:1;border-radius:3px;background:var(--field)}
+.heat .hl{display:flex;align-items:center;font-weight:600}
+.heat .hh{text-align:center}
+.btsrc{font-size:12.5px;color:var(--text-2);margin-top:10px}
+/* Warnung */
+.warn{border:1.5px solid var(--bad);background:transparent}
+.warn h2{color:var(--bad)}
+.wli{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.wli:first-of-type{border-top:0}
+.wli .ti{font-weight:600}
 .list{display:flex;flex-direction:column}
 .li{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
 .li:first-child{border-top:0}
@@ -543,6 +558,53 @@ const MC="Metricool Social Media Management";
 const FORMATS={POST:"Foto",KARUSSELL:"Karussell",REEL:"Reel",STORY:"Story"};
 const STATUS={entwurf:["Entwurf","var(--muted)"],geplant:["Geplant","var(--info)"],freigegeben:["Freigegeben für Instagram","var(--warn)"],instagram:["In Instagram eingeplant","var(--ok)"],metricool:["Bei Metricool","var(--accent)"],veroeffentlicht:["Veröffentlicht","var(--ok)"]};
 const SLOTS={3:"18:30",5:"19:30",0:"18:00"}; // Mi, Fr, So
+/* Beste Zeiten: aus Metricool, sonst aus den eigenen Posts (Reichweite) */
+const BT_H0=6,BT_H1=23;
+function ownBT(){const feed=S.media.filter(m=>m.type!=="Story"&&m.ts&&(m.reach||m.views));if(feed.length<3)return null;
+  const val=m=>m.reach||m.views||0;const sorted=feed.map(val).sort((a,b)=>a-b);const med=sorted[Math.floor(sorted.length/2)]||1;
+  const g={},w={};for(const m of feed){const d=new Date(m.ts);const wd=d.getDay(),h=d.getHours();const sc=val(m)/med;
+    for(const [dh,f] of [[0,1],[-1,.5],[1,.5]]){const hh=h+dh;if(hh<BT_H0||hh>BT_H1)continue;const k=wd+"|"+hh;g[k]=(g[k]||0)+sc*f;w[k]=(w[k]||0)+f}}
+  const grid={};for(const k in g)grid[k]=g[k]/w[k];return {src:"eigen",grid,n:feed.length}}
+function curBT(){return S.btMc||ownBT()}
+function btMax(bt){return Math.max(0,...Object.values(bt.grid))}
+function bestHour(wd,bt){bt=bt||curBT();if(!bt)return null;let best=null,bv=0;for(let h=BT_H0;h<=BT_H1;h++){const v=bt.grid[wd+"|"+h]||0;if(v>bv){bv=v;best=h}}
+  return best==null||bv<btMax(bt)*.6?null:{h:best,v:bv}}
+function slotFor(date){const wd=parse(date).getDay();const t=SLOTS[wd];if(!t)return null;
+  if(S.btMc){const b=bestHour(wd,S.btMc);if(b)return pad(b.h)+":00"}return t}
+function topTimes(n){const bt=curBT();if(!bt)return[];return Object.entries(bt.grid).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,n).map(([k,v])=>{const [wd,h]=k.split("|").map(Number);return {wd,h,v}})}
+function nextDateFor(wd,h){const now=new Date();for(let i=0;i<8;i++){const d=new Date();d.setHours(12,0,0,0);d.setDate(d.getDate()+i);if(d.getDay()!==wd)continue;if(i===0&&h<=now.getHours())continue;return iso(d)}return null}
+function btCard(){const bt=curBT();const days=[1,2,3,4,5,6,0];
+  if(!bt)return `<section class="card"><h2>Beste Zeiten</h2><p class="muted small" style="margin-top:10px">Noch zu wenig veröffentlichte Posts, um etwas zu sagen. Ab drei Posts mit Zahlen erscheint hier, wann deine Leute am meisten sehen.</p></section>`;
+  const mx=btMax(bt)||1;const hours=[];for(let h=BT_H0;h<=BT_H1;h++)hours.push(h);
+  const cells=days.map(wd=>`<div class="hl">${WD[wd]}</div>`+hours.map(h=>{const v=bt.grid[wd+"|"+h]||0;const a=v>0?(.15+.85*v/mx).toFixed(2):0;return `<div class="hc" title="${WD[wd]} ${h} Uhr" style="${a?`background:var(--amber);opacity:${a}`:""}"></div>`}).join("")).join("");
+  const axis=`<div></div>`+hours.map(h=>`<div class="hh">${h%3===0?h:""}</div>`).join("");
+  const top=topTimes(3).map(t=>{const d=nextDateFor(t.wd,t.h);return d?`<button class="pill sm" data-new="${d}|${pad(t.h)}:00">${WD[t.wd]} ${t.h} Uhr</button>`:""}).join("");
+  const src=bt.src==="metricool"?"Aus Metricool: wann deine Follower online sind.":`Aus deinen letzten ${bt.n} Posts, gewichtet nach Reichweite. Das ist noch wenig, nimm es als Tendenz.${S.mc.state==="nonet"?" Sobald Instagram in Metricool verbunden ist, kommen die Zeiten von dort und die freien Termine im Plan rücken automatisch auf die beste Stunde.":""}`;
+  return `<section class="card"><div class="cardhead"><h2>Beste Zeiten</h2>${top?`<div class="row"><span class="small muted">Nächster guter Termin:</span>${top}</div>`:""}</div>
+    <div class="heat" role="img" aria-label="Wochentage und Uhrzeiten, je dunkler desto besser">${cells}${axis}</div><p class="btsrc">${src}</p></section>`}
+/* Wächter: geplante Posts, die nicht rausgegangen sind */
+function plannedTs(p){return new Date(p.date+"T"+(p.time||"12:00")+":00").getTime()}
+function foundMedia(p){if(p.igId&&S.media.some(m=>m.id===p.igId))return true;const t=plannedTs(p);const story=p.format==="STORY";
+  return S.media.some(m=>(m.type==="Story")===story&&Math.abs(m.ts-t)<12*36e5)}
+function lastSync(){let x=0;for(const m of S.media){const u=Date.parse(m.updatedAt||"")||m.ts||0;if(u>x)x=u}return x}
+function overdue(){const now=Date.now();const ls=lastSync();
+  return S.posts.filter(p=>p.date&&["geplant","freigegeben","instagram","metricool"].includes(p.status)&&plannedTs(p)<now-30*6e4&&!(S.ignoreWarn||[]).includes(p.id)&&!foundMedia(p))
+    .map(p=>{const t=plannedTs(p);let why;
+      if(p.status==="geplant")why="Termin vorbei, wurde nie in Instagram eingeplant.";
+      else if(p.status==="freigegeben")why="Freigegeben, aber nie in Instagram eingeplant.";
+      else if(ls&&ls<t)why=`Noch nicht bestätigt. Die Instagram-Zahlen sind vom ${fmtD(iso(new Date(ls)))}, danach lässt sich nichts prüfen.`;
+      else why="Sollte draußen sein, taucht aber nicht bei deinen Instagram-Posts auf.";
+      return {p,why,sure:p.status==="geplant"||p.status==="freigegeben"||(ls&&ls>t+12*36e5)}})
+    .sort((a,b)=>plannedTs(a.p)-plannedTs(b.p))}
+function warnCard(){const w=overdue();if(!w.length)return"";
+  return `<section class="card warn"><div class="cardhead" style="margin-bottom:6px"><h2>${w.length===1?"Ein Post ist":"%n Posts sind".replace("%n",w.length)} nicht sicher rausgegangen</h2></div>
+  ${w.map(({p,why})=>`<div class="wli"><div style="min-width:0"><div class="ti">${esc(p.title||p.ort||"Post")} · ${fmtD(p.date)}${p.time?" "+esc(p.time):""}</div><div class="small muted">${why}</div></div>
+  <div class="row"><button class="btn sm" data-wfix="${esc(p.id)}">${p.status==="instagram"||p.status==="metricool"?"Öffnen":"Neu planen"}</button><button class="btn ghost sm" data-wpub="${esc(p.id)}">Ist raus</button></div></div>`).join("")}</section>`}
+document.addEventListener("click",async e=>{const f=e.target.closest("[data-wfix]"),u=e.target.closest("[data-wpub]");if(!f&&!u)return;
+  const id=(f||u).dataset.wfix||(f||u).dataset.wpub;const p=S.posts.find(x=>x.id===id);if(!p)return;
+  if(f){if(p.status==="instagram"||p.status==="metricool"){editPost(id);return}const d=nextSlots()[0];const np={...p,status:"geplant",date:d?d[0]:p.date,time:d?d[1]:p.time};if(!d){editPost(id);return}
+    const i=S.posts.indexOf(p);S.posts[i]=np;render();try{await savePost(np);toast(`${np.title||"Post"} → ${fmtD(np.date)} ${np.time}`)}catch(_){S.posts[i]=p;render();toast("Hat nicht geklappt")}}
+  else{const np={...p,status:"veroeffentlicht"};const i=S.posts.indexOf(p);S.posts[i]=np;render();try{await savePost(np);toast("Als veröffentlicht markiert")}catch(_){S.posts[i]=p;render();toast("Hat nicht geklappt")}}});
 const WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const nf=n=>n==null||isNaN(n)?"–":Number(n).toLocaleString("de-DE");
@@ -714,7 +776,7 @@ function checks(d){const all=(d.caption+" "+d.tags);const n=countTags(all);const
     [(d.caption.length+(d.tags?d.tags.length+2:0))+" / 2.200 Zeichen",d.caption.length+(d.tags?d.tags.length+2:0)<=2200]
   ]}
 function nextSlots(){const out=[];const taken=new Set(S.posts.filter(p=>p.date&&p.status!=="entwurf").map(p=>p.date));const now=new Date();const nowHM=pad(now.getHours())+":"+pad(now.getMinutes());const d=new Date();d.setHours(12);
-  for(let i=0;i<14&&out.length<3;i++){const x=new Date(d);x.setDate(d.getDate()+i);const t=SLOTS[x.getDay()];if(i===0&&t&&t<=nowHM)continue;if(t&&!taken.has(iso(x)))out.push([iso(x),t])}return out}
+  for(let i=0;i<14&&out.length<3;i++){const x=new Date(d);x.setDate(d.getDate()+i);const t=slotFor(iso(x));if(i===0&&t&&t<=nowHM)continue;if(t&&!taken.has(iso(x)))out.push([iso(x),t])}return out}
 function selImg(){if(S.poolSel){const x=S.pool.find(p=>p.id===S.poolSel);return x?x.img:null}
   if(S.planSel){const p=S.posts.find(x=>x.id===S.planSel);return p&&p.images&&p.images[0]||null}return null}
 function feedItems(){
@@ -734,7 +796,7 @@ function vPosten(){
   const mcReady=S.mc.state==="ok";
   const hasMedia=d.mediaUrl.trim().length>0;
   const slots=nextSlots();
-  V.innerHTML=`<div style="display:grid;grid-template-columns:minmax(0,1fr);gap:22px">
+  V.innerHTML=`<div style="display:grid;grid-template-columns:minmax(0,1fr);gap:22px">${warnCard()}
   <section class="card">
     <div class="cardhead"><div class="row" style="gap:12px"><h2>${d.id?"Post bearbeiten":"Neuer Post"}</h2>${d.date?`<span class="mono-d">${esc(fmtD(d.date).toUpperCase())}${d.time?" · "+esc(d.time):""}</span>`:""}<span class="chip">${FORMATS[d.format]||"Foto"}</span></div>
       <div class="row">${d.reelId?`<a class="btn ghost sm" href="werkstatt.html#reel=${esc(d.reelId)}">In der Werkstatt öffnen</a>`:""}${d.id?statusHTML(d.status):""}${d.id?`<button class="linkish" id="newPost">Neuen Post anfangen</button>`:""}</div></div>
@@ -1032,14 +1094,14 @@ const MONTHS=["Januar","Februar","März","April","Mai","Juni","Juli","August","S
 function postMedia(p){return S.media.find(m=>m.id===p.igId)||S.media.find(m=>m.type!=="Story"&&!S.posts.some(x=>x.igId===m.id)&&mPost(m)===p)||null}
 function evHTML(p){const ig=p.status==="instagram",pub=p.status==="veroeffentlicht";const st=p.stats&&p.stats.views!=null?p.stats:null;const mm=pub?postMedia(p):null;const v=mm?mm.views:st?st.views:null;
   return `<button class="ev${ig?" ig":""}${pub?" pub":""}${p.format==="STORY"?" story":""}" data-edit="${p.id}" ${ig?'title="In Instagram eingeplant. Geht so raus, wenn du nichts änderst."':""}>${(()=>{const im=p.images&&p.images.find(x=>!(x.type||"").startsWith("video"));return im?`<img class="evi" src="${esc(imgSrc(im))}" alt="" loading="lazy">`:""})()}<span class="ti">${esc(p.title||p.ort||"Post")}</span><span class="me"><span class="dot" style="background:${p.format==="STORY"&&pub?TYPC.Story:(STATUS[p.status]||STATUS.entwurf)[1]}"></span>${esc(p.time||"")} ${FORMATS[p.format]||""}</span>${ig?`<span class="me">✓ in Instagram eingeplant</span>`:pub&&v!=null?`<span class="me">${nf(v)} Aufrufe</span>`:""}</button>`}
-function dayHTML(d,today,dim){const ds=iso(d);const ps=S.posts.filter(p=>p.date===ds).sort((a,b)=>(a.time||"").localeCompare(b.time||""));const slot=SLOTS[d.getDay()];
+function dayHTML(d,today,dim){const ds=iso(d);const ps=S.posts.filter(p=>p.date===ds).sort((a,b)=>(a.time||"").localeCompare(b.time||""));const slot=slotFor(ds);const bh=bestHour(d.getDay());
   const nowHM=pad(new Date().getHours())+":"+pad(new Date().getMinutes());
-  return `<div class="day ${ds===today?"today":""}${dim?" dim":""}" data-date="${ds}"><div class="dayhead"><span>${WD[d.getDay()]}</span><b>${d.getDate()}.</b></div>
+  return `<div class="day ${ds===today?"today":""}${dim?" dim":""}" data-date="${ds}"><div class="dayhead"><span>${WD[d.getDay()]}${bh?` <span class="bst" title="Beste Zeit an diesem Wochentag">★${bh.h}</span>`:""}</span><b>${d.getDate()}.</b></div>
     ${ps.map(evHTML).join("")}
-    ${slot&&!ps.some(p=>p.format!=="STORY")&&(ds>today||(ds===today&&slot>nowHM))?`<button class="slot" data-new="${ds}|${slot}">+ frei · ${slot}</button>`:""}</div>`}
+    ${slot&&!ps.some(p=>p.format!=="STORY")&&(ds>today||(ds===today&&slot>nowHM))?`<button class="slot${S.btMc&&slot!==SLOTS[d.getDay()]?" best":""}" data-new="${ds}|${slot}">+ frei · ${slot}</button>`:""}</div>`}
 /* Posts im Kalender verschieben */
 function calMovable(p){return p&&p.date&&!["instagram","veroeffentlicht","metricool"].includes(p.status)}
-async function movePost(id,date){const p=S.posts.find(x=>x.id===id);if(!p||p.date===date)return;const slot=SLOTS[parse(date).getDay()];
+async function movePost(id,date){const p=S.posts.find(x=>x.id===id);if(!p||p.date===date)return;const slot=slotFor(date);
   const np={...p,date,time:slot||p.time||"",status:p.status==="freigegeben"?"geplant":p.status};const i=S.posts.indexOf(p);S.posts[i]=np;render();
   try{await savePost(np);toast(`${np.title||np.ort||"Post"} → ${fmtD(date)}${np.time?" "+np.time:""}${p.status==="freigegeben"?" · Freigabe zurückgesetzt":""}`)}catch(e){S.posts[i]=p;render();toast("Verschieben hat nicht geklappt")}}
 function initCalDrag(){V.querySelectorAll(".week .ev[data-edit]").forEach(t=>{const p=S.posts.find(x=>x.id===t.dataset.edit);
@@ -1056,6 +1118,7 @@ function initCalDrag(){V.querySelectorAll(".week .ev[data-edit]").forEach(t=>{co
     const up=ev=>{if(ev.pointerId!==pid)return;const target=over;cleanup();if(!g)return;thumbDragAt=Date.now();g.remove();t.classList.remove("dragph");
       if(target&&target.dataset.date!==p.date){if(target.dataset.date<iso(new Date())){toast("In die Vergangenheit geht nicht");return}movePost(p.id,target.dataset.date)}};
     addEventListener("pointermove",move,{passive:false});addEventListener("pointerup",up);addEventListener("pointercancel",up)})})}
+function rhythmTxt(){const t=[3,5,0].map(wd=>{const d=nextDateFor(wd,0)||iso(new Date());return WD[wd]+" "+(slotFor(d)||SLOTS[wd])}).join(", ");return "Rhythmus "+t+(S.btMc?" (beste Stunde aus Metricool)":"")}
 function vPlan(){
   const today=iso(new Date());const mode=S.planMode||"monat";
   let head,grid,cnt;
@@ -1063,28 +1126,28 @@ function vPlan(){
     const first=monday(ms);const last=new Date(ms.getFullYear(),ms.getMonth()+1,0,12);const end=new Date(last);end.setDate(last.getDate()+((7-last.getDay())%7));
     const days=[];for(const d=new Date(first);d<=end;d.setDate(d.getDate()+1))days.push(new Date(d));
     const inM=S.posts.filter(p=>p.date&&p.date.slice(0,7)===iso(ms).slice(0,7));const nP=inM.filter(p=>p.format!=="STORY"&&p.status!=="entwurf").length,nS=inM.filter(p=>p.format==="STORY").length;
-    head=`<h2>${MONTHS[ms.getMonth()]} ${ms.getFullYear()}</h2><div class="small muted" style="margin-top:4px">${nP} ${nP===1?"Post":"Posts"} und ${nS} ${nS===1?"Story":"Stories"} in diesem Monat · Rhythmus Mi 18:30, Fr 19:30, So 18:00</div>`;
+    head=`<h2>${MONTHS[ms.getMonth()]} ${ms.getFullYear()}</h2><div class="small muted" style="margin-top:4px">${nP} ${nP===1?"Post":"Posts"} und ${nS} ${nS===1?"Story":"Stories"} in diesem Monat · ${rhythmTxt()}</div>`;
     grid=`<div class="week month"><div class="wdh">Mo</div><div class="wdh">Di</div><div class="wdh">Mi</div><div class="wdh">Do</div><div class="wdh">Fr</div><div class="wdh">Sa</div><div class="wdh">So</div>${days.map(d=>dayHTML(d,today,d.getMonth()!==ms.getMonth())).join("")}</div>`}
   else{const ws=S.weekStart;const days=[...Array(7)].map((_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d});
     const kw=(()=>{const d=new Date(ws);d.setDate(d.getDate()+3);const y=new Date(d.getFullYear(),0,4);return 1+Math.round(((d-y)/864e5-3+((y.getDay()+6)%7))/7)})();
     const goal=S.posts.filter(p=>p.date&&p.date>=iso(days[0])&&p.date<=iso(days[6])&&p.format!=="STORY").length;
-    head=`<h2>Wochenplan · KW ${kw}</h2><div class="small muted" style="margin-top:4px">${goal} von 3 Posts in dieser Woche · Rhythmus Mi 18:30, Fr 19:30, So 18:00</div>`;
+    head=`<h2>Wochenplan · KW ${kw}</h2><div class="small muted" style="margin-top:4px">${goal} von 3 Posts in dieser Woche · ${rhythmTxt()}</div>`;
     grid=`<div class="week">${days.map(d=>dayHTML(d,today,false)).join("")}</div>`}
   const drafts=S.posts.filter(p=>p.status==="entwurf"&&!p.date);
   const upcoming=S.posts.filter(p=>p.date&&p.date>=today&&p.status!=="veroeffentlicht").sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time));
   const li=p=>{const im=p.images&&p.images[0];return `<div class="li"><div class="mini">${im&&!(im.type||"").startsWith("video")?`<img src="${esc(imgSrc(im))}" alt="">`:""}</div><div style="min-width:0"><div class="ti">${esc(p.title||p.ort||"Ohne Titel")}</div><div class="small muted">${FORMATS[p.format]||"Foto"} · ${p.date?fmtD(p.date)+(p.time?" "+p.time:""):"ohne Termin"}${p.ort?" · "+esc(p.ort):""}</div></div><div class="row">${statusHTML(p.status)}<button class="btn ghost sm" data-edit="${p.id}">Öffnen</button></div></div>`};
-  V.innerHTML=`<div style="display:grid;gap:22px">
+  V.innerHTML=`<div style="display:grid;gap:22px">${warnCard()}
   <section class="card">
     <div class="cardhead"><div>${head}</div>
       <div class="row"><div class="tabs" role="group" aria-label="Ansicht"><a href="javascript:void 0" data-pm="monat" ${mode==="monat"?'aria-current="page"':""}>Monat</a><a href="javascript:void 0" data-pm="woche" ${mode==="woche"?'aria-current="page"':""}>Woche</a></div>
       <button class="pill" id="wPrev" aria-label="${mode==="monat"?"Voriger Monat":"Vorige Woche"}">←</button><button class="pill" id="wNow">Heute</button><button class="pill" id="wNext" aria-label="${mode==="monat"?"Nächster Monat":"Nächste Woche"}">→</button></div></div>
     ${grid}
-    <p class="small muted" style="margin:12px 0 0">Posts zum Verschieben auf einen anderen Tag ziehen (am iPad kurz gedrückt halten). Die Uhrzeit springt auf den festen Termin des Tages. Was schon in Instagram eingeplant ist, bleibt fest.</p><div class="legend" style="margin-top:8px"><span><span class="dot" style="background:var(--info)"></span>geplant</span><span><span class="dot" style="background:var(--warn)"></span>freigegeben</span><span><span class="dot" style="background:var(--ok)"></span>in Instagram eingeplant oder veröffentlicht</span><span><span class="dot" style="background:${TYPC.Story}"></span>Story</span></div>
+    <p class="small muted" style="margin:12px 0 0">Posts zum Verschieben auf einen anderen Tag ziehen (am iPad kurz gedrückt halten). Die Uhrzeit springt auf den festen Termin des Tages. Ein ★ im Tageskopf zeigt die beste Stunde für diesen Wochentag. Was schon in Instagram eingeplant ist, bleibt fest.</p><div class="legend" style="margin-top:8px"><span><span class="dot" style="background:var(--info)"></span>geplant</span><span><span class="dot" style="background:var(--warn)"></span>freigegeben</span><span><span class="dot" style="background:var(--ok)"></span>in Instagram eingeplant oder veröffentlicht</span><span><span class="dot" style="background:${TYPC.Story}"></span>Story</span></div>
   </section>
   <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:22px">
     <section class="card"><h2>Als Nächstes</h2><div class="list" style="margin-top:8px">${upcoming.length?upcoming.map(li).join(""):`<p class="muted small">Nichts eingeplant. Tipp auf einen freien Termin im Plan.</p>`}</div></section>
     <section class="card"><h2>Entwürfe ohne Termin</h2><div class="list" style="margin-top:8px">${drafts.length?drafts.map(li).join(""):`<p class="muted small">Keine offenen Entwürfe.</p>`}</div></section>
-  </div></div>`;
+  </div>${btCard()}</div>`;
   const step=n=>{if(mode==="monat"){const m=S.monthStart;S.monthStart=new Date(m.getFullYear(),m.getMonth()+n,1,12)}else{const d=new Date(S.weekStart);d.setDate(d.getDate()+7*n);S.weekStart=d}render()};
   document.getElementById("wPrev").onclick=()=>step(-1);document.getElementById("wNext").onclick=()=>step(1);
   document.getElementById("wNow").onclick=()=>{S.weekStart=monday(new Date());S.monthStart=null;render()};
@@ -1409,7 +1472,13 @@ addEventListener("scroll",()=>{document.body.classList.toggle("sc",scrollY>60)},
   }catch(e){const c=e&&e.code;S.mc.msg=e&&e.message||"";
     S.mc.state=c==="tool_error"?"nonet":c==="needs_reauth"?"auth":"off"}
   render();
+  if(S.mc.brandId&&S.mc.state!=="auth"&&S.mc.state!=="off")loadBT();
 })();
+async function loadBT(){try{const a=new Date(),b=new Date();b.setDate(a.getDate()+6);const ia=iso(a),ib=iso(b);
+  const r=await mcp.callTool(MC,"getBestTimeToPostByNetwork",{brandId:S.mc.brandId,fromDate:ia+"T00:00:00"+tzOffset(ia,"12:00"),toDate:ib+"T23:59:59"+tzOffset(ib,"12:00"),timezone:S.mc.tz||"Europe/Berlin",socialNetwork:"instagram"},{cache:{staleTime:6*36e5,gcTime:12*36e5}});
+  const rows=(r&&r.payload&&r.payload.data)||[];const grid={};let any=false;
+  for(const row of rows){const wd=(row.dayOfWeek||0)%7;for(const x of row.bestTimesByHour||[]){if(x.hourOfDay<BT_H0||x.hourOfDay>BT_H1)continue;const v=+x.value||0;if(v>0){any=true;grid[wd+"|"+x.hourOfDay]=v}}}
+  S.btMc=any?{src:"metricool",grid}:null;render()}catch(e){S.btMc=null}}
 </script>
 </body>
 </html>
