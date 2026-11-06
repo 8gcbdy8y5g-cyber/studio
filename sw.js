@@ -20,7 +20,7 @@
 // v23 (06.11.2026): Reel-Studio in sechs Schritten, freie Musik automatisch passend zur Richtung
 // v24 (06.11.2026): Reel-Studio spielt immer nur einen Ton gleichzeitig
 // v25 (07.11.2026): Design-Prüfung umgesetzt: Reel-Studio mit Vorschlägen, Lesbarkeit, Tippflächen, Druck-Feedback, Zahlen in Grautönen
-const CACHE = 'studio-v25';
+const CACHE = 'studio-v26';
 const MODELLE = 'studio-modelle-1';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './galerie.css', './galerie.js', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
@@ -40,3 +40,4 @@ self.addEventListener('fetch', e => {
   e.respondWith(fetch(r).then(a => { if (a.ok || a.type === 'opaque') { const k = a.clone(); caches.open(CACHE).then(c => c.put(r, k)); } return a; })
     .catch(() => caches.match(r, { ignoreSearch: true }).then(g => g || (r.mode === 'navigate' ? caches.match('./index.html') : undefined))));
 });
+// v26: Reels löschen, Pro-Schnitt neu gestaltet

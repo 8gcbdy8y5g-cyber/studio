@@ -244,7 +244,7 @@
       rail.innerHTML = `<div class="gx-mini"><button type="button" data-st="${Math.max(0, i - 1)}" aria-label="Schritt zurück" ${i ? '' : 'disabled'}>‹</button><span>Schritt ${i + 1} von 6 · <b>${E(STEPS[i].name)}</b></span><button type="button" data-st="${Math.min(5, i + 1)}" aria-label="Nächster Schritt" ${i < 5 ? '' : 'disabled'}>›</button></div>` + '<ol>' + STEPS.map((s, k) => `<li><button type="button" data-st="${k}" ${k === i ? 'aria-current="step"' : ''}><b>${k + 1}</b><span><span class="n">${E(s.name)}</span><span class="v">${E(val(k))}</span></span></button></li>`).join('') + '</ol>';
       rail.querySelectorAll('[data-st]').forEach(b => b.onclick = () => show(+b.dataset.st, true));
       next.innerHTML = (i > 0 ? `<button type="button" class="btn ghost" data-go="${i - 1}">Zurück</button>` : '<span></span>') +
-        (i < 5 ? `<button type="button" class="btn" data-go="${i + 1}">Weiter zu ${E(STEPS[i + 1].name)} →</button>` : '');
+        (i < 5 ? `<button type="button" class="btn" data-go="${i + 1}">Weiter zu ${E(STEPS[i + 1].name)}${GI_().next}</button>` : '');
       next.querySelectorAll('[data-go]').forEach(b => b.onclick = () => show(+b.dataset.go, true));
       if (scroll) scrollTo({ top: 0, behavior: 'smooth' });
       if (i >= 3 && (P.items || []).length) autoMusic();
@@ -312,16 +312,157 @@
       box.innerHTML = `<div class="gx-fhead"><span class="gx-ftitle">Freie Musik passend zu „${E((MS.mood || 'treibend').replace(/^./, c => c.toUpperCase()))}“</span>${MS.busy ? '<span class="small muted">Sucht …</span>' : `<button type="button" class="gx-link" id="gxAlt">${r ? 'Anderes Stück' : 'Stück aussuchen'}</button>`}</div>` +
         (r ? `<p class="small">Läuft unter deinem Reel: <b>${E(r.title)}</b> von ${E(r.creator || 'unbekannt')} · ${E(lic(r))}${needsCredit(r) ? ' · Nennung steht schon in der Caption' : ''}</p>` : '') +
         (MS.err ? `<p class="small muted">${E(MS.err)}</p>` : '') +
-        (MS.list.length ? `<ol class="gx-flist">${MS.list.slice(0, 5).map((x, k) => `<li class="${k === MS.idx ? 'on' : ''}"><button type="button" class="gx-fplay" data-fp="${k}" aria-label="${E(x.title)} anhören">▶</button><span class="gx-fmeta"><b>${E(x.title)}</b><small>${E(x.creator || '')} · ${Math.round((x.duration || 0) / 1000)} s · ${E(lic(x))}</small></span>${k === MS.idx ? '<span class="small muted">gewählt</span>' : `<button type="button" class="btn ghost sm" data-ft="${k}">Nehmen</button>`}</li>`).join('')}</ol>` : '') +
+        (MS.list.length ? `<ol class="gx-flist">${MS.list.slice(0, 5).map((x, k) => `<li class="${k === MS.idx ? 'on' : ''}"><button type="button" class="gx-fplay" data-fp="${k}" aria-label="${E(x.title)} anhören">${GI_().play}</button><span class="gx-fmeta"><b>${E(x.title)}</b><small>${E(x.creator || '')} · ${Math.round((x.duration || 0) / 1000)} s · ${E(lic(x))}</small></span>${k === MS.idx ? '<span class="small muted">gewählt</span>' : `<button type="button" class="btn ghost sm" data-ft="${k}">Nehmen</button>`}</li>`).join('')}</ol>` : '') +
         `<p class="small muted gx-fnote">Freie Musik aus Wikimedia Commons über Openverse, nur Lizenzen, die kommerzielle Nutzung erlauben. Songs aus den Instagram-Charts gibt es nur in der Instagram-App.</p>`;
       const alt = box.querySelector('#gxAlt'); if (alt) alt.onclick = async () => { if (!MS.list.length) { await search((typeof R !== 'undefined' && R.moodSel) || 'treibend'); } let k = MS.idx + 1; while (k < MS.list.length && !(await take(k))) {} };
       box.querySelectorAll('[data-ft]').forEach(b => b.onclick = () => take(+b.dataset.ft));
-      box.querySelectorAll('[data-fp]').forEach(b => b.onclick = () => { const x = MS.list[+b.dataset.fp]; if (!x) return; if (MS.audio && MS.audio.dataset.k === b.dataset.fp && !MS.audio.paused) { MS.audio.pause(); b.textContent = '▶'; return; } if (MS.audio) MS.audio.pause(); box.querySelectorAll('[data-fp]').forEach(y => y.textContent = '▶'); if (window.__gxStopOthers) window.__gxStopOthers(); MS.audio = window.__gxAudio = new Audio(x.url); MS.audio.dataset.k = b.dataset.fp; MS.audio.onended = () => { b.textContent = '▶'; }; MS.audio.play().catch(() => {}); b.textContent = '❚❚'; });
+      box.querySelectorAll('[data-fp]').forEach(b => b.onclick = () => { const x = MS.list[+b.dataset.fp]; if (!x) return; if (MS.audio && MS.audio.dataset.k === b.dataset.fp && !MS.audio.paused) { MS.audio.pause(); b.innerHTML = GI_().play; return; } if (MS.audio) MS.audio.pause(); box.querySelectorAll('[data-fp]').forEach(y => y.innerHTML = GI_().play); if (window.__gxStopOthers) window.__gxStopOthers(); MS.audio = window.__gxAudio = new Audio(x.url); MS.audio.dataset.k = b.dataset.fp; MS.audio.onended = () => { b.innerHTML = GI_().play; }; MS.audio.play().catch(() => {}); b.innerHTML = GI_().pause; });
     }
     document.addEventListener('click', e => { const m = e.target.closest('#moods [data-mood]'); if (m && cur === 3) setTimeout(() => { if (P.musicName && P.musicName === MS.ours) autoMusic(true); else search(m.dataset.mood); }, 50); });
     drawFree();
     oneSound();
+    reelDelete();
+    proPolish();
     show(cur, false);
+  }
+
+
+  /* Kleine Strich-Icons statt Unicode-Zeichen */
+  function GI_() {
+    const S = (d, f) => `<svg class="gx-i" viewBox="0 0 24 24" aria-hidden="true"${f ? ' data-fill' : ''}>${d}</svg>`;
+    return window.__gxGI || (window.__gxGI = {
+      play: S('<path d="M8 5.5v13l10.5-6.5z"/>', 1), pause: S('<rect x="6.5" y="5" width="4" height="14" rx="1.2"/><rect x="13.5" y="5" width="4" height="14" rx="1.2"/>', 1),
+      undo: S('<path d="M9 7 4.5 11.5 9 16"/><path d="M5 11.5h9.5a5 5 0 0 1 0 10H12"/>'), redo: S('<path d="m15 7 4.5 4.5L15 16"/><path d="M19 11.5H9.5a5 5 0 0 0 0 10H12"/>'),
+      back: S('<path d="M14.5 6 8.5 12l6 6"/>'), next: S('<path d="M5 12h13"/><path d="m13 7 5 5-5 5"/>'),
+      trash: S('<path d="M4.5 7h15"/><path d="M9.5 7V4.8h5V7"/><path d="M6.5 7l.9 12.2a1.8 1.8 0 0 0 1.8 1.6h5.6a1.8 1.8 0 0 0 1.8-1.6L17.5 7"/>'),
+      tr: S('<rect x="3.5" y="6" width="10" height="12" rx="2"/><rect x="10.5" y="6" width="10" height="12" rx="2"/>'), plus: S('<path d="M12 6v12M6 12h12"/>'),
+      kf: S('<path d="m12 5 7 7-7 7-7-7z"/>', 1)
+    });
+  }
+
+  /* Deine Reels: einzeln löschen, mit Rückfrage direkt am Bild */
+  function reelDelete() {
+    const orig = window.renderList; if (typeof orig !== 'function') return;
+    let armed = null, timer = null, emptyArmed = false;
+    const disarm = () => { armed = null; emptyArmed = false; clearTimeout(timer); };
+    const arm = () => { clearTimeout(timer); timer = setTimeout(() => { disarm(); window.renderList(); }, 5000); };
+    async function kill(ids) {
+      for (const id of ids) {
+        const r = R.list.find(x => x.id === id);
+        if (id === P.id) { R.dirty = false; const nb = document.getElementById('newReel'); if (nb) await nb.onclick(); }
+        try { await db.collection('reels').doc(id).delete(); } catch (e) { toast('Löschen hat nicht geklappt. Bist du online?'); continue; }
+        if (!r || !/instagram|veroeffentlicht/.test(r.status || '')) { try { await db.collection('posts').doc('reel_' + id).delete(); } catch (e) {} }
+        try { localStorage.removeItem('gx-sug-' + id); } catch (e) {}
+        R.list = R.list.filter(x => x.id !== id);
+      }
+      disarm(); window.renderList();
+      toast(ids.length > 1 ? ids.length + ' Entwürfe gelöscht' : 'Reel gelöscht');
+    }
+    window.renderList = function () {
+      const out = orig.apply(this, arguments);
+      try {
+        const box = document.getElementById('reels'); if (!box || typeof db === 'undefined' || !db) return out;
+        box.querySelectorAll('.rc[data-open]').forEach(b => {
+          const id = b.dataset.open, r = R.list.find(x => x.id === id) || {};
+          const w = document.createElement('div'); w.className = 'gx-rcw'; b.replaceWith(w); w.appendChild(b);
+          const name = r.title || r.hook || r.ort || 'Ohne Titel';
+          const d = document.createElement('button'); d.type = 'button'; d.className = 'gx-rcdel';
+          if (armed === id) { w.classList.add('gx-armed'); d.classList.add('gx-on'); d.innerHTML = GI_().trash + '<span>Wirklich löschen</span>'; d.setAttribute('aria-label', '„' + name + '“ endgültig löschen'); }
+          else { d.innerHTML = GI_().trash; d.setAttribute('aria-label', '„' + name + '“ löschen'); d.title = 'Löschen'; }
+          d.onclick = e => { e.stopPropagation(); if (armed === id) kill([id]); else { armed = id; emptyArmed = false; arm(); window.renderList(); const n = document.querySelector('.gx-rcdel.gx-on'); if (n) n.focus(); } };
+          w.appendChild(d);
+          if (!(r.items || []).length) { const t = b.querySelector('.tx > span:last-child'); if (t) t.textContent = 'leer'; }
+        });
+        const empty = R.list.filter(x => !(x.items || []).length && x.id !== P.id).map(x => x.id);
+        const meta = document.getElementById('listMeta'); let eb = document.getElementById('gxEmpty');
+        if (meta && empty.length > 1) {
+          if (!eb) { eb = document.createElement('button'); eb.id = 'gxEmpty'; eb.type = 'button'; eb.className = 'gx-emptybtn'; meta.after(eb); }
+          eb.classList.toggle('gx-on', emptyArmed);
+          eb.textContent = emptyArmed ? `Alle ${empty.length} leeren Entwürfe löschen?` : `${empty.length} leere Entwürfe entfernen`;
+          eb.onclick = () => { if (emptyArmed) kill(empty); else { emptyArmed = true; armed = null; arm(); window.renderList(); } };
+        } else if (eb) eb.remove();
+      } catch (e) { console.warn('gx reels', e); }
+      return out;
+    };
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && (armed || emptyArmed)) { disarm(); window.renderList(); } });
+    try { window.renderList(); } catch (e) {}
+  }
+
+  /* Pro-Schnitt: ruhiger Kopf, Transport unter dem Bild, Werkzeuge nach Bedarf */
+  function proPolish() {
+    const wrap = (n, after) => { const o = window[n]; if (typeof o !== 'function') return; window[n] = function () { const r = o.apply(this, arguments); try { after.apply(this, arguments); } catch (e) { console.warn('gx pro', n, e); } return r; }; };
+    const $$ = id => document.getElementById(id);
+    function build() {
+      const d = $$('pro'); if (!d || d.dataset.gx) return; d.dataset.gx = '1'; d.classList.add('gx-pro');
+      const head = d.querySelector('.qph'), g = GI_();
+      const badge = head.querySelector('.qbadge'); if (badge) badge.remove();
+      head.querySelectorAll('.qsp').forEach(x => x.remove());
+      const close = $$('proClose'); close.innerHTML = g.back + '<span>Fertig</span>';
+      const h2 = head.querySelector('h2'); h2.textContent = 'Schnitt';
+      const sub = document.createElement('span'); sub.className = 'gx-prosub'; sub.id = 'gxProSub';
+      const left = document.createElement('div'); left.className = 'gx-pl'; left.append(close, h2, sub);
+      const right = document.createElement('div'); right.className = 'gx-pr';
+      const ren = $$('proRender'); ren.textContent = 'Rendern'; right.append(ren);
+      const tb = document.createElement('div'); tb.className = 'gx-ptb'; tb.setAttribute('role', 'group'); tb.setAttribute('aria-label', 'Wiedergabe');
+      const undo = $$('proUndo'), redo = $$('proRedo'), play = $$('proPlay'), tm = $$('proTime');
+      undo.innerHTML = g.undo; redo.innerHTML = g.redo; play.classList.add('gx-play');
+      const tl = document.createElement('div'); tl.className = 'gx-ptl'; tl.append(tm);
+      const tc = document.createElement('div'); tc.className = 'gx-ptc'; tc.append(play);
+      const tr = document.createElement('div'); tr.className = 'gx-ptr'; tr.append(undo, redo);
+      tb.append(tl, tc, tr);
+      head.innerHTML = ''; head.append(left, right);
+      d.insertBefore(tb, d.querySelector('.qptl'));
+    }
+    wrap('proMount', build);
+    wrap('proFit', () => { const st = $$('proStage'), b = $$('proCvBox'); if (!st || !b) return; const pd = innerWidth > 700 ? 48 : 20; const w = st.clientWidth - pd, h = st.clientHeight - pd; let ch = h, cw = ch * 9 / 16; if (cw > w) { cw = w; ch = cw * 16 / 9; } b.style.width = Math.max(60, cw) + 'px'; b.style.height = Math.max(100, ch) + 'px'; });
+    wrap('proTimeLabel', () => {
+      const b = $$('proPlay'); if (b && b.classList.contains('gx-play')) { const want = R.playing ? 'pause' : 'play'; if (b.dataset.st !== want) { b.dataset.st = want; b.innerHTML = GI_()[want]; } }
+      const el = $$('proTime'); if (el && el.textContent.includes(' / ')) { const [a, z] = el.textContent.split(' / '); el.innerHTML = `<b>${a}</b><span>/ ${z} s</span>`; }
+      const sub = $$('gxProSub'); if (sub && P.pro && P.pro.clips) { const t = `${P.pro.clips.length} Clips`; if (sub.textContent !== t) sub.textContent = t; }
+    });
+    wrap('proRenderLane', () => {
+      const lane = $$('proLane'); if (!lane) return; const g = GI_();
+      lane.querySelectorAll('.qjoin').forEach(j => { const on = j.classList.contains('qon'); const k = on ? 'tr' : 'plus'; if (j.dataset.ic !== k) { j.dataset.ic = k; j.innerHTML = g[k]; } j.setAttribute('aria-label', on ? 'Übergang bearbeiten' : 'Übergang hinzufügen'); });
+      lane.querySelectorAll('.qclip .qcap').forEach(c => { if (c.textContent.includes('◆')) c.innerHTML = c.innerHTML.replace(/◆+/, m => `<span class="gx-kf">${g.kf}${m.length > 1 ? m.length : ''}</span>`); });
+    });
+    wrap('proRenderTools', () => {
+      const el = $$('proTools'); if (!el) return;
+      const btn = a => el.querySelector(`[data-act="${a}"]`);
+      const prim = ['add', 'layer', 'text'].map(btn).filter(Boolean);
+      const end = btn('beat');
+      const ctx = [...el.querySelectorAll('[data-act]')].filter(b => !prim.includes(b) && b !== end);
+      const live = ctx.filter(b => !b.disabled);
+      el.innerHTML = '';
+      const grp = (cls, list) => { const g = document.createElement('div'); g.className = 'gx-tg ' + cls; list.forEach(x => g.append(x)); return g; };
+      el.append(grp('gx-tg1', prim));
+      if (live.length) el.append(grp('gx-tg2', live));
+      else { const h = document.createElement('p'); h.className = 'gx-thint'; h.textContent = 'Clip antippen für Schneiden, Tempo und Ausschnitt'; el.append(h); }
+      if (end) el.append(grp('gx-tg3', [end]));
+    });
+    wrap('proRenderIns', () => {
+      const el = $$('proIns'), d = $$('pro'); if (!el || !d) return;
+      const none = !PRO.sel; const was = d.classList.contains('gx-nosel'); d.classList.toggle('gx-nosel', none);
+      if (was !== none && typeof proFit === 'function') requestAnimationFrame(() => proFit());
+      if (!none) return;
+      const tot = R.tl ? R.tl.total : 0;
+      const notes = [...el.querySelectorAll('.qnote')];
+      const from = P.pro && P.pro.from ? ((STYLES[P.pro.from] || {}).name || P.pro.from) : '';
+      const h3 = el.querySelector('h3');
+      const stats = document.createElement('dl'); stats.className = 'gx-pstats';
+      stats.innerHTML = `<div><dt>Clips</dt><dd>${P.pro.clips.length}</dd></div><div><dt>Länge</dt><dd>${de(tot)} s</dd></div>${from ? `<div><dt>Aus Stil</dt><dd>${E(from)}</dd></div>` : ''}`;
+      if (h3) h3.after(stats);
+      notes.forEach(n => { const g = n.closest('.qg'); (g || n).remove(); });
+      const chips = el.querySelector('.qchips'); if (chips) chips.classList.add('gx-pacts');
+      const tips = document.createElement('details'); tips.className = 'gx-ptips';
+      const fine = matchMedia('(hover:hover) and (pointer:fine)').matches;
+      const K = (k, t) => `<li><span>${t}</span><span>${k.map(x => `<kbd>${x}</kbd>`).join('')}</span></li>`;
+      tips.innerHTML = fine
+        ? `<summary>Tastenkürzel</summary><ul>${K(['Leertaste'], 'Abspielen')}${K(['S'], 'Teilen')}${K(['T'], 'Text')}${K(['E'], 'Ebene')}${K(['Entf'], 'Löschen')}${K(['⌘', 'Z'], 'Rückgängig')}${K(['←', '→'], 'Ein Bild')}${K(['+', '−'], 'Zoom')}</ul>`
+        : `<summary>So bedienst du den Schnitt</summary><p>Antippen wählt aus. Wischen bewegt die Timeline, zwei Finger zoomen. Kanten eines gewählten Clips ziehen kürzt ihn, gedrückt halten und ziehen sortiert um.</p>`;
+      el.append(tips);
+      function E(t) { return String(t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+    });
+    if (document.getElementById('pro')) build();
   }
 
   /* Reel-Studio aufräumen: ruhiger Kopf, weniger Auswahl, Feinheiten eingeklappt */
@@ -419,7 +560,7 @@
 
   /* Immer nur ein Ton: Reel-Vorschau, Hörprobe der Richtung, Probe aus dem Ordner und freie Musik schließen sich aus */
   function oneSound() {
-    const stopFree = () => { try { if (window.__gxAudio && !window.__gxAudio.paused) { window.__gxAudio.pause(); document.querySelectorAll('[data-fp]').forEach(y => y.textContent = '▶'); } } catch (e) {} };
+    const stopFree = () => { try { if (window.__gxAudio && !window.__gxAudio.paused) { window.__gxAudio.pause(); document.querySelectorAll('[data-fp]').forEach(y => y.innerHTML = GI_().play); } } catch (e) {} };
     const stopReel = () => { try { if (typeof R !== 'undefined' && R.playing && typeof setPlaying === 'function') _setPlaying(false); } catch (e) {} };
     const stopProbe = () => { try { if (typeof R !== 'undefined' && (R.ex || R.tp) && typeof stopExample === 'function') _stopExample(); } catch (e) {} };
     const _setPlaying = window.setPlaying, _stopExample = window.stopExample;
