@@ -344,14 +344,19 @@
 
   /* Play/Pause: der Knopf wurde jedes Bild neu beschrieben, dabei ging der Tipp verloren.
      Jetzt ändert sich sein Inhalt nur beim Wechsel, und Pause greift auch, während die Musik noch lädt. */
-  function steadyPlay(btn) {
+  function steadyPlay(btn, act) {
     if (!btn || btn.dataset.gxSteady) return; btn.dataset.gxSteady = '1';
     const draw = () => { const want = (R.playing || (R.waitMusic && !R.gxCancel)) ? 'pause' : 'play'; if (btn.dataset.st !== want) { btn.dataset.st = want; btn.innerHTML = GI_()[want]; } };
-    Object.defineProperty(btn, 'textContent', { configurable: true, get: () => '', set: draw });
+    Object.defineProperty(btn, 'textContent', { configurable: true, get: () => (btn.dataset.st === 'pause' ? '❚❚' : '▶'), set: draw });
+    // Schalten schon beim Aufsetzen des Fingers, der spätere click wird verschluckt
+    let ate = -1e9;
+    btn.addEventListener('pointerdown', e => { if (e.button || btn.disabled) return; e.preventDefault(); ate = e.timeStamp; (act || btn.onclick).call(btn); draw(); });
+    btn.addEventListener('click', e => { if (e.isTrusted && e.timeStamp - ate < 1500) { ate = -1e9; e.stopImmediatePropagation(); e.preventDefault(); } }, true);
     draw();
   }
   function playFix() {
     steadyPlay(document.getElementById('play'));
+    steadyPlay(document.getElementById('mplay'), () => document.getElementById('play').onclick());
     const sp = window.setPlaying, now = window.setPlayingNow;
     if (typeof sp !== 'function' || typeof now !== 'function') return;
     window.setPlaying = function (on) {

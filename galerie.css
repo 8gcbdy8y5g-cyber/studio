@@ -507,7 +507,8 @@
 }
 @media (prefers-reduced-motion:reduce){#pro.gx-pro button{transition:none}}
 
-#play,#proPlay{touch-action:manipulation;-webkit-user-select:none;user-select:none}
-#play .gx-i,#proPlay .gx-i{pointer-events:none}
+#play,#mplay,#proPlay{touch-action:manipulation;-webkit-user-select:none;user-select:none}
+#play .gx-i,#mplay .gx-i,#proPlay .gx-i{pointer-events:none}
+#mplay .gx-i{width:16px;height:16px}
 #play .gx-i{width:18px;height:18px}
 #play[data-st=play] .gx-i{margin-left:2px}
