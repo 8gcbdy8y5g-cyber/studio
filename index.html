@@ -515,6 +515,8 @@ body.vpult .wrap{max-width:1560px}
 @media (max-width:700px){.pu-arw{background:rgba(0,0,0,.55);border-color:transparent}.card{border-radius:var(--r-card)}.pu-img{border-width:5px}}
 </style>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;min-height:100dvh}html{overscroll-behavior-y:none}img{max-width:100%}[hidden]{display:none!important}</style>
+<link rel="stylesheet" href="galerie.css">
+<script>document.documentElement.classList.add("gx")</script>
 </head>
 <body>
 <nav class="side" aria-label="Bereiche">
@@ -1481,5 +1483,6 @@ async function loadBT(){try{const a=new Date(),b=new Date();b.setDate(a.getDate(
   for(const row of rows){const wd=(row.dayOfWeek||0)%7;for(const x of row.bestTimesByHour||[]){if(x.hourOfDay<BT_H0||x.hourOfDay>BT_H1)continue;const v=+x.value||0;if(v>0){any=true;grid[wd+"|"+x.hourOfDay]=v}}}
   S.btMc=any?{src:"metricool",grid}:null;render()}catch(e){S.btMc=null}}
 </script>
+<script src="galerie.js"></script>
 </body>
 </html>

@@ -12,6 +12,16 @@ werk_src = pathlib.Path(sys.argv[2]).read_text()
 out = pathlib.Path(sys.argv[3])
 
 
+def galerie(h):
+    """Design „Galerie“ (06.11.2026): galerie.css und galerie.js liegen im Repo und kommen in beide Seiten."""
+    if 'galerie.css' in h:
+        return h
+    i = h.index('</head>')
+    h = h[:i] + '<link rel="stylesheet" href="galerie.css">\n<script>document.documentElement.classList.add("gx")</script>\n' + h[i:]
+    j = h.rindex('</body>')
+    return h[:j] + '<script src="galerie.js"></script>\n' + h[j:]
+
+
 def rep(s, a, b, cnt=1):
     n = s.count(a)
     assert n == cnt, (a[:90], n)
@@ -95,7 +105,7 @@ script = rep(script, '<div class="row">${d.id?statusHTML(d.status):""}',
 html = (head('Studio Sommer_gram', 'Planen, posten und auswerten für sommer_gram') + pre + '\n' + style + '\n' + EXTRA_CSS +
         '</head>\n<body>\n' + markup.strip() + '\n' + BOOT_STUDIO + script + '\n</body>\n</html>\n')
 html = re.sub(r'<meta name="claude:[^>]*>\n?', '', html)
-(out / 'index.html').write_text(html)
+(out / 'index.html').write_text(galerie(html))
 print('index.html', len(html))
 
 # Seitenleiste aus dem Studio für die Werkstatt übernehmen (Links zurück ins Studio)
@@ -195,5 +205,5 @@ wmarkup = wmarkup.replace('<div class="wrap">', nav + '\n<div class="wrap">', 1)
 whtml = (head('Reel-Werkstatt · Studio Sommer_gram', 'Reels schneiden für sommer_gram') + theme_js + '\n' + wpre + '\n' + wstyle + '\n' +
          werk_css + EXTRA_CSS + '</head>\n<body>\n' + wmarkup.strip() + '\n' + BOOT_WERK + wscript + '\n</body>\n</html>\n')
 whtml = re.sub(r'<meta name="claude:[^>]*>\n?', '', whtml)
-(out / 'werkstatt.html').write_text(whtml)
+(out / 'werkstatt.html').write_text(galerie(whtml))
 print('werkstatt.html', len(whtml))

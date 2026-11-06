@@ -16,9 +16,10 @@
 // v18 (05.11.2026): Stil Ortstitel (Streifen, Vorhang, Ort tippt sich ein, Flicker unten, harte Schnitte)
 // v19 (06.11.2026): Stil Beschlagen (nasse Scheibe, Ort als Fenster, Pinsel legt frei)
 // v20 (06.11.2026): Beschlagen ohne dunklen Rand um die Buchstaben
-const CACHE = 'studio-v21';
+// v22 (06.11.2026): Neues Design „Galerie“ (galerie.css, galerie.js): Feed, Plan, Zahlen, ruhig und fotografisch
+const CACHE = 'studio-v22';
 const MODELLE = 'studio-modelle-1';
-const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
+const DATEIEN = ['./', './index.html', './werkstatt.html', './galerie.css', './galerie.js', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
 const FREMD = ['https://www.gstatic.com', 'https://fonts.googleapis.com', 'https://fonts.gstatic.com', 'https://cdn.jsdelivr.net', 'https://storage.googleapis.com'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(DATEIEN)).then(() => self.skipWaiting())); });
