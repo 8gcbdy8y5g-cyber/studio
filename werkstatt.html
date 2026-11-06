@@ -602,6 +602,7 @@ const STYLES={
   film:{name:"Film",line:"Erzählt ruhig wie ein Filmstreifen: lange Einstellungen, Lichtlecks, Filmbrand und weiche Überblendungen, wahlweise mit Kinobalken.",tags:["Lichtlecks","Überblendung","Ruhig"]},
   galerie:{name:"Galerie",line:"Fotos im Passepartout wie in einem Bildband. Harte Masken-Wischer, ab und zu ein Doppelbild, Nummerierung und Titel in Serifenschrift.",tags:["Passepartout","Doppelbild","Serif"]},
   recap:{name:"Recap",line:"Für den Monatsrückblick: weiße Fläche, groß die Schrift, auf jedem Sechzehntel landet ein Bild, bis eine dichte Collage steht. Dann verschwinden die Bilder wieder, bis nur die Schrift bleibt.",tags:["Monatsrückblick","Collage im Takt"]},
+  beschlagen:{name:"Beschlagen",line:"Das erste Bild liegt hinter einer nassen, beschlagenen Scheibe. Der Ort tippt sich ein, die Buchstaben sind Fenster aufs klare Bild. Dann wischt ein Pinselstrich die Scheibe frei. Danach ruhige Schnitte.",tags:["Regenscheibe","Text als Fenster","Pinsel"]},
   ortstitel:{name:"Ortstitel",line:"Für Reisen: erst ein Bild, dann schieben sich im Halbtakt schmale Streifen mit weiteren Bildern hinein. Ein ruhiges Weitwinkelbild fällt wie ein Vorhang darüber, der Ort tippt sich groß ein, darunter flackern die anderen Bilder. Danach schnelle harte Schnitte.",tags:["Reise-Recap","Ort als Titel","Streifen"]},
   futurist:{name:"Futurist",line:"Große Wörter im Takt hinter dem Motiv, dann ein Scrapbook: Abzüge an der Wäscheleine, aus denen das Motiv herausspringt, Beschriftung in Handschrift. Zum Schluss der Text als Schnipsel-Buchstaben.",tags:["Text hinter dem Motiv","Scrapbook","Schnipsel-Titel"]},
   geschnitten:{name:"Geschnitten",line:"Das Motiv freigestellt auf heller Fläche, in vier Streifen geschnitten, die auf jedem Beat ihre Höhe wechseln. Neue Clips fliegen Streifen für Streifen herein.",tags:["Motiv freigestellt","Streifen im Takt"]},
@@ -626,19 +627,19 @@ function lookFor(st,r){
   if(st==="nahtlos")return {filter:pick(r,["contrast(1.05) saturate(1.03)","contrast(1.04) saturate(0.95)"]),tint:tint(),grain:0.22,vig:0.7};
   if(st==="dump")return {filter:"contrast(1.12) saturate(1.15)",tint:pick(r,[null,["#ffaa5a",0.05]]),grain:0.28,vig:0,card:pick(r,["#F7F6F2","#FFFFFF","#EFEDE8"]),bg:pick(r,["blur","blur","ink"])};
   if(st==="film")return {filter:pick(r,["contrast(0.94) saturate(0.82) sepia(0.2) brightness(1.04)","contrast(0.97) saturate(0.9) sepia(0.12) brightness(1.02) hue-rotate(-6deg)","contrast(0.92) saturate(0.78) sepia(0.26) brightness(1.05)"]),tint:["#ff9650",0.08],grain:0.6,vig:1.5,weave:true,flicker:true,frame:r()<0.5?"letter":"full",stamp:r()<0.7,leak:pick(r,["amber","rose","red"])};
-  if(st==="kalyl"||st==="geschnitten"||st==="gespiegelt"||st==="futurist"||st==="recap"||st==="ortstitel")return {grain:0,vig:0};
+  if(st==="kalyl"||st==="geschnitten"||st==="gespiegelt"||st==="futurist"||st==="recap"||st==="ortstitel"||st==="beschlagen")return {grain:0,vig:0};
   if(st==="split"){const lay=pick(r,["tb","tb","tb","tb","tb60","tb40"]);return {filter:pick(r,["contrast(1.06) saturate(1.06)","contrast(1.04) saturate(1.0)"]),tint:tint(),grain:0.2,vig:0.5,lay,
     seam:pick(r,["#000000","#000000","#FFFFFF","none"]),entry:pick(r,["slide","open","open","cut"]),paneTr:pick(r,["slide","slide","cut","flash"]),stagger:r()<0.75,first:r()<0.5?0:1}}
   const bw=r()<0.2;return {bw,filter:bw?"grayscale(1) contrast(1.12)":pick(r,["contrast(1.04) saturate(0.95)","contrast(1.06) saturate(0.9) brightness(1.02)"]),mat:pick(r,[["#F2F0EB","#141414"],["#121212","#EDEBE6"],["#D8D5CE","#161616"]]),grain:0.1,vig:0,index:r()<0.75};
 }
 function cutLook(lk){const o=Object.assign({},lk);for(const k of ["filter","tint","grain","vig","weave","flicker","stamp","bw"])delete o[k];return o}
-function textFor(st,r){if(st==="kalyl")return {kind:"kalyl"};if(st==="gespiegelt")return {kind:"mirror"};if(st==="geschnitten")return {kind:"mirror"};if(st==="futurist")return {kind:"mirror"};if(st==="recap")return {kind:"mirror"};if(st==="ortstitel")return {kind:"mirror"};if(st==="split")return {kind:"bold"};if(st==="dump")return {kind:"sticker",y:pick(r,[300,760]),rot:(r()-0.5)*0.12};return {kind:{takt:"bold",nahtlos:"center",film:"mono",galerie:"serif"}[st]}}
+function textFor(st,r){if(st==="kalyl")return {kind:"kalyl"};if(st==="gespiegelt")return {kind:"mirror"};if(st==="geschnitten")return {kind:"mirror"};if(st==="futurist")return {kind:"mirror"};if(st==="recap")return {kind:"mirror"};if(st==="ortstitel"||st==="beschlagen")return {kind:"mirror"};if(st==="split")return {kind:"bold"};if(st==="dump")return {kind:"sticker",y:pick(r,[300,760]),rot:(r()-0.5)*0.12};return {kind:{takt:"bold",nahtlos:"center",film:"mono",galerie:"serif"}[st]}}
 function autoTr(st,s,nx,k,cnt,r,prev,L){
   if(st==="takt")return k===cnt-2?pick(r,["zoom","flash"]):wpick(r,{whip_l:3,whip_r:3,zoom:3,push_u:2,push_d:1,flash:2,spin:1},prev);
   if(st==="nahtlos")return {l:()=>wpick(r,{whip_l:3,object_l:2}),r:()=>wpick(r,{whip_r:3,object_r:2}),u:()=>wpick(r,{push_u:3,object_u:2}),in:()=>"zoom"}[L.dir]();
   if(st==="dump"){r();if(nx.sec==="end")return "flash";if(s.tag==="hook")return "flash1";if(s.sec==="b"&&nx.sec==="b")return wpick(r,{cut:5,flash1:2,glitch:1.5});if(s.sec==="s"&&nx.sec==="s")return "cut";return "flash1"}
   if(st==="film")return wpick(r,{dissolve:3,leak:3,burn:2,dip:1},prev);
-  if(st==="ortstitel"){r();return "cut"}
+  if(st==="ortstitel"||st==="beschlagen"){r();return "cut"}
   if(st==="futurist"){r();return s.mode==="kfu"&&nx.mode!=="kfu"?"kpaper":"cut"}
   if(st==="geschnitten"){r();return "kslice"}if(st==="gespiegelt"){r();return "kfold"}
   if(st==="kalyl"){r();if(s.tag==="intro")return "kblob";if(s.mode==="k3"&&nx.mode==="k3")return "kswap";if(s.mode==="k3")return "kmorph";if(s.mode==="kins"&&nx.mode==="kins")return "cut";if(s.mode==="kins")return "kexpand";return "cut"}
@@ -702,6 +703,9 @@ function timeline(){
     if(outro>=0)S.push({it:its[outro],i:outro,beats:ub(its[outro],its[outro].kind==="video"?8:4),mode:"full",motion:{k:"in",a:0.06},main:true});
   }else if(st==="recap"){
     const T=rcCount(n);const fi=its.findIndex(it=>it.kind!=="video");const k0=fi<0?0:fi;rcAnalyze();const pl=rcPlan(T,b);L.rcPlan=pl;S.push({it:its[k0],i:k0,beats:pl?pl.end/b:1+T/4+3+T/4+4,mode:"krc",motion:{k:"in",a:0},main:true,tag:"recap"});
+  }else if(st==="beschlagen"){
+    const T=bsTimes();S.push({it:its[0],i:0,beats:Math.ceil(T.end/b*2)/2,mode:"kbs",motion:{k:"in",a:0},main:true});
+    its.slice(1).forEach((it,j,A)=>{const last=j===A.length-1;S.push({it,i:j+1,beats:ub(it,last?(it.kind==="video"?6:4):2),mode:"full",motion:{k:"in",a:0.03},main:true})});
   }else if(st==="ortstitel"){
     const pl=loPlan(its,b);const rest=its.map((it,i)=>i).filter(i=>i!==0&&i!==pl.hero);
     S.push({it:its[0],i:0,beats:1+0.5*(LO.cols-1)+1.5,mode:"klo",motion:{k:"in",a:0},main:true,tag:"intro",strips:pl.strips.map(i=>its[i]),hero:its[pl.hero]});
@@ -748,7 +752,7 @@ function timeline(){
       if(!user&&st!=="kalyl"&&!KL_ST.has(st)&&((s.end-s.start)<0.45||(nx.end-nx.start)<0.45)&&TR_LEN[kind]>6)kind="cut";
       const Ls=TR_LEN[kind]/FPS;L.trs.push({i:k,at:s.end,kind,L:Ls});s.ln=Ls;nx.lp=Ls;prev=kind}};
   for(let pass=0;pass<5;pass++){timeAndTr();let ch=false;
-    S.forEach(s=>{if(s.mode==="split"||s.mode==="k3"||s.mode==="krc"||s.mode==="klo"||s.it.kind!=="video"||!s.it.dur)return;const sp=s.it.speed||1;const have=Math.max(0.05,(s.it.dur-0.05)/sp-(s.off||0));const ov=(s.lp+s.ln)/2;
+    S.forEach(s=>{if(s.mode==="split"||s.mode==="k3"||s.mode==="krc"||s.mode==="klo"||s.mode==="kbs"||s.it.kind!=="video"||!s.it.dur)return;const sp=s.it.speed||1;const have=Math.max(0.05,(s.it.dur-0.05)/sp-(s.off||0));const ov=(s.lp+s.ln)/2;
       const slow=s.slow||1;if(((s.end-s.start)+ov)*(1/slow)>have+1e-6){const raw=Math.floor((have-ov)/b*4)/4;
         if(raw>=0.25){if(raw<s.beats){s.beats=raw;s.capped=true;ch=true}}
         else{if(s.beats!==0.25){s.beats=0.25;s.capped=true;ch=true}const sl=Math.min(1,have/(0.25*b+ov));if(Math.abs(sl-slow)>1e-4){s.slow=sl;ch=true}}}});
@@ -1070,6 +1074,7 @@ const TRAITS={
   film:["Ruhiges Tempo, Bilder bleiben länger stehen","Lichtlecks, Filmbrand und Überblendungen","Langsame Kamerafahrten über jedes Bild","Je nach Variante mit Kinobalken"],
   galerie:["Fotos im Passepartout, hell oder dunkel","Harte Masken-Wischer statt Effekte","Ab und zu ein Doppelbild, dazu Nummern","Titel in Serifenschrift"],
   recap:["Weiße Fläche, in der Mitte groß und gestapelt die Schrift in einer Farbe aus deinem Material","Ohne Anfangstext steht dort automatisch Monat und Jahr, genommen aus den Aufnahmedaten der Fotos","Mit Musik landet jedes Bild auf einem echten Schlag des Songs (Bass und Höhen), auf lauten Schlägen etwas größer, ohne Musik auf jedem Sechzehntel. Die Collage wächst von oben nach unten, die Schrift bleibt immer obenauf","Drei Schläge steht die ganze Collage, dann verschwinden die Bilder in derselben Reihenfolge wieder","Zum Schluss nur die Schrift und klein darunter, wie viele Fotos und Clips es waren","Bei wenigen Bildern kommen manche zweimal vor, bei mehr als 40 nimmt die Werkstatt die ersten 40"],
+  beschlagen:["Anfang: das erste Bild hinter einer beschlagenen Scheibe mit Regentropfen, weich, grau und hell","Der Ort aus „Ort“ tippt sich groß ein. Durch die Buchstaben siehst du das klare Bild","Dann wischt ein Pinsel in Schwüngen über die Scheibe, bis alles frei ist","Danach ruhige harte Schnitte, jedes Bild zwei Schläge, das letzte länger. Passt gut zu Regen und Herbst, nimm als erstes Bild ein Video oder ein Foto mit viel Bewegung"],
   ortstitel:["Anfang: das erste Bild, dann kommen von links nach rechts vier schmale Streifen mit weiteren Bildern dazu, jeder auf einem halben Schlag","Ein ruhiges Bild mit viel Himmel fällt von oben wie ein Vorhang über die Streifen. Welches das ist, sucht die Werkstatt selbst aus","Darauf tippt sich der Ort aus „Ort“ groß und gelb ein, kurz mit Buchstabensalat. Darüber der Monat aus den Aufnahmedaten (oder die Unterzeile), darunter RECAP","Dann flackert die untere Bildhälfte im Halbtakt durch die anderen Bilder, der Titel bleibt stehen. Danach harte Schnitte auf dem Beat"],
   futurist:["Anfang: kleine Zeile, darunter ein großes Wort, beide knallen mit Bewegungsunschärfe auf den Beat, das Motiv steht davor","Danach schiebt sich Papier über das Bild: jeder Clip hängt als Abzug mit gerissenem Rand an der Wäscheleine, pendelt kurz aus und trägt eine Nummer wie auf dem Kontaktbogen","Bei jedem zweiten Abzug und beim letzten springt das Motiv mit weißem Sticker-Rand aus dem Rahmen","Unter dem Abzug erscheint Wort für Wort ein Stück deiner Caption in Handschrift","Schluss: „Zum Schluss“ als Schnipsel-Buchstaben aus verschiedenen Schriften, darunter dein erstes Motiv als Sticker im Takt","Farben aus deinem Material"],
   geschnitten:["Das Motiv wird freigestellt und steht groß auf einer hellen Fläche in den Farben deines Materials","Vier Streifen, jeder sitzt etwas höher oder tiefer und springt auf jedem Beat weich auf eine neue Höhe","Neue Clips fliegen Streifen für Streifen abwechselnd von oben und unten herein","Ohne erkanntes Motiv wird das ganze Bild in Streifen geschnitten"],
@@ -1108,7 +1113,7 @@ const MOODS={
   treibend:{name:"Treibend",line:"Klarer Beat und Bass, Tempo um 110 bis 130. Für schnelle Schnitte.",fits:"Takt, Fotostapel",traits:["Deutlicher Beat, auf den die Schnitte fallen","Bass und Schlagzeug von Anfang an","Passt zu Wischern und Zoom-Kicks"]},
   warm:{name:"Warm",line:"Akustisch, gezupft, ein bisschen Nostalgie. Für Familie, Herbst und Abendlicht.",fits:"Film, Nahtlos, Takt",traits:["Gitarre oder Klavier, gezupft","Mittleres Tempo","Weich, nie hektisch"]}
 };
-const STYLE_MOOD={takt:["treibend","warm"],dump:["treibend"],nahtlos:["ruhig","warm"],film:["warm","ruhig"],galerie:["ruhig"],split:["treibend","warm"],kalyl:["treibend","warm"],geschnitten:["treibend","warm"],gespiegelt:["ruhig","warm"],futurist:["treibend","warm"],ortstitel:["treibend","warm"],recap:["treibend"]};
+const STYLE_MOOD={takt:["treibend","warm"],dump:["treibend"],nahtlos:["ruhig","warm"],film:["warm","ruhig"],galerie:["ruhig"],split:["treibend","warm"],kalyl:["treibend","warm"],geschnitten:["treibend","warm"],gespiegelt:["ruhig","warm"],futurist:["treibend","warm"],ortstitel:["treibend","warm"],beschlagen:["ruhig","kühl"],recap:["treibend"]};
 function musicUrl(){return P.music&&P.music.assetId?__bs(P.music.assetId):R.music?(R.musicObjUrl||(R.musicObjUrl=URL.createObjectURL(R.music))):null}
 function musicStart(){return P.music?(P.music.start||0):0}
 /* Hörprobe je Richtung: im Browser erzeugt, etwa 6 Sekunden */
@@ -1542,7 +1547,7 @@ function klGrad(x,pal,rect){const r=rect||{x:0,y:0,w:W,h:H};const g=x.createLine
 Engine.prototype.klSeg=function(x,seg,t){
   const pal=klPal();const mode=seg.mode;x.globalAlpha=1;x.globalCompositeOperation="source-over";
   if(mode==="ksl"){this.gsSlice(x,seg,t);return}if(mode==="kmi"){this.gsMirror(x,seg,t);return}
-  if(mode==="krc"){this.rcDraw(x,seg,t);return}if(mode==="klo"){this.loDraw(x,seg,t);return}if(mode==="kfu"){this.fuIntro(x,seg,t);return}if(mode==="kpa"){this.fuScrap(x,seg,t);return}if(mode==="kra"){this.fuEnd(x,seg,t);return}
+  if(mode==="krc"){this.rcDraw(x,seg,t);return}if(mode==="klo"){this.loDraw(x,seg,t);return}if(mode==="kbs"){this.bsDraw(x,seg,t);return}if(mode==="kfu"){this.fuIntro(x,seg,t);return}if(mode==="kpa"){this.fuScrap(x,seg,t);return}if(mode==="kra"){this.fuEnd(x,seg,t);return}
   if(mode==="k3"){x.fillStyle=pal.dark;x.fillRect(0,0,W,H);(seg.panes||[]).forEach((pn,j)=>{const Rc=K3_RECTS[j];if(!Rc)return;const sp=Math.max(0.001,seg.end-seg.start);const e=ease(clamp((t-seg.start)/sp));
       x.save();x.beginPath();x.rect(Rc.x,Rc.y,Rc.w,Rc.h);x.clip();drawCover(x,srcOf(pn.it),Rc,1.02+0.05*e,0,klPy(pn.it),pn.it.cx);x.restore()});return}
   const g=klGeom(seg,t);const S=srcOf(seg.it);
@@ -2529,6 +2534,49 @@ Engine.prototype.loDraw=function(x,seg,t){x.globalAlpha=1;x.globalCompositeOpera
   let s=ttl.slice(0,shown);if(shown<ttl.length&&k>=tk0){const f=Math.floor(t*FPS);const AZ="ABCDEFGHIJKLMNOPRSTUVWZ";s+=AZ[Math.floor(hash(f*7.1+shown)*AZ.length)]}
   if(s){const full=x.measureText(ttl).width;x.textAlign="left";const x0=W/2-full/2;x.fillStyle="rgba(0,0,0,0.22)";x.fillText(s,x0+3,cy+5);x.fillStyle=col;x.fillText(s,x0,cy)}
   x.restore()};
+
+/* ---------- Stil „Beschlagen“ (06.11.2026) ----------
+   Nach einem CapCut-Tutorial (visualtutorials1905): das erste Bild liegt hinter einer beschlagenen, nassen Scheibe.
+   Der Ort tippt sich Buchstabe für Buchstabe ein, die Buchstaben sind Fenster aufs klare Bild. Dann wischt ein
+   Pinselstrich die Scheibe frei, bis das ganze Bild klar ist. Danach ruhige harte Schnitte. */
+const BS={fw:540,fh:960,cache:null};
+function bsTitle(){return String(P.ort||klHookText()||"Unterwegs").toUpperCase().slice(0,14)}
+function bsTimes(){const n=bsTitle().length;const per=0.17,t0=0.4;const te=t0+n*per;const b0=te+0.8,bd=2.2;return {t0,per,te,b0,bd,end:b0+bd+0.7}}
+// Tropfen und Schlieren einmal erzeugen
+function bsDrops(){if(BS.drops)return BS.drops;const c=mk(BS.fw,BS.fh),x=c.getContext("2d");let s=7;const rnd=()=>{s=(s*16807)%2147483647;return s/2147483647};
+  for(let i=0;i<14;i++){const px=rnd()*BS.fw,py=rnd()*BS.fh*0.6,len=80+rnd()*260;const g=x.createLinearGradient(px,py,px,py+len);g.addColorStop(0,"rgba(255,255,255,0)");g.addColorStop(0.5,"rgba(255,255,255,0.10)");g.addColorStop(1,"rgba(255,255,255,0)");x.fillStyle=g;x.fillRect(px,py,1.6+rnd()*2,len)}
+  for(let i=0;i<900;i++){const px=rnd()*BS.fw,py=rnd()*BS.fh,r=rnd()<0.92?0.6+rnd()*1.8:2.2+rnd()*3.2;
+    x.fillStyle=`rgba(0,0,0,${0.10+rnd()*0.12})`;x.beginPath();x.ellipse(px+r*0.25,py+r*0.35,r,r*1.1,0,0,Math.PI*2);x.fill();
+    x.fillStyle=`rgba(255,255,255,${0.3+rnd()*0.3})`;x.beginPath();x.ellipse(px,py,r*0.85,r*0.95,0,0,Math.PI*2);x.fill();
+    if(r>2){x.fillStyle="rgba(255,255,255,0.65)";x.beginPath();x.arc(px-r*0.3,py-r*0.35,r*0.28,0,Math.PI*2);x.fill()}}
+  BS.drops=c;return c}
+// Pinsel: Kleckse entlang einer Zickzack-Bahn, mit unruhigem Rand
+const BS_PATH=(()=>{const P=[];const rows=[0.5,0.32,0.68,0.16,0.84,0.04,0.96];let dir=1;for(const y of rows){const xs=[0.08,0.3,0.52,0.74,0.94];(dir>0?xs:xs.slice().reverse()).forEach(x=>P.push([x,y+(Math.sin(x*9+y*5)*0.03)]));dir=-dir}return P})();
+function bsBrush(x,p,w,h){if(p<=0)return;if(p>=0.985){x.fillRect(0,0,w,h);return}const n=BS_PATH.length;const R=w*0.3;
+  for(let i=0;i<n;i++){const a=i/n*0.86;if(p<a)break;const g=ease(clamp((p-a)/0.16));const [cx,cy]=BS_PATH[i];const r=R*g*(0.85+0.3*hash(i*3.7));x.beginPath();
+    for(let k=0;k<=28;k++){const an=k/28*Math.PI*2;const rr=r*(1+0.14*Math.sin(an*3+i)+0.08*Math.sin(an*7+i*2.3)+0.05*(hash(i*31+k)-0.5));const px=cx*w+Math.cos(an)*rr,py=cy*h+Math.sin(an)*rr*0.92;k?x.lineTo(px,py):x.moveTo(px,py)}x.fill()}
+  if(p>0.9){x.globalAlpha=(p-0.9)/0.085;x.fillRect(0,0,w,h);x.globalAlpha=1}}
+Engine.prototype.bsDraw=function(x,seg,t){x.globalAlpha=1;x.globalCompositeOperation="source-over";const k=t-seg.start,d=Math.max(0.001,seg.end-seg.start);const S=srcOf(seg.it);
+  x.fillStyle="#000";x.fillRect(0,0,W,H);if(S)drawCover(x,S,RECT_FULL,1.02+0.03*clamp(k/d),0,0,seg.it.cx);
+  const T=bsTimes();const bp=clamp((k-T.b0)/T.bd);if(bp>=1||!S)return;
+  // beschlagene Scheibe: Bild stark verkleinert (weich), entsättigt, aufgehellt
+  if(!this.bsC){this.bsC={a:mk(54,96),b:mk(108,192),c:mk(216,384),f:mk(BS.fw,BS.fh),tmp:new Float32Array(54*96*3)}}const C=this.bsC;
+  const ax=C.a.getContext("2d",{willReadFrequently:true});ax.globalCompositeOperation="source-over";drawCover(ax,S,{x:0,y:0,w:54,h:96},1.02,0,0,seg.it.cx);
+  const id=ax.getImageData(0,0,54,96),dd=id.data,A=C.tmp,w=54,h=96;
+  for(let i=0,j=0;i<dd.length;i+=4,j+=3){const l=dd[i]*0.3+dd[i+1]*0.59+dd[i+2]*0.11;for(let c=0;c<3;c++)A[j+c]=(dd[i+c]*0.25+l*0.75)*0.42+(c===2?172:162)*0.58}
+  for(let pass=0;pass<3;pass++){for(let y=0;y<h;y++)for(let x0=0;x0<w;x0++){let r=0,g=0,bb=0,n=0;for(let dy=-1;dy<=1;dy++){const yy=y+dy;if(yy<0||yy>=h)continue;for(let dx=-1;dx<=1;dx++){const xx=x0+dx;if(xx<0||xx>=w)continue;const q=(yy*w+xx)*3;r+=A[q];g+=A[q+1];bb+=A[q+2];n++}}const o=(y*w+x0)*4;dd[o]=r/n;dd[o+1]=g/n;dd[o+2]=bb/n}
+    for(let i=0,j=0;i<dd.length;i+=4,j+=3){A[j]=dd[i];A[j+1]=dd[i+1];A[j+2]=dd[i+2]}}
+  ax.putImageData(id,0,0);
+  const bx=C.b.getContext("2d");bx.imageSmoothingQuality="high";bx.drawImage(C.a,0,0,108,192);const cx2=C.c.getContext("2d");cx2.imageSmoothingQuality="high";cx2.drawImage(C.b,0,0,216,384);
+  const fx=C.f.getContext("2d");fx.globalCompositeOperation="source-over";fx.globalAlpha=1;fx.imageSmoothingQuality="high";fx.drawImage(C.c,0,0,BS.fw,BS.fh);
+  const g=fx.createLinearGradient(0,0,0,BS.fh);g.addColorStop(0,"rgba(255,255,255,0.12)");g.addColorStop(1,"rgba(30,36,44,0.18)");fx.fillStyle=g;fx.fillRect(0,0,BS.fw,BS.fh);fx.drawImage(bsDrops(),0,0);
+  // Buchstaben und Pinsel herausschneiden
+  fx.globalCompositeOperation="destination-out";fx.fillStyle="#000";const ttl=bsTitle();const shown=Math.floor(clamp((k-T.t0)/T.per,0,ttl.length));
+  if(shown){fx.save();fx.textBaseline="middle";fx.textAlign="left";fx.font=`400 200px Anton,Inter,sans-serif`;const w0=fx.measureText(ttl).width;const fs=Math.min(250,200*BS.fw*0.84/Math.max(1,w0));fx.font=`400 ${fs}px Anton,Inter,sans-serif`;try{fx.letterSpacing="1px"}catch(e){}
+    const full=fx.measureText(ttl).width;const tx0=BS.fw/2-full/2,ty=BS.fh*0.47,part=ttl.slice(0,shown);
+    fx.globalCompositeOperation="source-over";fx.strokeStyle="rgba(20,24,30,0.28)";fx.lineWidth=7;fx.lineJoin="round";fx.strokeText(part,tx0,ty);fx.globalCompositeOperation="destination-out";fx.fillText(part,tx0,ty);try{fx.letterSpacing="0px"}catch(e){}fx.restore()}
+  bsBrush(fx,bp,BS.fw,BS.fh);fx.globalCompositeOperation="source-over";
+  x.drawImage(C.f,0,0,W,H)};
 
 /* ================= Speichern ================= */
 let saveTimer=null;

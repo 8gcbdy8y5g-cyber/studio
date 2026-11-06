@@ -14,7 +14,8 @@
 // v16 (05.11.2026): Pro-Schnitt mit Ebenen (Bild im Bild, Polaroid, Kreis, Freisteller, Farbfläche, Verlauf) und Fehlerbehebungen
 // v17 (05.11.2026): Vorschau hängt nicht mehr bei Videos, deren erstes Bild nicht bei 0 s liegt (schwarzes Bild im Pro-Schnitt); Wächter für hängende Videos
 // v18 (05.11.2026): Stil Ortstitel (Streifen, Vorhang, Ort tippt sich ein, Flicker unten, harte Schnitte)
-const CACHE = 'studio-v18';
+// v19 (06.11.2026): Stil Beschlagen (nasse Scheibe, Ort als Fenster, Pinsel legt frei)
+const CACHE = 'studio-v19';
 const MODELLE = 'studio-modelle-1';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
