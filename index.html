@@ -716,7 +716,8 @@ function vPult(){const items=puItems();const sel=puSel();const idx=sel?items.fin
   const meta=sel?`${idx>=0?`Bild ${idx+1} von ${items.length} · `:""}${esc(where)}${p&&p.date?" · "+esc(fmtD(p.date)):""}`:"Noch kein Material";
   const feed=puFeed(sel);
   const cnt=x=>x===PU_ALL?puPlanned().length+upcoming().drafts.length+S.pool.length:x===PU_PLAN?puPlanned().length:x===DRAFTS?upcoming().drafts.length:S.pool.filter(y=>poolFolder(y)===x).length;
-  V.innerHTML=`<div class="pu">
+  const wc=warnCard();
+  V.innerHTML=`${wc?`<div style="margin-bottom:16px">${wc}</div>`:""}<div class="pu">
   <section class="pu-cen" data-mode="${mode}">
     <div class="pu-cbar"><span class="meta">${meta}</span><span class="pu-tog" role="group" aria-label="Ansicht"><button data-pmode="bild" aria-pressed="${mode==="bild"}">Bild</button><button data-pmode="feed" aria-pressed="${mode==="feed"}">Feed</button></span></div>
     <div class="pu-stage">
