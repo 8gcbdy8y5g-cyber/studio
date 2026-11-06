@@ -383,6 +383,7 @@
       headLine(by.edit, 'gxSugLook', `Gewählt: <b>${E(L.name)}</b>`, 'Anderer Look', () => { const l = recLooks(); const i = l.indexOf(cur); const e = ED(); e.look = l[(i + 1) % l.length]; editChanged(); renderEdit(); });
       return r;
     };
+    if (by.edit) { const h = by.edit.querySelector('.cardhead h2'); if (h) h.textContent = 'Look'; const sm = by.edit.querySelector('.cardhead .small'); if (sm) sm.remove(); }
     // Stil: Schrift, Textfarbe und Variante einklappen
     if (by.style) {
       const d2 = document.createElement('details'); d2.className = 'gx-fine'; d2.innerHTML = '<summary>Schrift, Textfarbe und Variante</summary><div class="gx-fine-in"></div>';

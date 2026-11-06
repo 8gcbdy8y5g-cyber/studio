@@ -362,3 +362,5 @@
 .gx .gx-strip { -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent); mask-image:linear-gradient(90deg,#000 88%,transparent); padding-right:48px }
 
 @media (max-width:700px) { .gx nav.gx-nav { background:color-mix(in srgb,var(--bg) 97%,transparent) } }
+.gx .gx-mini button { display:grid; place-items:center; line-height:1; padding:0 0 3px }
+.gx .gx-mini > span { display:block; align-self:center }
