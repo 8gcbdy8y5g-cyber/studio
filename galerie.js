@@ -182,26 +182,126 @@
   /* Erste Darstellung mit dem neuen Feed */
   try { render(); } catch (e) { console.error(e); }
 
-  /* ---------- Reel-Studio: Schritte links ---------- */
+  /* ---------- Reel-Studio: sechs Schritte, einer nach dem anderen ---------- */
   function werkSteps() {
     document.body.classList.add('gx-werk');
     document.title = document.title.replace('Reel-Werkstatt', 'Reel-Studio');
     const h1 = document.querySelector('header.top h1'); if (h1) h1.textContent = 'Reel-Studio';
-    const wrap = document.querySelector('.wrap'); if (!wrap) return;
-    const bar = document.createElement('nav'); bar.className = 'gx-steps'; bar.setAttribute('aria-label', 'Schritte');
-    const hdr = wrap.querySelector('header.top'); (hdr ? hdr.nextSibling : wrap.firstChild) ? wrap.insertBefore(bar, hdr ? hdr.nextSibling : wrap.firstChild) : wrap.appendChild(bar);
-    let sig = '';
-    const build = () => {
-      const hs = [...wrap.querySelectorAll('h2')].filter(h => h.offsetParent && !bar.contains(h) && h.textContent.trim() && h.textContent.trim() !== 'Deine Reels');
-      const s = hs.map(h => h.textContent.trim()).join('|'); if (s === sig) return; sig = s;
-      bar.innerHTML = hs.map((h, i) => `<a href="#" data-i="${i}"><b>${i + 1}</b>${esc0(h.textContent.trim().replace('Bearbeiten', 'Look').replace('Rendern und freigeben', 'Rendern'))}</a>`).join('');
-      bar.querySelectorAll('a').forEach(a => a.onclick = e => { e.preventDefault(); const h = hs[+a.dataset.i]; if (!h) return; const y = h.getBoundingClientRect().top + scrollY - (bar.getBoundingClientRect().height + 90); scrollTo({ top: y, behavior: 'smooth' }); });
-      spy();
+    const layout = document.querySelector('.layout'); const stack = layout && layout.querySelector(':scope > .stack');
+    if (!layout || !stack) return;
+    const E = t => String(t == null ? '' : t).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+    const cards = [...stack.querySelectorAll(':scope > section.card')];
+    const has = (c, sel) => !!c.querySelector(sel);
+    const by = {
+      media: document.getElementById('mediaCard'), style: document.getElementById('styleCard'), edit: document.getElementById('editCard'),
+      music: document.getElementById('musicCard'), out: document.getElementById('outCard'),
+      takt: cards.find(c => has(c, '#bpmRow')), text: cards.find(c => has(c, '#f-hook')), post: cards.find(c => has(c, '#f-cap'))
     };
-    const spy = () => { const hs = [...wrap.querySelectorAll('h2')].filter(h => h.offsetParent && !bar.contains(h) && h.textContent.trim() !== 'Deine Reels'); let cur = 0; hs.forEach((h, i) => { if (h.getBoundingClientRect().top < 220) cur = i; }); bar.querySelectorAll('a').forEach((a, i) => a.classList.toggle('on', i === cur)); };
-    const esc0 = t => t.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-    let t = null; new MutationObserver(() => { clearTimeout(t); t = setTimeout(build, 120); }).observe(wrap, { childList: true, subtree: true });
-    addEventListener('scroll', spy, { passive: true });
-    build();
+    const STEPS = [
+      { name: 'Material', cards: [by.media] },
+      { name: 'Stil', cards: [by.style] },
+      { name: 'Look', cards: [by.edit] },
+      { name: 'Musik und Takt', cards: [by.music, by.takt] },
+      { name: 'Texte', cards: [by.text] },
+      { name: 'Fertig', cards: [by.post, by.out] }
+    ];
+    STEPS.forEach(s => s.cards = s.cards.filter(Boolean));
+    let cur = 0; try { cur = Math.min(5, Math.max(0, +(localStorage.getItem('gx-step') || 0))); } catch (e) {}
+
+    const rail = document.createElement('nav'); rail.className = 'gx-rail'; rail.setAttribute('aria-label', 'Schritte');
+    layout.insertBefore(rail, layout.firstChild);
+    const next = document.createElement('div'); next.className = 'gx-nextrow'; stack.appendChild(next);
+
+    const val = i => { try {
+      if (i === 0) { const n = (P.items || []).length; return n ? n + (n === 1 ? ' Stück' : ' Stücke') : 'noch leer'; }
+      if (i === 1) return (STYLES[P.style] && STYLES[P.style].name) || '';
+      if (i === 2) { const l = LOOKS.find(x => x.id === (P.edit && P.edit.look)); return l ? l.name : ''; }
+      if (i === 3) { const m = P.musicName || (P.music && P.music.title) || (P.sound ? 'Originalton' : 'ohne Ton'); return m.replace(/\.(mp3|ogg|wav|m4a)$/i, '') + ' · ' + (P.bpm || 120) + ' BPM'; }
+      if (i === 4) return P.hook || 'ohne Text';
+      if (i === 5) { const d = document.getElementById('f-date'), t = document.getElementById('f-time'); return d && d.value ? fmtDE(d.value) + (t && t.value ? ', ' + t.value : '') : 'noch offen'; }
+    } catch (e) {} return ''; };
+    const fmtDE = v => { const [y, m, d] = v.split('-'); return +d + '.' + +m + '.'; };
+
+    const show = (i, scroll) => {
+      cur = i; try { localStorage.setItem('gx-step', String(i)); } catch (e) {}
+      cards.forEach(c => c.classList.toggle('gx-off', !STEPS[i].cards.includes(c)));
+      rail.innerHTML = '<ol>' + STEPS.map((s, k) => `<li><button type="button" data-st="${k}" ${k === i ? 'aria-current="step"' : ''}><b>${k + 1}</b><span><span class="n">${E(s.name)}</span><span class="v">${E(val(k))}</span></span></button></li>`).join('') + '</ol>';
+      rail.querySelectorAll('[data-st]').forEach(b => b.onclick = () => show(+b.dataset.st, true));
+      next.innerHTML = (i > 0 ? `<button type="button" class="btn ghost" data-go="${i - 1}">Zurück</button>` : '<span></span>') +
+        (i < 5 ? `<button type="button" class="btn" data-go="${i + 1}">Weiter zu ${E(STEPS[i + 1].name)} →</button>` : '');
+      next.querySelectorAll('[data-go]').forEach(b => b.onclick = () => show(+b.dataset.go, true));
+      if (scroll) scrollTo({ top: 0, behavior: 'smooth' });
+      if (i >= 3 && (P.items || []).length) autoMusic();
+    };
+    let t = null; new MutationObserver(m => { if (m.every(x => rail.contains(x.target) || next.contains(x.target))) return; clearTimeout(t); t = setTimeout(() => { const vs = [...rail.querySelectorAll('.v')]; vs.forEach((v, k) => { const nv = val(k); if (v.textContent !== nv) v.textContent = nv; }); }, 200); }).observe(stack, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-pressed', 'value'] });
+    document.addEventListener('input', () => { clearTimeout(t); t = setTimeout(() => rail.querySelectorAll('.v').forEach((v, k) => { v.textContent = val(k); }), 300); });
+
+    /* ---------- Freie Musik von Openverse, automatisch passend zur Richtung ---------- */
+    const TERMS = { ruhig: ['calm piano', 'ambient', 'lofi'], treibend: ['upbeat', 'energetic', 'lofi'], warm: ['acoustic guitar', 'ukulele', 'folk'] };
+    const BAD = /(birthday|anthem|hymn|national|ode|speech|interview|lecture|thunder|rain|noise|field recording|test|demo-|sample|bartok|purcell|wagner|mozart|beethoven|bach|chopin|orchestra|symphon)/i;
+    const box = document.createElement('div'); box.className = 'gx-free';
+    if (by.music) { const tr = document.getElementById('tracks'); (tr || by.music.lastElementChild).insertAdjacentElement(tr ? 'beforebegin' : 'afterend', box); }
+    const MS = { list: [], idx: -1, mood: null, busy: false, err: '' };
+    const lic = r => { const l = (r.license || '').toLowerCase(); return l === 'cc0' ? 'CC0, frei' : l === 'pdm' ? 'gemeinfrei' : 'CC ' + l.toUpperCase() + ' ' + (r.license_version || ''); };
+    const needsCredit = r => !['cc0', 'pdm'].includes((r.license || '').toLowerCase());
+    const reelLen = () => { const m = ((document.getElementById('time') || {}).textContent || '').match(/\/\s*([\d,]+)/); const v = m ? parseFloat(m[1].replace(',', '.')) : 0; return v > 3 ? v : 15; };
+    async function search(mood) {
+      MS.busy = true; MS.err = ''; drawFree();
+      const seen = new Set(), out = [];
+      for (const q of TERMS[mood] || TERMS.treibend) {
+        try {
+          const u = 'https://api.openverse.org/v1/audio/?q=' + encodeURIComponent(q) + '&license_type=commercial&source=wikimedia_audio&page_size=20';
+          const r = await fetch(u); if (!r.ok) continue; const j = await r.json();
+          for (const x of j.results || []) { const d = (x.duration || 0) / 1000; if (!x.url || seen.has(x.id) || d < Math.max(20, reelLen()) || d > 600 || BAD.test(x.title || '')) continue; seen.add(x.id); out.push(x); }
+        } catch (e) {}
+        if (out.length >= 8) break;
+      }
+      out.sort((a, b) => (needsCredit(a) - needsCredit(b)) || ((a.source === 'wikimedia_audio' ? 0 : 1) - (b.source === 'wikimedia_audio' ? 0 : 1)));
+      MS.list = out.slice(0, 8); MS.mood = mood; MS.busy = false; MS.idx = -1;
+      if (!MS.list.length) MS.err = 'Gerade nichts Passendes gefunden. Später noch mal, oder eigene Musikdatei nehmen.';
+      drawFree();
+    }
+    async function take(k, silent) {
+      const r = MS.list[k]; if (!r) return false;
+      MS.busy = true; drawFree();
+      try {
+        const res = await fetch(r.url, { mode: 'cors' }); if (!res.ok) throw new Error('http');
+        const blob = await res.blob(); const ext = (r.filetype || 'mp3').replace('mp32', 'mp3');
+        const f = new File([blob], (r.title || 'Musik').replace(/[\\/:*?"<>|]/g, '').slice(0, 60) + '.' + ext, { type: blob.type || 'audio/mpeg' });
+        const inp = document.getElementById('musicIn'); const dt = new DataTransfer(); dt.items.add(f); inp.files = dt.files; inp.dispatchEvent(new Event('change', { bubbles: true }));
+        const orig = document.getElementById('snd-orig'); if (orig && orig.getAttribute('aria-pressed') === 'true') orig.click();
+        credit(r); MS.idx = k; MS.ours = f.name; MS.busy = false; drawFree();
+        if (!silent) toast0('Musik: ' + (r.title || 'Stück'));
+        return true;
+      } catch (e) { MS.busy = false; MS.failed = (MS.failed || 0) + 1; MS.list.splice(k, 1); if (!MS.list.length) MS.err = 'Die gefundenen Stücke ließen sich gerade nicht laden. Später noch mal, oder eigene Musikdatei nehmen.'; drawFree(); return false; }
+    }
+    function credit(r) {
+      const cap = document.getElementById('f-cap'); if (!cap) return;
+      let v = cap.value.replace(/\n*Musik: .*$/s, '');
+      if (needsCredit(r)) v = (v.trim() ? v.trim() + '\n\n' : '') + 'Musik: ' + (r.title || '') + ' von ' + (r.creator || 'unbekannt') + ' (' + lic(r) + ')';
+      if (v !== cap.value) { cap.value = v; cap.dispatchEvent(new Event('input', { bubbles: true })); }
+    }
+    async function autoMusic(force) {
+      const mood = (typeof R !== 'undefined' && R.moodSel) || 'treibend';
+      let key = ''; try { key = 'gx-auto-' + P.id; } catch (e) {}
+      if (!force) { if (P.musicName || P.music) { if (!MS.list.length || MS.mood !== mood) search(mood); return; } try { if (localStorage.getItem(key)) { if (MS.mood !== mood) search(mood); return; } } catch (e) {} }
+      if (MS.mood !== mood || !MS.list.length) await search(mood);
+      for (let k = 0; k < MS.list.length; k++) { if (await take(k, true)) { try { localStorage.setItem(key, '1'); } catch (e) {} toast0('Musik ausgesucht: ' + (MS.list[MS.idx].title || 'Stück')); return; } k--; }
+    }
+    const toast0 = m => { try { toast(m); } catch (e) {} };
+    function drawFree() {
+      const r = MS.list[MS.idx];
+      box.innerHTML = `<div class="gx-fhead"><span class="gx-ftitle">Freie Musik passend zu „${E((MS.mood || 'treibend').replace(/^./, c => c.toUpperCase()))}“</span>${MS.busy ? '<span class="small muted">Sucht …</span>' : `<button type="button" class="gx-link" id="gxAlt">${r ? 'Anderes Stück' : 'Stück aussuchen'}</button>`}</div>` +
+        (r ? `<p class="small">Läuft unter deinem Reel: <b>${E(r.title)}</b> von ${E(r.creator || 'unbekannt')} · ${E(lic(r))}${needsCredit(r) ? ' · Nennung steht schon in der Caption' : ''}</p>` : '') +
+        (MS.err ? `<p class="small muted">${E(MS.err)}</p>` : '') +
+        (MS.list.length ? `<ol class="gx-flist">${MS.list.slice(0, 5).map((x, k) => `<li class="${k === MS.idx ? 'on' : ''}"><button type="button" class="gx-fplay" data-fp="${k}" aria-label="${E(x.title)} anhören">▶</button><span class="gx-fmeta"><b>${E(x.title)}</b><small>${E(x.creator || '')} · ${Math.round((x.duration || 0) / 1000)} s · ${E(lic(x))}</small></span>${k === MS.idx ? '<span class="small muted">gewählt</span>' : `<button type="button" class="btn ghost sm" data-ft="${k}">Nehmen</button>`}</li>`).join('')}</ol>` : '') +
+        `<p class="small muted gx-fnote">Freie Musik aus Wikimedia Commons über Openverse, nur Lizenzen, die kommerzielle Nutzung erlauben. Songs aus den Instagram-Charts gibt es nur in der Instagram-App.</p>`;
+      const alt = box.querySelector('#gxAlt'); if (alt) alt.onclick = async () => { if (!MS.list.length) { await search((typeof R !== 'undefined' && R.moodSel) || 'treibend'); } let k = MS.idx + 1; while (k < MS.list.length && !(await take(k))) {} };
+      box.querySelectorAll('[data-ft]').forEach(b => b.onclick = () => take(+b.dataset.ft));
+      box.querySelectorAll('[data-fp]').forEach(b => b.onclick = () => { const x = MS.list[+b.dataset.fp]; if (!x) return; if (MS.audio && MS.audio.dataset.k === b.dataset.fp && !MS.audio.paused) { MS.audio.pause(); b.textContent = '▶'; return; } if (MS.audio) MS.audio.pause(); box.querySelectorAll('[data-fp]').forEach(y => y.textContent = '▶'); MS.audio = new Audio(x.url); MS.audio.dataset.k = b.dataset.fp; MS.audio.play().catch(() => {}); b.textContent = '❚❚'; });
+    }
+    document.addEventListener('click', e => { const m = e.target.closest('#moods [data-mood]'); if (m && cur === 3) setTimeout(() => { if (!(P.musicName || P.music) || P.musicName === MS.ours) autoMusic(true); else search(m.dataset.mood); }, 50); });
+    drawFree();
+    show(cur, false);
   }
 })();
