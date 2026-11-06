@@ -2574,7 +2574,7 @@ Engine.prototype.bsDraw=function(x,seg,t){x.globalAlpha=1;x.globalCompositeOpera
   fx.globalCompositeOperation="destination-out";fx.fillStyle="#000";const ttl=bsTitle();const shown=Math.floor(clamp((k-T.t0)/T.per,0,ttl.length));
   if(shown){fx.save();fx.textBaseline="middle";fx.textAlign="left";fx.font=`400 200px Anton,Inter,sans-serif`;const w0=fx.measureText(ttl).width;const fs=Math.min(250,200*BS.fw*0.84/Math.max(1,w0));fx.font=`400 ${fs}px Anton,Inter,sans-serif`;try{fx.letterSpacing="1px"}catch(e){}
     const full=fx.measureText(ttl).width;const tx0=BS.fw/2-full/2,ty=BS.fh*0.47,part=ttl.slice(0,shown);
-    fx.globalCompositeOperation="source-over";fx.strokeStyle="rgba(20,24,30,0.28)";fx.lineWidth=7;fx.lineJoin="round";fx.strokeText(part,tx0,ty);fx.globalCompositeOperation="destination-out";fx.fillText(part,tx0,ty);try{fx.letterSpacing="0px"}catch(e){}fx.restore()}
+    fx.globalCompositeOperation="destination-out";fx.fillText(part,tx0,ty);try{fx.letterSpacing="0px"}catch(e){}fx.restore()}
   bsBrush(fx,bp,BS.fw,BS.fh);fx.globalCompositeOperation="source-over";
   x.drawImage(C.f,0,0,W,H)};
 

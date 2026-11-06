@@ -15,7 +15,8 @@
 // v17 (05.11.2026): Vorschau hängt nicht mehr bei Videos, deren erstes Bild nicht bei 0 s liegt (schwarzes Bild im Pro-Schnitt); Wächter für hängende Videos
 // v18 (05.11.2026): Stil Ortstitel (Streifen, Vorhang, Ort tippt sich ein, Flicker unten, harte Schnitte)
 // v19 (06.11.2026): Stil Beschlagen (nasse Scheibe, Ort als Fenster, Pinsel legt frei)
-const CACHE = 'studio-v19';
+// v20 (06.11.2026): Beschlagen ohne dunklen Rand um die Buchstaben
+const CACHE = 'studio-v20';
 const MODELLE = 'studio-modelle-1';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
