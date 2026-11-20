@@ -830,7 +830,7 @@ function vPosten(){
           <div class="grid2"><input type="date" class="field" id="f-date" value="${esc(d.date)}" aria-label="Datum"><input type="time" class="field" id="f-time" value="${esc(d.time)}" aria-label="Uhrzeit"></div>
           ${slots.length?`<div class="row small"><span class="muted">Freie Rhythmus-Termine:</span>${slots.map(([dt,t])=>`<button class="pill" style="min-height:30px;padding:4px 12px;font-size:13px" data-slot="${dt}|${t}">${fmtD(dt)} ${t}</button>`).join("")}</div>`:""}
         </div>
-        ${d.id&&d.status==="geplant"&&d.format!=="STORY"?`<div class="notice" style="align-items:center;justify-content:space-between"><span><b>Bereit für Instagram?</b> Nach der Freigabe plant Claude den Post bei Metricool ein, jeden Abend automatisch oder sofort, wenn du im Chat „schick raus“ sagst. Metricool veröffentlicht ihn dann zum Termin.</span><button class="btn sm" id="approve" ${d.date&&d.time&&d.images.length?"":"disabled"}>Freigeben</button></div>`:""}
+        ${d.id&&d.status==="geplant"&&d.format!=="STORY"?`<div class="notice" style="align-items:center;justify-content:space-between"><span><b>Bereit für Instagram?</b> Nach der Freigabe plant Claude den Post bei Metricool ein, jeden Abend automatisch oder sofort, wenn du im Chat „schick raus“ sagst. Metricool veröffentlicht ihn dann zum Termin.</span>${(()=>{const n=d.date?mcCount(d.date.slice(0,7),d.id):0;return `<span class="small" style="white-space:nowrap;color:${n>=MC_LIMIT?"var(--bad)":n>=MC_LIMIT-4?"var(--warn)":"var(--muted)"}">${n} von ${MC_LIMIT} im Monat</span>`})()}<button class="btn sm" id="approve" ${d.date&&d.time&&d.images.length&&!(d.date&&mcCount(d.date.slice(0,7),d.id)>=MC_LIMIT)?"":"disabled"}>Freigeben</button></div>`:""}
         ${d.id&&d.status==="freigegeben"?`<div class="notice" style="align-items:center;justify-content:space-between"><span><b>Freigegeben.</b> Claude plant den Post heute Abend bei Metricool ein. Schneller geht es mit „schick raus“ im Chat.</span><button class="linkish" id="unapprove">Freigabe zurücknehmen</button></div>`:""}
         ${d.id&&d.status==="instagram"?`<div class="notice"><span><b>Liegt in Instagram.</b> Änderungen hier im Studio kommen nicht automatisch bei Instagram an. Ändern oder löschen geht in der App unter „Geplanter Content“.</span></div>`:""}
         <div class="row">
@@ -887,7 +887,7 @@ function bindPosten(){
   if(g("mcYes"))g("mcYes").onclick=sendToMetricool;
   if(g("del"))g("del").onclick=async()=>{const id=S.draft.id;S.draft=newDraft();S.cur=0;try{await deletePost(id);toast("Post gelöscht")}catch(e){toast("Löschen hat nicht geklappt")}render()};
   if(g("markPub"))g("markPub").onclick=()=>commit("veroeffentlicht");
-  if(g("approve"))g("approve").onclick=()=>{syncDraftFromInputs();if(!S.draft.date||!S.draft.time){toast("Erst Datum und Uhrzeit wählen");return}commit("freigegeben")};
+  if(g("approve"))g("approve").onclick=()=>{syncDraftFromInputs();if(!S.draft.date||!S.draft.time){toast("Erst Datum und Uhrzeit wählen");return}if(mcCount(S.draft.date.slice(0,7),S.draft.id)>=MC_LIMIT){toast("In dem Monat sind die 20 Metricool-Posts voll");return}commit("freigegeben")};
   if(g("unapprove"))g("unapprove").onclick=()=>commit("geplant");
   if(g("stripNew"))g("stripNew").onclick=()=>{S.draft=newDraft();S.cur=0;S.suggest=null;S.confirm=false;render();scrollTo({top:0,behavior:"smooth"})};
 }
@@ -1478,6 +1478,9 @@ addEventListener("scroll",()=>{document.body.classList.toggle("sc",scrollY>60)},
   render();
   if(S.mc.brandId&&S.mc.state!=="auth"&&S.mc.state!=="off")loadBT();
 })();
+/* Metricool Free: höchstens 20 Veröffentlichungen pro Kalendermonat. Gezählt wird, was über Metricool läuft oder dafür freigegeben ist. */
+const MC_LIMIT=20;
+function mcCount(month,exceptId){return S.posts.filter(p=>p.id!==exceptId&&(p.date||"").slice(0,7)===month&&(p.status==="metricool"||p.status==="freigegeben"||(p.plannerUrl&&p.status==="veroeffentlicht"))).length}
 /* Web-App: Claude ist die Brücke zu Metricool und legt Status und beste Zeiten in gallery/metricool ab */
 function bridgeMc(x){if(!x)return;S.mc.bridge=x;if(x.brandId)S.mc.brandId=String(x.brandId);S.mc.state=x.instagram?"bridge":"nonet";
   const g=x.bestTimes&&typeof x.bestTimes==="object"?x.bestTimes:null;S.btMc=g&&Object.keys(g).length?{src:"metricool",grid:g}:S.btMc}

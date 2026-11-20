@@ -15,6 +15,7 @@ Feste Werte:
 2. Wartende Posts holen: `(await studioAPI.list('posts')).filter(p => p.status === 'freigegeben')`.
    - Termin liegt in der Vergangenheit oder weniger als 15 Minuten in der Zukunft: nicht senden, im Bericht nennen (Bruno muss neu planen).
    - Keine Bilder und keine `mediaUrl`: nicht senden, im Bericht nennen.
+   - **Monatslimit Metricool Free: 20 Veröffentlichungen pro Kalendermonat.** Pro Monat zählen: Posts mit Status `metricool`, plus `veroeffentlicht` mit `plannerUrl` (Datum im selben Monat). Freigegebene Posts in Terminreihenfolge nur so lange senden, bis 20 erreicht sind; der Rest bleibt `freigegeben` und kommt in den Bericht („Monat voll, bitte verschieben“). Ab 16 im Monat im Bericht warnen. Das Studio zeigt beim Freigeben denselben Zähler und sperrt bei 20.
 3. Medien je Post in die Downloads legen: für jedes `p.images[i]` → `await studioAPI.sichern(id, 'studio-mc-<postId>-<i>.<jpg|mp4>')` (Endung nach `type`). Steht in `p.mediaUrl` schon ein öffentlicher Link, den nehmen.
 4. Dateien mit `device_stage_files` holen, in einen frischen Klon des Branches `medien` legen und als **einzelnen Orphan-Commit** force-pushen (so bleibt nichts in der Historie liegen).
 5. Pro Post `createScheduledPost` (blogId `7258133`):
