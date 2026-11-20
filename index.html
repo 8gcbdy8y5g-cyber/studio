@@ -385,6 +385,7 @@ nav.side{background:var(--side);border-color:var(--line)}
 .rowgrid .me::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 0 2px var(--amber)}
 /* Raster */
 .rgrid{display:grid;grid-template-columns:minmax(0,390px) minmax(0,1fr);gap:22px;align-items:start}
+.rgrid .phone .tile.pv{outline:2px dashed var(--accent);outline-offset:-2px}
 .rgrid .phone{position:sticky;top:calc(84px + env(safe-area-inset-top,0px))}
 .prof{display:flex;align-items:center;gap:12px;margin-bottom:14px}
 .prof .av{width:44px;height:44px;border-radius:50%;overflow:hidden;background:#1E1B19;flex:none;box-shadow:0 0 0 2px var(--card),0 0 0 3.5px var(--amber)}
@@ -782,10 +783,16 @@ function nextSlots(){const out=[];const taken=new Set(S.posts.filter(p=>p.date&&
   for(let i=0;i<14&&out.length<3;i++){const x=new Date(d);x.setDate(d.getDate()+i);const t=slotFor(iso(x));if(i===0&&t&&t<=nowHM)continue;if(t&&!taken.has(iso(x)))out.push([iso(x),t])}return out}
 function selImg(){if(S.poolSel){const x=S.pool.find(p=>p.id===S.poolSel);return x?x.img:null}
   if(S.planSel){const p=S.posts.find(x=>x.id===S.planSel);return p&&p.images&&p.images[0]||null}return null}
-function feedItems(){
+/* Raster-Vorschau: oben die nächsten Kandidaten (in der Reihenfolge rechts), darunter Eingeplantes, dann was online ist. Neuestes oben links wie bei Instagram. */
+function prevN(){if(S.prevN==null){try{S.prevN=+(localStorage.getItem("sg-prevn")??3)}catch(e){S.prevN=3}}return S.prevN}
+function feedItems(){const today=iso(new Date());
   const pub=S.posts.filter(p=>p.status==="veroeffentlicht"&&p.format!=="STORY").sort((a,b)=>(b.date||"0").localeCompare(a.date||"0"));
-  const im=selImg();
-  return [...(im?[{_draft:true,_prev:true,images:[im],title:"Vorschau"}]:[]),...pub].slice(0,9)}
+  const planned=S.posts.filter(p=>["geplant","freigegeben","metricool","instagram"].includes(p.status)&&p.format!=="STORY"&&(p.date||"")>=today).sort((a,b)=>(b.date+(b.time||"")).localeCompare(a.date+(a.time||""))).map(p=>({...p,_plan:true}));
+  const cf=curFolder();const dr=S.posts.filter(p=>p.status==="entwurf"&&p.images&&p.images.length&&p.format!=="STORY");
+  const cand=(cf===DRAFTS?dr.map(p=>({k:"p:"+p.id,im:p.images[0],t:p.title})):S.pool.filter(x=>poolFolder(x)===cf).map(x=>({k:"g:"+x.id,im:x.img,t:""}))).map((x,i)=>({...x,i})).sort((a,b)=>(gRank(a.k)-gRank(b.k))||(a.i-b.i));
+  const nx=cand.slice(0,prevN()).map((x,i)=>({_draft:true,_rk:i+1,images:[x.im],title:x.t||"Nr. "+(i+1),_k:x.k})).reverse();
+  const im=selImg();const sel=im&&!nx.some(x=>x.images[0]===im)?[{_draft:true,_prev:true,images:[im],title:"Vorschau"}]:[];
+  return [...sel,...nx,...planned,...pub].slice(0,18)}
 function upcoming(){const today=iso(new Date());
   const planned=S.posts.filter(p=>(p.status==="geplant"||p.status==="freigegeben"||p.status==="instagram"||p.status==="metricool")&&p.format!=="STORY"&&p.date>=today).sort((a,b)=>(a.date+(a.time||"")).localeCompare(b.date+(b.time||"")));
   const stories=S.posts.filter(p=>p.format==="STORY"&&(p.status==="geplant"||p.status==="instagram"||p.status==="metricool")&&p.date>=today).sort((a,b)=>a.date.localeCompare(b.date));
@@ -1018,8 +1025,10 @@ function showError(t){const b=document.getElementById("banner");b.innerHTML=`<di
 function vRaster(){
   V.innerHTML=`<div class="rgrid">
   <section class="card phone">
-    <div class="prof"><span class="av" aria-hidden="true"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="lgCs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A62"/><stop offset="1" stop-color="#D9612E"/></linearGradient><clipPath id="lgCc"><rect width="200" height="114"/></clipPath></defs><rect width="200" height="200" fill="#1E1B19"/><circle cx="100" cy="114" r="40" fill="url(#lgCs)" clip-path="url(#lgCc)"/><rect x="44" y="110" width="112" height="9" rx="4.5" fill="#FFF6EC"/><rect x="74" y="131" width="52" height="6" rx="3" fill="#E9875A" opacity=".75"/><rect x="88" y="146" width="24" height="6" rx="3" fill="#E9875A" opacity=".45"/></svg></span><div><b>sommer_gram</b><div class="counter">${(()=>{const L=[...S.insights].filter(i=>i.followers!=null).sort((a,b)=>a.date.localeCompare(b.date)).pop();return L?nf(L.followers)+" FOLLOWER · ":""})()}WAS SCHON ONLINE IST</div></div></div>
-    <div class="feedgrid">${feedItems().map(p=>{const im=p.images&&p.images[0];return `<button class="tile" ${p._draft?"":`data-edit="${p.id}"`} aria-label="${esc(p.title||p.ort||"Post")}">${im&&!(im.type||"").startsWith("video")?`<img src="${esc(imgSrc(im))}" alt="">`:""}${p._draft?`<span class="badge">${p._prev?"Vorschau":"Neu"}</span>`:p.status==="geplant"||p.status==="metricool"?`<span class="badge">${fmtD(p.date)}</span>`:""}${im?"":`<span class="t">${esc(p.title||p.ort||(p._draft?"Dein neuer Post":"Post"))}</span>`}</button>`}).join("")}</div>
+    <div class="prof"><span class="av" aria-hidden="true"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="lgCs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A62"/><stop offset="1" stop-color="#D9612E"/></linearGradient><clipPath id="lgCc"><rect width="200" height="114"/></clipPath></defs><rect width="200" height="200" fill="#1E1B19"/><circle cx="100" cy="114" r="40" fill="url(#lgCs)" clip-path="url(#lgCc)"/><rect x="44" y="110" width="112" height="9" rx="4.5" fill="#FFF6EC"/><rect x="74" y="131" width="52" height="6" rx="3" fill="#E9875A" opacity=".75"/><rect x="88" y="146" width="24" height="6" rx="3" fill="#E9875A" opacity=".45"/></svg></span><div><b>sommer_gram</b><div class="counter">${(()=>{const L=[...S.insights].filter(i=>i.followers!=null).sort((a,b)=>a.date.localeCompare(b.date)).pop();return L?nf(L.followers)+" FOLLOWER · ":""})()}SO SIEHT DEIN FEED DANN AUS</div></div></div>
+    <div class="row" style="gap:6px;margin:0 0 10px;flex-wrap:wrap"><span class="small muted">Nächste zeigen</span>${[0,3,6,9].map(n=>`<button class="pill sm" data-prevn="${n}" aria-pressed="${prevN()===n}">${n}</button>`).join("")}</div>
+    <div class="feedgrid">${feedItems().map(p=>{const im=p.images&&p.images[0];const vid=im&&(im.type||"").startsWith("video");return `<button class="tile${p._draft?" pv":""}" ${p._draft?(p._k?`data-sel="${p._k}"`:""):`data-edit="${p.id}"`} aria-label="${esc(p.title||p.ort||"Post")}">${im?(vid?`<video src="${esc(imgSrc(im))}#t=0.5" muted playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover;pointer-events:none"></video>`:`<img src="${esc(imgSrc(im))}" alt="">`):""}${p._draft?`<span class="badge">${p._prev?"Vorschau":p._rk+". nächster"}</span>`:p._plan?`<span class="badge">${fmtD(p.date)}</span>`:""}${im?"":`<span class="t">${esc(p.title||p.ort||(p._draft?"Dein neuer Post":"Post"))}</span>`}</button>`}).join("")}</div>
+    <p class="small muted" style="margin:10px 0 0">Oben die nächsten Kandidaten aus der Liste rechts, darunter Eingeplantes, dann was schon online ist. Rechts umsortieren, links siehst du sofort, wie es im Feed wirkt.</p>
   </section>
   <section class="card">
     <div class="cardhead"><div><h2>Mögliche neue Posts</h2><div class="small muted" style="margin-top:4px">In der Reihenfolge, in der ich sie posten würde</div></div>
@@ -1042,6 +1051,7 @@ function vRaster(){
 }
 function bindRaster(){const g=id=>document.getElementById(id);
   V.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>editPost(b.dataset.edit));
+  V.querySelectorAll("[data-prevn]").forEach(b=>b.onclick=()=>{S.prevN=+b.dataset.prevn;try{localStorage.setItem("sg-prevn",String(S.prevN))}catch(e){}render()});
   // Galerie
   const pa=g("poolAdd");if(pa)pa.onclick=()=>{syncDraftFromInputs();poolIn.click()};
   const pd=g("poolDrop");if(pd){pd.onclick=()=>{syncDraftFromInputs();poolIn.click()};pd.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();syncDraftFromInputs();poolIn.click()}}}
