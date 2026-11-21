@@ -34,5 +34,10 @@ Feste Werte:
    In `gallery/metricool` schreiben: `{brandId:'7258133', instagram:'sommer_gram', lastSync:<ISO>, kpis:[{l:'Follower',v:<letzter Tag>},{l:'Aufrufe',v:<Summe>},{l:'Reichweite',v:<Summe>},{l:'Interaktionen',v:<Summe>}], bestTimes:{'<wochentag 0=So>|<stunde>':wert}}`.
    Firestore erlaubt keine verschachtelten Listen.
 9. Eigenen Tab schließen. Kurzer Bericht an Bruno: was eingeplant wurde (Datum, Uhrzeit, Titel), was nicht und warum.
+10. **Story-Zeile am Posttag:** Geht heute ein Post raus (Status `metricool` oder `veroeffentlicht`, `date` = heute), dann kommt in den Bericht ein eigener Abschnitt „Story für heute“:
+    - Uhrzeit: etwa eine Stunde nach dem Post.
+    - Was: den Post in die Story teilen und ein Extra dazu. Am besten ein Bild, das nicht im Karussell ist, zum Beispiel ein aussortiertes aus demselben Ordner im Studio. Sonst eine kurze Zeile in Brunos Ton, ohne Frage, ohne Aufruf, zum Beispiel „Bild 3 war knapp dran, rauszufliegen.“
+    - Keine Umfragen und keine Frage-Sticker, das ist Bruno unangenehm.
+    - Die Story postet Bruno selbst.
 
 Die heruntergeladenen Dateien `studio-mc-*` bleiben in den Downloads liegen, solange kein Löschrecht erteilt ist; dann nach `_to_delete/` verschieben.
