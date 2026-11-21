@@ -1,7 +1,8 @@
 # Studio Sommer_gram
 
-Planen, posten und auswerten für sommer_gram. Web-App mit Firebase (wie SommerHaus).
+Reels bauen, Archiv und Zahlen für sommer_gram. Web-App mit Firebase (wie SommerHaus), läuft über GitHub Pages.
 
-- `index.html`: Studio (Posten, Plan, Raster, Zahlen, Einstellungen)
-- `werkstatt.html`: Reel-Werkstatt (Reels schneiden, Looks, Musik), fertige Reels landen als Reel-Post im Plan
-- Gebaut mit `build.py` aus den claude.ai-Versionen, Quellen im Claude-Projekt unter `claude/studio-app/`
+- `index.html`: Archiv (was auf Instagram online ist), Zahlen, Einstellungen
+- `werkstatt.html`: Werkstatt (Reels schneiden, Looks, Musik, rendern und aufs iPhone teilen)
+- `galerie.css`, `galerie.js`: Aussehen und Navigation
+- Geplant und gepostet wird im Claude-Chat über Metricool. Die Zahlen und neuen Posts trägt die Aufgabe „Instagram-Abgleich abends“ ein.

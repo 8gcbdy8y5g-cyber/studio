@@ -20,7 +20,7 @@
 // v23 (06.11.2026): Reel-Studio in sechs Schritten, freie Musik automatisch passend zur Richtung
 // v24 (06.11.2026): Reel-Studio spielt immer nur einen Ton gleichzeitig
 // v25 (07.11.2026): Design-Prüfung umgesetzt: Reel-Studio mit Vorschlägen, Lesbarkeit, Tippflächen, Druck-Feedback, Zahlen in Grautönen
-const CACHE = 'studio-v32';
+const CACHE = 'studio-v33';
 const MODELLE = 'studio-modelle-1';
 const DATEIEN = ['./', './index.html', './werkstatt.html', './galerie.css', './galerie.js', './studio-firebase.js', './firebase-config.js', './manifest.webmanifest',
   './icon.svg', './icon-180.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png', './favicon-32.png'];
@@ -43,3 +43,4 @@ self.addEventListener('fetch', e => {
 // v26: Reels löschen, Pro-Schnitt neu gestaltet
 // v27: Play/Pause reagiert zuverlässig
 // v28: Play/Pause schaltet beim Antippen, eigene Dateien immer frisch vom Server prüfen
+// v33 (21.11.2026): Umbau auf Archiv, Werkstatt, Zahlen. Planen und Posten laufen im Claude-Chat.

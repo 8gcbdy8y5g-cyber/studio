@@ -1,13 +1,13 @@
 {
   "name": "Studio Sommer_gram",
   "short_name": "Studio",
-  "description": "Planen, posten und auswerten für sommer_gram",
+  "description": "Reels bauen, Archiv und Zahlen für sommer_gram",
   "lang": "de",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#1E1B19",
-  "theme_color": "#1E1B19",
+  "background_color": "#161514",
+  "theme_color": "#161514",
   "icons": [
     {
       "src": "icon-192.png",
@@ -28,8 +28,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Reel-Werkstatt",
-      "short_name": "Reels",
+      "name": "Werkstatt",
+      "short_name": "Werkstatt",
       "url": "./werkstatt.html",
       "icons": [
         {
