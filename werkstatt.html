@@ -7,11 +7,11 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Studio">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="theme-color" content="#F7EFE4" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#1E1B19" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#161514" media="(prefers-color-scheme: dark)">
 <meta name="color-scheme" content="light dark">
-<meta name="description" content="Reels schneiden für sommer_gram">
-<title>Reel-Werkstatt · Studio Sommer_gram</title>
+<meta name="description" content="Reels bauen, Archiv und Zahlen für sommer_gram">
+<title>Werkstatt · Studio Sommer_gram</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
@@ -117,7 +117,6 @@ textarea.field{resize:vertical;min-height:96px;line-height:1.5}
 .step{display:inline-flex;align-items:center;background:var(--card);border-radius:999px;border:1px solid var(--line)}
 .step button{border:0;background:none;width:30px;height:30px;border-radius:50%;cursor:pointer;font-size:16px;font-weight:600}
 .step span{font-size:12.5px;font-weight:600;min-width:74px;text-align:center}
-.mini{font-size:12px;padding:4px 10px;min-height:30px}
 .slider{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:8px;align-items:center;font-size:12px;color:var(--text-2)}
 .slider input{width:100%;accent-color:var(--accent)}
 .slider output{font-family:var(--mono);font-size:11.5px;white-space:nowrap}
@@ -177,7 +176,9 @@ select.field{padding:6px 10px;font-size:13px;width:auto;min-height:32px}
 .minipv .msnd{font-size:13px;color:var(--text-2);overflow:hidden;text-overflow:ellipsis}
 @media (max-width:560px){.minipv{grid-template-columns:110px minmax(0,1fr)}.minipv .mscreen{width:110px}}
 .bar{height:8px;background:var(--field);border-radius:99px;overflow:hidden}
-.bar span{display:block;height:100%;background:var(--accent);width:0;transition:width .2s}
+.bar span{display:block;height:100%;background:var(--accent);width:100%;transform:scaleX(0);transform-origin:left;transition:transform .2s linear}
+.outbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.outbtns .btn.big{min-height:52px;justify-content:center;font-size:16px}
+.cv34{display:flex;gap:12px;align-items:center}.cv34-im{position:relative;flex:none;width:72px;aspect-ratio:9/16;overflow:hidden;background:var(--field)}.cv34-im img{width:100%;height:100%;object-fit:cover;display:block}.cv34-im i{position:absolute;left:0;right:0;top:12.5%;height:75%;box-shadow:0 0 0 999px rgba(0,0,0,.45);outline:1.5px solid #fff;outline-offset:-1.5px}
 .result{display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:start}
 .result video{width:150px;aspect-ratio:9/16;border-radius:14px;background:var(--stage);display:block;object-fit:cover}
 .result .cover{width:64px;aspect-ratio:9/16;border-radius:8px;overflow:hidden;background:var(--field)}
@@ -292,19 +293,15 @@ nav.side{background:var(--side);border-color:var(--line)}
 </head>
 <body>
 <nav class="side" aria-label="Bereiche">
-  <a href="index.html#pult" class="logo" title="Studio Sommer_gram, zur Startseite" aria-label="Studio Sommer_gram, zur Startseite"><svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="wkAs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A62"/><stop offset="1" stop-color="#D9612E"/></linearGradient><clipPath id="wkAc"><rect width="200" height="114"/></clipPath></defs><rect width="200" height="200" fill="#1E1B19"/><circle cx="100" cy="114" r="40" fill="url(#wkAs)" clip-path="url(#wkAc)"/><rect x="44" y="110" width="112" height="9" rx="4.5" fill="#FFF6EC"/><rect x="74" y="131" width="52" height="6" rx="3" fill="#E9875A" opacity=".75"/><rect x="88" y="146" width="24" height="6" rx="3" fill="#E9875A" opacity=".45"/></svg></a>
-  <a class="nv" href="index.html#pult" data-v="pult"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M3 19.5h3M8.5 19.5h3M14 19.5h3M19.5 19.5H21"/><path d="M8 12l2.5-3 2 2.2L14 9.5l2 2.5"/></svg>Pult</a>
-  <a class="nv" href="index.html#posten" data-v="posten"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="3"/><circle cx="12" cy="11" r="3.2"/><path d="M8 17.5h8"/></svg>Posten</a>
-  <a class="nv" href="index.html#plan" data-v="plan"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Plan</a>
-  <a class="nv" href="werkstatt.html" data-v="reels" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M10 9.2v5.6l4.6-2.8z"/><path d="M5 6.5h2M5 17.5h2M17 6.5h2M17 17.5h2"/></svg>Reels</a>
-  <a class="nv" href="index.html#analytics" data-v="analytics"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 20V11M11 20V5M17 20v-6M3 20.5h18"/></svg>Zahlen</a>
-  <span class="sp"></span>
-  <a class="nv" href="index.html#einstellungen" data-v="einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h9M18 7h2M4 17h3M11 17h9"/><circle cx="15.5" cy="7" r="2.3"/><circle cx="9" cy="17" r="2.3"/></svg>Einstellungen</a>
+  <a class="nv" href="index.html#archiv" data-v="archiv">Archiv</a>
+  <a class="nv" href="werkstatt.html" data-v="werkstatt" aria-current="page">Werkstatt</a>
+  <a class="nv" href="index.html#zahlen" data-v="analytics">Zahlen</a>
+  <a class="nv" href="index.html#einstellungen" data-v="einstellungen" aria-label="Einstellungen">Einstellungen</a>
 </nav>
 <div class="wrap">
   <header class="top">
     <div class="brand"><svg class="mark" viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="hzS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F29A62"/><stop offset="1" stop-color="#D9612E"/></linearGradient><clipPath id="hzC"><rect x="0" y="0" width="200" height="114"/></clipPath></defs><rect width="200" height="200" fill="#1E1B19"/><circle cx="100" cy="114" r="40" fill="url(#hzS)" clip-path="url(#hzC)"/><rect x="44" y="110" width="112" height="9" rx="4.5" fill="#FFF6EC"/><rect x="74" y="131" width="52" height="6" rx="3" fill="#E9875A" opacity=".75"/><rect x="88" y="146" width="24" height="6" rx="3" fill="#E9875A" opacity=".45"/></svg><div>
-      <h1>Reel-Werkstatt</h1>
+      <h1>Werkstatt</h1>
       <div class="sub"><span class="tag">für Studio Sommer_gram</span><span>Fotos und kurze Videos rein, Reel im Takt raus</span></div>
     </div></div>
     <div class="row">
@@ -422,7 +419,7 @@ nav.side{background:var(--side);border-color:var(--line)}
       </section>
 
       <section class="card">
-        <div class="cardhead"><h2>Post</h2><span class="small muted">wie im Studio</span></div>
+        <div class="cardhead"><h2>Post</h2><span class="small muted">für deine Notizen, gepostet wird im Chat</span></div>
         <div class="grid2">
           <label class="stack"><span class="lbl">Ort</span><input class="field" id="f-ort" placeholder="z. B. Bochum, Westpark"></label>
           <label class="stack"><span class="lbl">Titel (nur für dich)</span><input class="field" id="f-title" placeholder="z. B. Abendlauf im Park"></label>
@@ -433,14 +430,10 @@ nav.side{background:var(--side);border-color:var(--line)}
           <input class="field" id="f-tags" placeholder="#bochum #herbst #laufen" aria-label="Hashtags">
         </div>
         <div class="checks" id="checks"></div>
-        <div class="stack"><span class="lbl">Zeitpunkt</span>
-          <div class="grid2"><input type="date" class="field" id="f-date" aria-label="Datum"><input type="time" class="field" id="f-time" aria-label="Uhrzeit"></div>
-          <div class="row small" id="slots"></div>
-        </div>
       </section>
 
       <section class="card" id="outCard">
-        <div class="cardhead"><h2>Rendern und freigeben</h2><span class="small muted" id="outMeta">1080 × 1920, 30 Bilder pro Sekunde, MP4</span></div>
+        <div class="cardhead"><h2>Rendern und sichern</h2><span class="small muted" id="outMeta">1080 × 1920, 30 Bilder pro Sekunde, MP4</span></div>
         <div class="minipv" id="miniPv" hidden>
           <div class="mscreen"><canvas id="mpv" width="270" height="480" aria-label="Vorschau des Reels"></canvas></div>
           <div class="mside">
@@ -494,17 +487,6 @@ nav.side{background:var(--side);border-color:var(--line)}
     return api.files.save(blob,{type:type}).then(function(id){put(id,blob);return {id:id,url:null};});}};}
   window.claude={use:function(n){return p.then(function(api){
     if(n==="db")return api.db;if(n==="assets")return assetsOf(api);if(n==="downloads")return downloads;if(n==="user")return api.user||null;return null;});}};
-  /* Fertige Reels erscheinen als Reel-Post im Plan des Studios. Termin, Text und Status lassen sich dort weiterplanen. */
-  window.__mirrorReel=function(r){if(!r||!r.videoAssetId)return;p.then(function(api){
-    var st={freigegeben:"freigegeben",instagram:"instagram",veroeffentlicht:"veroeffentlicht"}[r.status]||(r.date&&r.time?"geplant":"entwurf");
-    var post={id:"reel_"+r.id,title:r.title||r.hook||"Reel",format:"REEL",images:r.coverAssetId?[{id:r.coverAssetId,type:"image/jpeg",ratio:0.5625}]:[],
-      ort:r.ort||"",caption:r.caption||"",tags:r.tags||"",date:r.date||"",time:r.time||"",mediaUrl:"",status:st,reelId:r.id,
-      video:{id:r.videoAssetId,dur:r.dur||0,size:r.sizeBytes||0},updatedAt:new Date().toISOString()};
-    return api.db.collection("posts").doc(post.id).set(post);}).catch(function(e){console.warn("Reel-Post",e);});};
-  /* Belegte Tage aus dem Plan des Studios (ohne Entwürfe und ohne den eigenen Reel-Post) */
-  p.then(function(api){api.db.collection("posts").onSnapshot(function(snap){var t=new Set();
-    snap.docs.forEach(function(d){var x=d.data();var mine=typeof P!=="undefined"&&x.reelId===P.id;if(x.date&&x.status!=="entwurf"&&x.format!=="STORY"&&!mine)t.add(x.date);});
-    window.__taken=t;try{renderSlots()}catch(e){}},function(){});});
   var m=location.hash.match(/reel=([\w-]+)/);window.__wantReel=m?m[1]:null;
   if('serviceWorker' in navigator)window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});
 })();
@@ -570,7 +552,7 @@ function makeMp4Muxer(opt){
 
 /* ================= Grundlagen ================= */
 const W=1080,H=1920,FPS=30;
-const STATUS={entwurf:["Entwurf","var(--muted)"],fertig:["Gerendert","var(--info)"],freigegeben:["Freigegeben für Instagram","var(--warn)"],instagram:["In Instagram eingeplant","var(--ok)"],veroeffentlicht:["Veröffentlicht","var(--ok)"]};
+const STATUS={entwurf:["Entwurf","var(--muted)"],fertig:["Gerendert","var(--info)"],freigegeben:["Gerendert","var(--info)"],instagram:["Gerendert","var(--info)"],veroeffentlicht:["Veröffentlicht","var(--ok)"]};
 const SLOTS={3:"18:30",5:"19:30",0:"18:00"};
 const WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
 const $=id=>document.getElementById(id);
@@ -1053,7 +1035,7 @@ function renderEdit(){const e=ED(),L=lookById(e.look),on=L.id!=="none";
   for(const k of ["warm","bright","grain"]){$("ed-"+k).value=e[k]||0;$("ed-"+k).disabled=!on;$("ed-"+k+"O").textContent=fineTxt(e[k]||0)}
   $("ed-match").setAttribute("aria-pressed",e.match!==false);$("ed-skin").setAttribute("aria-pressed",e.skin!==false);$("ed-match").disabled=!on;$("ed-skin").disabled=!on;$("ed-reset").disabled=!on;
   const can=on&&P.items.length>0;document.querySelectorAll(".holdcmp").forEach(bt=>bt.disabled=!can)}
-function editChanged(light){R.needs=2;if(!light){markChanged();renderApprove()}}
+function editChanged(light){R.needs=2;if(!light){markChanged();renderOut()}}
 function setCompare(on){if(!!R.compare===on)return;R.compare=on;R.needs=2;$("cmpBadge").hidden=!on;document.querySelectorAll(".holdcmp").forEach(b=>b.setAttribute("aria-pressed",on))}
 function bindEdit(){buildLookTiles();
   $("ed-amt").oninput=e=>{const E=ED();E.amts[E.look]=+e.target.value;$("ed-amtO").textContent=e.target.value+" %";editChanged(true)};
@@ -1107,7 +1089,7 @@ function renderStyles(){const box=$("styles");if(!box)return;const cur=STYLES[P.
   box.querySelectorAll("[data-style]").forEach(b=>b.onclick=()=>chooseStyle(b.dataset.style));
   $("stName").textContent=STYLES[cur].name;$("stLine").textContent=STYLES[cur].line;$("stTraits").innerHTML=TRAITS[cur].map(t=>`<li>${esc(t)}</li>`).join("");renderKlState();renderTsel();$("varLbl").textContent="Variante "+P.seed}
 function chooseStyle(k){if(P.pro&&P.pro.on){P.pro.on=false;renderProBar()}if(k===P.style&&R.demo){R.demo.t0=performance.now();return}P.style=k;afterStyleChange()}
-function afterStyleChange(){markChanged();rebuild();renderItems();renderApprove();startDemo();R.t=0;R.needs=3;updateTransport()}
+function afterStyleChange(){markChanged();rebuild();renderItems();renderOut();startDemo();R.t=0;R.needs=3;updateTransport()}
 
 /* ================= Musik aus dem Ordner Instagram › Musik ================= */
 const MOODS={
@@ -1175,7 +1157,7 @@ function chooseTrack(t){if(!t)return;P.music={id:t.id,assetId:t.assetId,title:t.
 function autoTrack(){const moods=STYLE_MOOD[P.style]||["treibend"];let pool=R.mlist.filter(t=>moods.includes(t.mood));if(!pool.length)pool=R.mlist;if(!pool.length){toast("Noch keine Musik im Ordner");return}
   const r=rng((P.seed||1)*31+7);const sorted=[...pool].sort((a,b)=>String(a.id).localeCompare(String(b.id)));let t=sorted[Math.floor(r()*sorted.length)];
   if(P.music&&sorted.length>1&&t.id===P.music.id)t=sorted[(sorted.indexOf(t)+1)%sorted.length];R.moodSel=t.mood;renderMoods();chooseTrack(t)}
-function musicChanged(){renderMiniSound();markChanged();renderBpm();rebuild();renderItems();renderTracks();renderApprove();R.t=0;R.needs=3;if(R.playing)syncMusic(true)}
+function musicChanged(){renderMiniSound();markChanged();renderBpm();rebuild();renderItems();renderTracks();renderOut();R.t=0;R.needs=3;if(R.playing)syncMusic(true)}
 /* Ton in der Vorschau, im Gleichlauf mit dem Bild */
 /* Vorschau mit Musik: Das Audio-Element ist der Taktgeber. Das Bild folgt der Stelle, an der die Musik gerade ist,
    und wartet, wenn sie lädt oder stockt. Gespult wird die Musik nur beim Start, beim Spulen und am Ende des Reels.
@@ -1318,7 +1300,7 @@ async function exportReel(){
   if(!P.items.length)return;const miss=P.items.filter(it=>it.kind==="video"&&!(M[it.id]&&M[it.id].video));if(miss.length){toast("Erst die fehlenden Videos neu hinzufügen");return}
   const tl=R.tl=timeline();const total=tl.total;const br=Math.round(Math.min(10e6,(18*1048576*8)/total-250e3));
   const codec=await pickCodec(br);if(!codec){renderBoxState({err:"Dieser Browser kann hier kein MP4 erzeugen. Öffne die Werkstatt in Chrome auf dem Mac oder in Safari ab Version 17."});return}
-  setPlaying(false);R.exporting=true;R.cancel=false;renderBoxState({prog:0,txt:"Ton wird vorbereitet …"});
+  setPlaying(false);R.exporting=true;R.cancel=false;R.expT0=performance.now();R.expP0=null;renderBoxState({prog:0,txt:"Ton wird vorbereitet …"});
   try{
     await Promise.all(['600 92px Inter','700 64px Inter','400 104px "Instrument Serif"','400 200px Anton','400 76px "Permanent Marker"'].map(f=>document.fonts.load(f).catch(()=>{})));
     if(KL_MASK.has(tl.style)){renderBoxState({prog:0,txt:"Motiv wird erkannt …"});await klEnsure(tl,p=>renderBoxState({prog:0,txt:`Motiv wird erkannt … ${Math.round(p*100)} %`}))}
@@ -1337,27 +1319,27 @@ async function exportReel(){
         for(const seg of tl.uses||tl.segs){if(seg.it.kind!=="video")continue;if(seg.ly){const v=R.exLay[seg.ly.id];if(v&&t>=seg.start-1/FPS&&t<seg.end+1/FPS)await seek(v,srcTime(seg,t));continue}if(t>=seg.start-seg.lp/2-1/FPS&&t<seg.end+seg.ln/2+1/FPS)await seek(M[seg.it.id].video,srcTime(seg,t))}
         eng.render(t);const vf=new VideoFrame(cv,{timestamp:Math.round(f*1e6/FPS),duration:Math.round(1e6/FPS)});ve.encode(vf,{keyFrame:f%60===0});vf.close();
         while(ve.encodeQueueSize>4)await sleep(2);
-        if(f%3===0){renderBoxState({prog:f/n,txt:`Bild ${f+1} von ${n}`});await sleep(0)}}
+        if(f%3===0){if(R.expP0==null)R.expP0={t:performance.now(),f};renderBoxState({prog:f/n,frames:true});await sleep(0)}}
       await ve.flush();ve.close();if(err)throw err;
     }finally{for(const id in saved){const v=M[id].video;M[id].video=saved[id];v.removeAttribute("src");v.load()}for(const k in R.exLay||{}){const v=R.exLay[k];v.removeAttribute("src");v.load()}R.exLay=null}
     const bytes=mux.finalize();const blob=new Blob([bytes],{type:"video/mp4"});
-    if(R.lastUrl)URL.revokeObjectURL(R.lastUrl);R.lastBlob=blob;R.lastUrl=URL.createObjectURL(blob);
+    if(R.lastUrl)URL.revokeObjectURL(R.lastUrl);R.lastBlob=blob;R.lastUrl=URL.createObjectURL(blob);R.lastFor=P.id;
     P.dur=Math.round(total*10)/10;P.sizeBytes=blob.size;P.renderSig=renderSig();P.renderedAt=new Date().toISOString();P.audioNote=au.note||"";
     // Titelbild
     const ct=P.coverT!=null?Math.min(P.coverT,total-0.05):coverDefault(tl);
     for(const seg of tl.uses||tl.segs){if(seg.ly)continue;const m=M[seg.it.id];if(seg.it.kind==="video"&&m&&t_in(seg,ct))await seek(m.video,srcTime(seg,ct))}
     const saveTexts=[P.hook,P.ende];P.hook="";P.ende="";eng.render(ct,{noMark:true});P.hook=saveTexts[0];P.ende=saveTexts[1];
-    const coverBlob=await new Promise(r=>cv.toBlob(r,"image/jpeg",0.9));if(eng.gr){eng.gr.dispose();eng.gr=null}R.coverUrl&&URL.revokeObjectURL(R.coverUrl);R.coverUrl=URL.createObjectURL(coverBlob);R.coverBlob=coverBlob;
+    const coverBlob=await new Promise(r=>cv.toBlob(r,"image/jpeg",0.9));if(eng.gr){eng.gr.dispose();eng.gr=null}R.coverUrl&&URL.revokeObjectURL(R.coverUrl);R.coverUrl=URL.createObjectURL(coverBlob);R.coverBlob=coverBlob;R.coverFor=P.id;
     renderBoxState({prog:1,txt:assets?"Wird im Studio gespeichert …":"Fertig"});
     if(assets){try{if(blob.size>20*1048576)throw {code:"too_large"};const a=await assets.upload(blob,{type:"video/mp4"});const c=await assets.upload(coverBlob,{type:"image/jpeg"});
-        P.videoAssetId=a.id;P.coverAssetId=c.id;if(P.status!=="instagram"&&P.status!=="veroeffentlicht")P.status="fertig"}
+        P.videoAssetId=a.id;P.coverAssetId=c.id;if(P.status!=="veroeffentlicht")P.status="fertig"}
       catch(e){toast(e&&e.code==="too_large"?"Das Reel ist zu groß zum Speichern. Kürze es etwas.":"Speichern hat nicht geklappt. Das Video bleibt hier zum Sichern.",4200);P.videoAssetId=null}}
     else{P.status="fertig"}
     R.exporting=false;markChanged(true);renderResult();renderHeader();
   }catch(e){renderBoxState({err:e&&e.message==="abgebrochen"?"Rendern abgebrochen.":"Rendern hat nicht geklappt: "+(e&&e.message||e)})}
   finally{R.exporting=false;R.needs=3}}
 function t_in(seg,t){return t>=seg.start-seg.lp/2&&t<seg.end+seg.ln/2}
-function coverDefault(tl){const l=tl.segs[tl.segs.length-1];return Math.min(tl.total-0.05,l.start+(l.end-l.start)*0.55)}
+function coverDefault(tl){const at=tl.total*0.25;const l=tl.segs.find(g=>at>=g.start&&at<g.end)||tl.segs[0];return Math.min(tl.total-0.05,l.start+(l.end-l.start)*0.55)}
 
 
 /* ================= Stil Kalyl ================= */
@@ -2585,7 +2567,7 @@ let saveTimer=null;
 function markChanged(now){P.updatedAt=new Date().toISOString();R.dirty=true;if(now)return saveNow();scheduleSave()}
 function scheduleSave(){if(!db||!P.items.length)return renderSaveState();clearTimeout(saveTimer);saveTimer=setTimeout(saveNow,900);renderSaveState()}
 async function saveNow(){clearTimeout(saveTimer);if(!db||!P.items.length){renderSaveState();return}R.saving=true;renderSaveState();
-  try{const body=JSON.parse(JSON.stringify(P));body.updatedAt=new Date().toISOString();await db.collection("reels").doc(P.id).set(body);R.dirty=false;window.__mirrorReel&&window.__mirrorReel(body)}
+  try{const body=JSON.parse(JSON.stringify(P));body.updatedAt=new Date().toISOString();await db.collection("reels").doc(P.id).set(body);R.dirty=false}
   catch(e){toast(e&&e.code==="quota_exceeded"?"Der Speicher ist voll. Lösch alte Reels unten.":"Speichern hat nicht geklappt.")}
   R.saving=false;renderSaveState()}
 function renderSaveState(){const el=$("saveState");let c="var(--muted)",t="Nicht gespeichert";
@@ -2618,7 +2600,7 @@ function renderItems(){
   bindItems()}
 function itemById(id){return P.items.find(x=>x.id===id)}
 function jumpTo(i){const tl=R.tl;const sg=tl&&tl.segs[tl.itemShot[i]];if(!sg)return;setPlaying(false);R.t=sg.start+0.05;R.cur=P.items[i].id;R.needs=3;updateTransport();renderItems()}
-function changed(){markChanged();rebuild();renderItems();renderApprove()}
+function changed(){markChanged();rebuild();renderItems();renderOut()}
 function bindItems(){
   const box=$("items");
   box.querySelectorAll("[data-go]").forEach(b=>b.onclick=()=>jumpTo(+b.dataset.go));
@@ -2642,9 +2624,9 @@ function bindItems(){
       if(d&&from>=0){const [x]=P.items.splice(from,1);let to=P.items.findIndex(y=>y.id===d.id)+(d.after?1:0);if(to<0)to=P.items.length;P.items.splice(to,0,x);changed()}else renderItems()})})}
 
 /* ================= Oberfläche: Felder ================= */
-const FIELDS=[["f-hook","hook"],["f-sub","sub"],["f-ende","ende"],["f-notes","notes"],["f-ort","ort"],["f-title","title"],["f-cap","caption"],["f-tags","tags"],["f-date","date"],["f-time","time"]];
-function fillFields(){for(const [id,k] of FIELDS)$(id).value=P[k]||"";$("musicName").textContent=P.musicName?(R.music?P.musicName:P.musicName+" (in diesem Fenster neu wählen)"):"";renderBpm();renderLook();renderChecks();renderSlots();renderMoods();renderTracks()}
-function bindFields(){for(const [id,k] of FIELDS){$(id).addEventListener("input",()=>{P[k]=$(id).value;if(["hook","sub","ende"].includes(k)){R.needs=2;if(!R.playing){R.t=k==="ende"&&R.tl&&R.tl.segs.length?R.tl.segs[R.tl.segs.length-1].start+1:0.8}}if(["caption","tags","ort","date","time"].includes(k))renderChecks();renderApprove();markChanged()})}}
+const FIELDS=[["f-hook","hook"],["f-sub","sub"],["f-ende","ende"],["f-notes","notes"],["f-ort","ort"],["f-title","title"],["f-cap","caption"],["f-tags","tags"]];
+function fillFields(){for(const [id,k] of FIELDS)$(id).value=P[k]||"";$("musicName").textContent=P.musicName?(R.music?P.musicName:P.musicName+" (in diesem Fenster neu wählen)"):"";renderBpm();renderLook();renderChecks();renderMoods();renderTracks()}
+function bindFields(){for(const [id,k] of FIELDS){$(id).addEventListener("input",()=>{P[k]=$(id).value;if(["hook","sub","ende"].includes(k)){R.needs=2;if(!R.playing){R.t=k==="ende"&&R.tl&&R.tl.segs.length?R.tl.segs[R.tl.segs.length-1].start+1:0.8}}if(["caption","tags","ort"].includes(k))renderChecks();renderOut();markChanged()})}}
 function renderBpm(){const lock=!!P.music;$("bpmHint").textContent=lock?`Das Tempo kommt vom Song „${P.music.title}“ (${de(P.bpm,0)} BPM), damit die Schnitte auf dem Beat liegen.`:"Wähle in etwa das Tempo des Songs, den du drüberlegen willst. 120 passt zu den meisten Reel-Sounds.";
   if(lock){$("bpmRow").innerHTML=`<span class="chip"><span class="dot" style="background:var(--ok)"></span>${de(P.bpm,1)} BPM vom Song</span>`;return}
   $("bpmRow").innerHTML=[100,110,120,128].map(b=>`<button class="pill" data-bpm="${b}" aria-pressed="${P.bpm===b}">${b} BPM</button>`).join("")+`<input class="field" type="number" min="60" max="180" id="bpmCustom" value="${Math.round(P.bpm)}" aria-label="Eigenes Tempo" style="width:92px">`;
@@ -2654,9 +2636,6 @@ function renderLook(){if(typeof renderEdit==="function")renderEdit();$("wm").set
 function checks(){const n=countTags(P.caption+" "+P.tags);const len=P.caption.length+(P.tags?P.tags.length+2:0);
   return [["Ort gesetzt",!!P.ort.trim()],[n+" Hashtags (max. 5)",n<=5],["Keine Frage am Ende",!/\?\s*$/.test(P.caption.trim())],[len.toLocaleString("de-DE")+" / 2.200 Zeichen",len<=2200]]}
 function renderChecks(){$("checks").innerHTML=checks().map(([t,ok])=>`<span><span class="dot" style="background:${ok?"var(--ok)":"var(--warn)"}"></span>${esc(t)}</span>`).join("");$("capCnt").textContent=`${P.caption.length.toLocaleString("de-DE")} / 2.200 · ${countTags(P.caption+" "+P.tags)} Hashtags`}
-function renderSlots(){const out=[];const d=new Date();const now=pad(d.getHours())+":"+pad(d.getMinutes());for(let i=0;i<14&&out.length<3;i++){const x=new Date(d);x.setDate(d.getDate()+i);const t=SLOTS[x.getDay()];if(i===0&&t&&t<=now)continue;if(t&&!(window.__taken&&window.__taken.has(iso(x))))out.push([iso(x),t])}
-  $("slots").innerHTML=`<span class="muted">Rhythmus-Termine:</span>`+out.map(([dt,t])=>`<button class="pill mini" data-slot="${dt}|${t}" aria-pressed="${P.date===dt&&P.time===t}">${fmtD(dt)} ${t}</button>`).join("");
-  $("slots").querySelectorAll("[data-slot]").forEach(b=>b.onclick=()=>{const [dt,t]=b.dataset.slot.split("|");P.date=dt;P.time=t;$("f-date").value=dt;$("f-time").value=t;renderSlots();renderApprove();markChanged()})}
 function renderChips(){const tl=R.tl;if(!tl||!tl.segs.length){$("chips").innerHTML="";return}const tot=tl.total;const ok=tot>=7&&tot<=15;
   $("chips").innerHTML=`<span class="chip">${esc((tl.style==="pro"?{name:"Pro-Schnitt"}:STYLES[tl.style]).name)} · Variante ${P.seed}</span><span class="chip"><span class="dot" style="background:${ok?"var(--ok)":"var(--warn)"}"></span>${de(tot)} s ${ok?"":"· ideal 8 bis 15 s"}</span><span class="chip">${tl.segs.length} Einstellungen</span><span class="chip">${P.bpm} BPM</span>`}
 
@@ -2692,35 +2671,47 @@ function renderSugg(){const s=R.suggest,box=$("sugg");if(!s){box.innerHTML="";re
   box.querySelectorAll("[data-take]").forEach(b=>b.onclick=()=>{take(b.dataset.take);b.textContent="Übernommen";b.disabled=true});
   const all=$("takeAll");if(all)all.onclick=()=>{["hook","sub","ende","caption","tags"].forEach(k=>{if(s[k])take(k)});toast("Übernommen")}}
 
-/* ================= Rendern und Freigabe ================= */
+/* ================= Rendern und sichern ================= */
 function renderBoxState(st){if(!st&&R.exporting)return;const box=$("renderBox");const has=P.items.length>0;
   if(st&&st.err){box.innerHTML=`<div class="notice bad">${esc(st.err)}</div><div class="row"><button class="btn" id="doRender" ${has?"":"disabled"}>Reel rendern</button></div>`;$("doRender").onclick=exportReel;return}
-  if(st&&st.prog!=null){box.innerHTML=`<div class="bar"><span style="width:${Math.round(st.prog*100)}%"></span></div><div class="row" style="justify-content:space-between"><span class="small muted">${esc(st.txt||"")}</span>${st.prog<1?`<button class="linkish" id="cancel">Abbrechen</button>`:""}</div>`;const c=$("cancel");if(c)c.onclick=()=>{R.cancel=true};return}
+  if(st&&st.prog!=null){const el=(performance.now()-(R.expT0||performance.now()))/1000;let txt=st.txt||"";
+    if(st.frames){const pc=Math.round(st.prog*100);let rest="";const a=R.expP0;if(a&&st.prog>0.03){const done=st.prog-a.f/((R.tl&&R.tl.total||1)*FPS);const sec=(performance.now()-a.t)/1000;if(done>0){const left=Math.max(1,Math.round(sec/done*(1-st.prog)));rest=left>=60?`noch etwa ${Math.round(left/60)} min`:`noch etwa ${left} s`}}txt=`${pc} %${rest?" · "+rest:""}`}
+    box.innerHTML=`<div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.round(st.prog*100)}"><span style="transform:scaleX(${st.prog.toFixed(3)})"></span></div><div class="row" style="justify-content:space-between"><span class="small muted">${esc(txt)}</span>${st.prog<1?`<button class="linkish" id="cancel">Abbrechen</button>`:""}</div>${el>=10&&st.prog<1?`<p class="small muted" style="margin:0">Bildschirm anlassen</p>`:""}`;const c=$("cancel");if(c)c.onclick=()=>{R.cancel=true};return}
   const stale=P.renderSig&&!sigSame(P.renderSig);
-  box.innerHTML=`<div class="row"><button class="btn" id="doRender" ${has?"":"disabled"}>${P.renderSig?"Neu rendern":"Reel rendern"}</button><span class="small muted">${has?(stale?"Seit dem letzten Rendern geändert.":"Dauert je nach Videos 20 Sekunden bis 2 Minuten. Fenster dabei offen lassen."):"Erst Material hinzufügen."}</span></div>`;
+  box.innerHTML=`<div class="row"><button class="btn" id="doRender" ${has?"":"disabled"}>${P.renderSig?"Neu rendern":"Reel rendern"}</button><span class="small muted">${has?(stale?"Seit dem letzten Rendern geändert.":"Dauert je nach Videos 20 Sekunden bis 2 Minuten."):"Erst Material hinzufügen."}</span></div>`;
   $("doRender").onclick=exportReel}
+/* Teilen in zwei Tipps: erst rendern, dann teilen. Die Freigabe des Browsers für navigator.share gilt nur kurz nach einem Tipp,
+   deshalb liegen die Dateien schon fertig bereit, bevor der Knopf erscheint. */
+const outDay=()=>{const d=new Date();return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())};
+function outFiles(){const day=outDay();
+  if(R.lastBlob&&R.lastFor===P.id&&(!R.shareMp4||R.shareMp4.__b!==R.lastBlob)){R.shareMp4=new File([R.lastBlob],`sommer_gram-reel-${day}.mp4`,{type:"video/mp4"});R.shareMp4.__b=R.lastBlob}
+  if(R.coverBlob&&R.coverFor===P.id&&(!R.shareJpg||R.shareJpg.__b!==R.coverBlob)){R.shareJpg=new File([R.coverBlob],`sommer_gram-titelbild-${day}.jpg`,{type:"image/jpeg"});R.shareJpg.__b=R.coverBlob}
+  /* Nach dem Neuladen: gespeichertes Video und Titelbild vorab holen */
+  if(!(R.lastBlob&&R.lastFor===P.id)&&P.videoAssetId&&!R.loadingOut){const id=P.id;R.loadingOut=true;__bf(P.videoAssetId).then(x=>x.blob()).then(b=>{if(P.id!==id)return;R.lastBlob=b;R.lastFor=id;renderResult()}).catch(()=>{}).finally(()=>{R.loadingOut=false})}
+  if(!(R.coverBlob&&R.coverFor===P.id)&&P.coverAssetId&&!R.loadingCov){const id=P.id;R.loadingCov=true;__bf(P.coverAssetId).then(x=>x.blob()).then(b=>{if(P.id!==id)return;R.coverBlob=b;R.coverFor=id;renderResult()}).catch(()=>{}).finally(()=>{R.loadingCov=false})}
+  return {mp4:R.lastFor===P.id?R.shareMp4:null,jpg:R.coverFor===P.id?R.shareJpg:null}}
+function canShareFile(f){try{const touch=("ontouchend" in document)&&navigator.maxTouchPoints>0;return !!(f&&touch&&navigator.share&&navigator.canShare&&navigator.canShare({files:[f]}))}catch(e){return false}}
+function saveFile(f){const a=document.createElement("a");a.href=URL.createObjectURL(f);a.download=f.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000)}
+function shareOrSave(f,hint){if(!f){toast("Datei wird noch geladen");return}
+  if(!canShareFile(f)){saveFile(f);return}
+  try{navigator.share({files:[f]}).catch(e=>{if(e&&e.name==="AbortError")return;if(e&&e.name==="NotAllowedError"){hint.textContent="Noch einmal tippen";return}hint.textContent="Teilen ging nicht. Noch einmal tippen."})}
+  catch(e){if(e&&e.name==="NotAllowedError")hint.textContent="Noch einmal tippen";else saveFile(f)}}
 function renderResult(){const box=$("resultBox");if(!P.renderSig){box.innerHTML="";renderBoxState(null);return}
-  const vurl=R.lastUrl||(P.videoAssetId?__bs(P.videoAssetId):"");const curl=R.coverUrl||(P.coverAssetId?__bs(P.coverAssetId):"");
+  const F=outFiles();const vurl=R.lastFor===P.id&&R.lastUrl?R.lastUrl:(P.videoAssetId?__bs(P.videoAssetId):"");const curl=R.coverFor===P.id&&R.coverUrl?R.coverUrl:(P.coverAssetId?__bs(P.coverAssetId):"");
+  const share=canShareFile(F.mp4||new File([""],"x.mp4",{type:"video/mp4"}));
   box.innerHTML=`<div class="result">${vurl?`<video src="${esc(vurl)}" controls playsinline preload="metadata" poster="${esc(curl)}"></video>`:`<div></div>`}
-    <div class="stack" style="gap:10px">
-      <div class="row"><span class="chip">${de(P.dur)} s</span><span class="chip">${(P.sizeBytes/1048576).toLocaleString("de-DE",{maximumFractionDigits:1})} MB</span>${curl?`<span class="chip" style="padding:3px 8px 3px 3px"><span class="cover" style="width:22px;border-radius:5px"><img src="${esc(curl)}" alt=""></span>Titelbild</span>`:""}</div>
+    <div class="stack" style="gap:12px">
+      <div class="row"><span class="chip">${de(P.dur)} s</span><span class="chip">${(P.sizeBytes/1048576).toLocaleString("de-DE",{maximumFractionDigits:1})} MB</span></div>
+      ${curl?`<div class="cv34"><span class="cv34-im"><img src="${esc(curl)}" alt="Titelbild"><i aria-hidden="true"></i></span><span class="small muted">Titelbild. Der helle Rahmen zeigt, was im Profilraster (3:4) zu sehen ist.</span></div>`:""}
       ${P.audioNote?`<span class="small" style="color:var(--warn)">${esc(P.audioNote)}</span>`:""}
-      <div class="row">${downloads&&(R.lastBlob||P.videoAssetId)?`<button class="btn ghost sm" id="dl">Auf Gerät sichern</button>`:""}${R.lastBlob&&!downloads?`<span class="small muted">Sichern geht hier gerade nicht.</span>`:""}</div>
-      <div id="approveBox" class="stack" style="gap:10px"></div>
-    </div></div>`;
-  const dl=$("dl");if(dl)dl.onclick=async()=>{try{let data=R.lastBlob;if(!data&&P.videoAssetId)data=await (await __bf(P.videoAssetId)).blob();await downloads.save({filename:`reel-${slug(P.title||P.ort||"sommer_gram")}.mp4`,data})}catch(e){if(e&&e.code==="declined")return;toast("Sichern hat nicht geklappt")}};
-  renderApprove();renderBoxState(null)}
-function renderApprove(){const box=$("approveBox");if(!box){renderBoxState(null);return}
-  const stale=!sigSame(P.renderSig);const ready=!stale&&P.videoAssetId&&P.date&&P.time&&P.caption.trim();
-  const missing=[stale&&"neues Rendern",!P.videoAssetId&&"gespeichertes Video",!P.date&&"Datum",!P.time&&"Uhrzeit",!P.caption.trim()&&"Caption"].filter(Boolean);
-  box.innerHTML=(stale&&P.status!=="instagram"?`<div class="notice">Du hast danach noch etwas geändert. Render neu, bevor du freigibst.</div>`:"")+
-    (P.status==="freigegeben"?`<div class="notice ok"><span><b>Freigegeben.</b> Sag Claude im Chat kurz Bescheid, dann wird das Reel für ${esc(fmtD(P.date))} ${esc(P.time)} in Instagram eingeplant.</span><button class="linkish" id="unapprove">Freigabe zurücknehmen</button></div>`
-    :P.status==="instagram"?`<div class="notice ok"><span><b>Liegt in Instagram.</b> Änderungen hier kommen dort nicht an. Ändern oder löschen geht in der App unter „Geplanter Content“.</span></div>`
-    :P.status==="veroeffentlicht"?`<div class="notice ok"><span><b>Veröffentlicht.</b></span></div>`
-    :`<div class="row"><button class="btn" id="approve" ${ready?"":"disabled"}>Für Instagram freigeben</button><span class="small muted">${ready?"Geht über Planen und Veröffentlichen, mit Termin, Caption und Ort.":"Es fehlt noch: "+missing.join(", ")+"."}</span></div>`);
-  const ap=$("approve");if(ap)ap.onclick=()=>{if(!sigSame(P.renderSig)){toast("Erst neu rendern");return}P.status="freigegeben";markChanged(true);renderApprove();renderHeader()};
-  const un=$("unapprove");if(un)un.onclick=()=>{P.status="fertig";markChanged(true);renderApprove();renderHeader()};
+    </div></div>
+    <div class="outbtns"><button class="btn big" id="shMp4" ${F.mp4?"":"disabled"}>${share?"Reel teilen":"MP4 sichern"}</button><button class="btn ghost big" id="shJpg" ${F.jpg?"":"disabled"}>${share?"Titelbild teilen":"Titelbild sichern"}</button></div>
+    <p class="small muted" id="shHint" role="status" style="margin:0">${F.mp4?(share?"Im Teilen-Menü „Video sichern“ wählen oder direkt die Claude-App.":"Die Datei landet in deinen Downloads."):"Video wird geladen …"}</p>`;
+  const hint=$("shHint");
+  $("shMp4").onclick=()=>shareOrSave(outFiles().mp4,hint);
+  $("shJpg").onclick=()=>shareOrSave(outFiles().jpg,hint);
   renderBoxState(null)}
+function renderOut(){renderBoxState(null)}
 const slug=s=>String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/ß/g,"ss").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,40)||"reel";
 
 /* ================= Liste ================= */
@@ -2755,11 +2746,11 @@ function bindStatic(){
   $("setCover").onclick=async()=>{setPlaying(false);P.coverT=Math.round(R.t*100)/100;
     if(!P.renderSig){markChanged();toast(`Titelbild bei ${de(R.t)} s gemerkt. Es kommt beim Rendern dazu.`,3200);return}
     try{const cv=mk(W,H),eng=new Engine(cv);const keep=[P.hook,P.ende];P.hook="";P.ende="";eng.render(R.t);P.hook=keep[0];P.ende=keep[1];
-      const b=await new Promise(r=>cv.toBlob(r,"image/jpeg",0.9));if(R.coverUrl)URL.revokeObjectURL(R.coverUrl);R.coverUrl=URL.createObjectURL(b);R.coverBlob=b;
+      const b=await new Promise(r=>cv.toBlob(r,"image/jpeg",0.9));if(R.coverUrl)URL.revokeObjectURL(R.coverUrl);R.coverUrl=URL.createObjectURL(b);R.coverBlob=b;R.coverFor=P.id;
       if(assets){const a=await assets.upload(b,{type:"image/jpeg"});P.coverAssetId=a.id}markChanged(true);renderResult();toast("Titelbild übernommen")}catch(e){toast("Titelbild ließ sich nicht speichern")}};
-  $("wm").onclick=()=>{P.wm=!P.wm;renderLook();R.needs=2;markChanged();renderApprove()};
-  $("snd-orig").onclick=()=>{P.sound=!P.sound;renderLook();markChanged();renderApprove()};
-  $("musicIn").onchange=()=>{const f=$("musicIn").files[0];if(!f)return;if(R.musicObjUrl){URL.revokeObjectURL(R.musicObjUrl);R.musicObjUrl=null}R.music=f;P.music=null;P.musicName=f.name;renderBpm();renderTracks();$("musicName").innerHTML=`${esc(f.name)} · <button class="linkish" id="musicOff">entfernen</button>`;$("musicOff").onclick=()=>{R.music=null;P.musicName="";$("musicName").textContent="";$("musicIn").value="";renderMiniSound();markChanged();renderApprove()};renderMiniSound();markChanged();renderApprove()};
+  $("wm").onclick=()=>{P.wm=!P.wm;renderLook();R.needs=2;markChanged();renderOut()};
+  $("snd-orig").onclick=()=>{P.sound=!P.sound;renderLook();markChanged();renderOut()};
+  $("musicIn").onchange=()=>{const f=$("musicIn").files[0];if(!f)return;if(R.musicObjUrl){URL.revokeObjectURL(R.musicObjUrl);R.musicObjUrl=null}R.music=f;P.music=null;P.musicName=f.name;renderBpm();renderTracks();$("musicName").innerHTML=`${esc(f.name)} · <button class="linkish" id="musicOff">entfernen</button>`;$("musicOff").onclick=()=>{R.music=null;P.musicName="";$("musicName").textContent="";$("musicIn").value="";renderMiniSound();markChanged();renderOut()};renderMiniSound();markChanged();renderOut()};
   $("suggest").onclick=suggest;
   $("reroll").onclick=()=>{P.seed=newSeed();afterStyleChange()};
   $("moodPlay").onclick=()=>{if(R.ex&&R.ex.mood===R.moodSel){stopExample();return}playExample(R.moodSel||"treibend")};
@@ -2779,7 +2770,7 @@ async function init(){
   const obs=new MutationObserver(()=>{$("suggest").disabled=!sample||!P.items.length});obs.observe($("items"),{childList:true});
   if(db){$("banner").innerHTML=`<div class="notice">Lade deine Reels …</div>`;const to=setTimeout(()=>{$("banner").innerHTML=`<div class="notice">Die gespeicherten Reels kommen gerade nicht. Neue Reels kannst du trotzdem bauen.</div>`},10000);
     db.collection("reels").onSnapshot(snap=>{clearTimeout(to);$("banner").innerHTML="";R.list=snap.docs.map(x=>x.data());
-      const mine=R.list.find(x=>x.id===P.id);if(mine&&!R.dirty&&mine.status!==P.status){P.status=mine.status;renderHeader();renderApprove()}renderList();if(window.__wantReel&&R.list.some(x=>x.id===window.__wantReel)){const id=window.__wantReel;window.__wantReel=null;openReel(id)}},
+      const mine=R.list.find(x=>x.id===P.id);if(mine&&!R.dirty&&mine.status!==P.status){P.status=mine.status;renderHeader();renderOut()}renderList();if(window.__wantReel&&R.list.some(x=>x.id===window.__wantReel)){const id=window.__wantReel;window.__wantReel=null;openReel(id)}},
       e=>{clearTimeout(to);$("banner").innerHTML=`<div class="notice">Die gespeicherten Reels sind gerade nicht erreichbar. Neue Reels kannst du trotzdem bauen und sichern.</div>`})}
   if(db){db.collection("music").onSnapshot(snap=>{R.mlist=snap.docs.map(x=>Object.assign({id:x.id},x.data())).filter(t=>t.assetId);
       if(!R.moodSel||!R.mlist.some(t=>t.mood===R.moodSel)){const f=R.mlist[0];if(f)R.moodSel=f.mood}renderMoods();renderTracks()},()=>{})}
