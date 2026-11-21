@@ -382,7 +382,6 @@ function vAnalytics(){
   const fol=[...S.insights].filter(i=>i.followers!=null).sort((a,b)=>a.date.localeCompare(b.date));const lastF=fol[fol.length-1];
   const base=lastF?insAround(lastF.date,days,i=>i.followers!=null&&i.date<lastF.date):null;
   const fd=lastF&&base?lastF.followers-base.followers:null;
-  const base2=base?insAround(base.date,days,i=>i.followers!=null&&i.date<base.date):null;const fd2=base&&base2?base.followers-base2.followers:null;
   const shr=rate(cur,"shares"),shr0=rate(prev,"shares"),sav=rate(cur,"saves"),sav0=rate(prev,"saves");
   const kpi=(v,name,d,extra)=>`<div class="kz"><span class="kz-v">${v}</span><span class="kz-n">${name}</span>${extra||""}${d||""}</div>`;
   const sgn=v=>v==null?"–":(v>0?"+":"")+nf(v);
@@ -390,7 +389,7 @@ function vAnalytics(){
   const kpis=`<section class="kz-grid" aria-label="Kennzahlen, letzte ${perL}">
     ${kpi(nf(P&&P.views),"Aufrufe",delta(P&&P.views,PP&&PP.views))}
     ${kpi(nf(P&&P.reach),`Betrachter <small>(Reichweite)</small>`,delta(P&&P.reach,PP&&PP.reach))}
-    ${kpi(sgn(fd),"Follower",fd2?delta(fd,fd2):"",lastF?`<span class="kz-s">jetzt ${nf(lastF.followers)}</span>`:"")}
+    ${kpi(sgn(fd),"Follower","",lastF?`<span class="kz-s">jetzt ${nf(lastF.followers)}</span>`:"")}
     ${kpi(dec1(shr),"Geteilt pro 100 Betrachter",delta(shr,shr0))}
     ${kpi(dec1(sav),"Gespeichert pro 100 Betrachter",delta(sav,sav0))}
     ${kpi(nf(P&&P.interactions),"Interaktionen",delta(P&&P.interactions,PP&&PP.interactions))}
